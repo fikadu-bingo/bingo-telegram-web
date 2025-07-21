@@ -32,7 +32,15 @@ function DepositModal({ onClose }) {
 
     try {
       setLoading(true);
-      await axios.post("https://bingo-server-rw7p.onrender.com/api/user/deposit", formData);
+      await axios.post(
+  "https://bingo-server-rw7p.onrender.com/api/user/deposit",
+  formData,
+  {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  }
+);
       setShowSuccess(true);
     } catch (err) {
       alert("Failed to submit deposit. Please try again.");
