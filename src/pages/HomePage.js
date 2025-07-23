@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DepositModal from "../components/DepositModal";
 import DepositSuccessModal from "../components/DepositSuccessModal";
 import CashOutModal from "../components/CashOutModal";
 import CashOutSuccessModal from "../components/CashOutSuccessModal";
-import axios from "axios";
+import logo from "../assets/logo.png";
 
 function HomePage() {
   const navigate = useNavigate();
@@ -15,22 +15,6 @@ function HomePage() {
   const [showModal, setShowModal] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCashOutSuccess, setShowCashOutSuccess] = useState(false);
-
-  const [username, setUsername] = useState("Guest");
-  const [profilePic, setProfilePic] = useState("https://via.placeholder.com/100");
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await axios.get("/api/user/me"); // Adjust this endpoint if needed
-        setUsername(res.data.username || "Guest");
-        setProfilePic(res.data.profile_photo_url || "https://via.placeholder.com/100");
-      } catch (err) {
-        console.error("Failed to load user info", err);
-      }
-    };
-    fetchUser();
-  }, []);
 
   const stakes = [200, 100, 50, 20, 10];
 
@@ -92,18 +76,14 @@ function HomePage() {
       }}
     >
       <img
-        src={profilePic}
-        alt="Profile"
+        src={logo}
+        alt="1Bingo Logo"
         style={{
-          borderRadius: "50%",
-          width: "100px",
-          height: "100px",
-          objectFit: "cover",
+          width: "120px",
+          height: "auto",
           marginBottom: "10px",
-          border: "3px solid #4CAF50",
         }}
       />
-      <h3>{username}</h3>
 
       <div
         style={{
@@ -144,6 +124,7 @@ function HomePage() {
         <div style={{ flex: 1, textAlign: "center" }}>Win</div>
         <div style={{ flex: 1, textAlign: "center" }}>Join</div>
       </div>
+
       {stakes.map((amount) => (
         <div
           key={amount}
@@ -158,8 +139,7 @@ function HomePage() {
                 : "1px solid transparent",
             borderRadius: "10px",
             padding: "10px",
-            margin: "8px 0",
-          }}
+            margin: "8px 0",}}
         >
           <div
             style={{
@@ -244,20 +224,7 @@ function HomePage() {
       </p>
 
       {showModal === "stakeWarning" && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(0, 0, 0, 0.7)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 9999,
-          }}
-        >
+        <div style={overlayStyle}>
           <div
             style={{
               background: "white",
@@ -287,12 +254,23 @@ function HomePage() {
           </div>
         </div>
       )}
+
       {showModal === "deposit" && (
-        <DepositModal onClose={() => setShowModal(null)} onDeposit={handleDeposit} />
+        <div style={overlayStyle}>
+          <DepositModal
+            onClose={() => setShowModal(null)}
+            onDeposit={handleDeposit}
+          />
+        </div>
       )}
 
       {showModal === "cashout" && (
-        <CashOutModal onClose={() => setShowModal(null)} onConfirm={handleCashOut} />
+        <div style={overlayStyle}>
+          <CashOutModal
+            onClose={() => setShowModal(null)}
+            onConfirm={handleCashOut}
+          />
+        </div>
       )}
 
       {showSuccessModal && (
@@ -305,7 +283,6 @@ function HomePage() {
     </div>
   );
 }
-
 const actionBtnStyle = {
   flex: "1 1 45%",
   padding: "12px",
@@ -316,6 +293,19 @@ const actionBtnStyle = {
   fontWeight: "bold",
   cursor: "pointer",
   fontSize: "14px",
+};
+
+const overlayStyle = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "100vw",
+  height: "100vh",
+  backgroundColor: "rgba(0, 0, 0, 0.7)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 1000,
 };
 
 export default HomePage;
