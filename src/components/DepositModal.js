@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import DepositSuccessModal from "./DepositSuccessModal";
-
+import "./DepositModal.css";
 function DepositModal({ onClose }) {
   const [amount, setAmount] = useState("");
   const [phone, setPhone] = useState("");
@@ -33,14 +33,14 @@ function DepositModal({ onClose }) {
     try {
       setLoading(true);
       await axios.post(
-  "https://bingo-server-rw7p.onrender.com/api/user/deposit",
-  formData,
-  {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  }
-);
+        "https://bingo-server-rw7p.onrender.com/api/user/deposit",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       setShowSuccess(true);
     } catch (err) {
       alert("Failed to submit deposit. Please try again.");
@@ -57,78 +57,122 @@ function DepositModal({ onClose }) {
   };
 
   return (
-    <div style={overlayStyle}>
-      <div style={modalStyle}>
-        <div style={{ textAlign: "center", marginBottom: "20px" }}>
-          <img
-            src="/telebirr-logo.png"
-            alt="Telebirr Logo"
-            style={{ width: "80px", height: "80px", borderRadius: "12px" }}
-          />
-        </div>
-
-        <div style={{ ...formRow, marginTop: "5px", position: "relative" }}>
-          <label style={labelStyle}>Telebirr Number</label>
-          <div style={copyContainerStyle}>
-            <span style={{ color: "#007BFF", fontWeight: "bold" }}>{telebirrNumber}</span>
-            <button type="button" onClick={handleCopy} style={copyButtonStyle}>
-              📄
-            </button>
-            {copied && <span style={copiedTextStyle}>Copied</span>}
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div style={formRow}>
-            <label style={labelStyle}>
-              Amount<br /><small>(Min 10 ETB / Max 1000 ETB)</small>
-            </label>
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="e.g. 100"
-              required
-              style={inputStyle}
+    <>
+      <div className="modal">
+        <div className="modal-content">
+          <div style={{ textAlign: "center", marginBottom: "20px" }}>
+            <img
+              src="/telebirr-logo.png"
+              alt="Telebirr Logo"
+              style={{ width: "80px", height: "80px", borderRadius: "12px" }}
             />
           </div>
 
-          <div style={formRow}>
-            <label style={labelStyle}>Your Telebirr Number</label>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="09xxxxxxxx"
-              required
-              style={inputStyle}
-            />
+          {/* Telebirr Number (copyable) */}
+          <div
+            style={{
+              marginBottom: "15px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <label><strong>Telebirr Number</strong></label>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ color: "#007BFF", fontWeight: "bold" }}>{telebirrNumber}</span>
+              <button
+                type="button"
+                onClick={handleCopy}
+                style={{
+                  cursor: "pointer",
+                  background: "none",
+                  border: "none",
+                  fontSize: "18px",
+                }}
+              >
+                📄
+              </button>
+              {copied && <span style={{ fontSize: "12px", color: "green" }}>Copied</span>}
+            </div>
           </div>
 
-          <div style={formRow}>
-            <label style={labelStyle}>
-              Submit Your Receipt<br />
-              <small>(.jpg, .png, .pdf — Max 10MB)</small>
-            </label>
-            <label htmlFor="file-upload" style={uploadBox}>
-              +
+          <form onSubmit={handleSubmit}>
+            {/* Amount Input */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "15px",
+              }}
+            >
+              <label>Amount (Min 10 ETB / Max 1000 ETB)</label>
               <input
-                id="file-upload"
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="e.g. 100"
+                required
+                style={{ width: "150px", padding: "6px" }}
+              />
+            </div>
+
+            {/* Phone Number Input */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "15px",
+              }}>
+              <label>Your Telebirr Number</label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="09xxxxxxxx"
+                required
+                style={{ width: "150px", padding: "6px" }}
+              />
+            </div>
+
+            {/* Receipt Upload Input */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "20px",
+              }}
+            >
+              <label>Upload Your Receipt</label>
+              <input
                 type="file"
                 accept=".jpg,.png,.pdf"
                 onChange={(e) => setReceipt(e.target.files[0])}
                 required
-                style={{ display: "none" }}
+                style={{ width: "150px" }}
               />
-            </label>
-          </div>
+            </div>
 
-          <button type="submit" style={submitButtonStyle} disabled={loading}>
-            {loading ? "Submitting..." : "Confirm Deposit"}
-          </button>
-        </form>
+            {/* Confirm Button */}
+            <button type="submit" disabled={loading} style={{
+              width: "100%",
+              padding: "10px",
+              backgroundColor: "#007BFF",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              fontWeight: "bold",
+              cursor: "pointer",
+            }}>
+              {loading ? "Submitting..." : "Confirm Deposit"}
+            </button>
+          </form>
 
-        <button onClick={onClose} style={closeBtnStyle}>✖️</button>
+          {/* Close Button */}
+          <button onClick={onClose} className="close">✖️</button>
+        </div>
       </div>
 
       {showSuccess && (
@@ -139,20 +183,8 @@ function DepositModal({ onClose }) {
           }}
         />
       )}
-    </div>
+    </>
   );
 }
-export default DepositModal;
 
-// Styles (same as your original code)...
-const overlayStyle = { /* same */ };
-const modalStyle = { /* same */ };
-const formRow = { /* same */ };
-const labelStyle = { /* same */ };
-const inputStyle = { /* same */ };
-const uploadBox = { /* same */ };
-const submitButtonStyle = { /* same */ };
-const closeBtnStyle = { /* same */ };
-const copyContainerStyle = { /* same */ };
-const copyButtonStyle = { /* same */ };
-const copiedTextStyle = { /* same */ };
+export default DepositModal;
