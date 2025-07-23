@@ -4,6 +4,8 @@ import DepositModal from "../components/DepositModal";
 import DepositSuccessModal from "../components/DepositSuccessModal";
 import CashOutModal from "../components/CashOutModal";
 import CashOutSuccessModal from "../components/CashOutSuccessModal";
+import TransferModal from "../components/TransferModal";
+import PromoCodeModal from "../components/PromoCodeModal"; // ✅ Import Promo Modal
 import logo from "../assets/logo.png";
 
 function HomePage() {
@@ -15,6 +17,8 @@ function HomePage() {
   const [showModal, setShowModal] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCashOutSuccess, setShowCashOutSuccess] = useState(false);
+  const [showTransferModal, setShowTransferModal] = useState(false);
+  const [showPromoModal, setShowPromoModal] = useState(false); // ✅ Promo modal state
 
   const stakes = [200, 100, 50, 20, 10];
 
@@ -131,15 +135,13 @@ function HomePage() {
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
-            background: activeButton === amount ? "#0E0E2C" : "#22224A",
+            justifyContent: "space-between",background: activeButton === amount ? "#0E0E2C" : "#22224A",
             border:
-              activeButton === amount
-                ? "1px solid orange"
-                : "1px solid transparent",
+              activeButton === amount ? "1px solid orange" : "1px solid transparent",
             borderRadius: "10px",
             padding: "10px",
-            margin: "8px 0",}}
+            margin: "8px 0",
+          }}
         >
           <div
             style={{
@@ -205,7 +207,9 @@ function HomePage() {
         <button style={actionBtnStyle} onClick={() => setShowModal("cashout")}>
           💵 Cash out
         </button>
-        <button style={actionBtnStyle}>🔁 Transfer</button>
+        <button style={actionBtnStyle} onClick={() => setShowTransferModal(true)}>
+          🔁 Transfer
+        </button>
         <button style={actionBtnStyle} onClick={handlePlayNow}>
           🎮 Play now
         </button>
@@ -219,10 +223,12 @@ function HomePage() {
           cursor: "pointer",
           marginTop: "10px",
         }}
+        onClick={() => setShowPromoModal(true)} // ✅ Show promo modal on click
       >
         Have a promo code? Click here
       </p>
 
+      {/* Modals */}
       {showModal === "stakeWarning" && (
         <div style={overlayStyle}>
           <div
@@ -271,6 +277,25 @@ function HomePage() {
             onConfirm={handleCashOut}
           />
         </div>
+      )}{showTransferModal && (
+        <div style={overlayStyle}>
+          <TransferModal
+            onClose={() => setShowTransferModal(false)}
+            balance={balance}
+          />
+        </div>
+      )}
+
+      {showPromoModal && (
+        <div style={overlayStyle}>
+          <PromoCodeModal
+            onClose={() => setShowPromoModal(false)}
+            onSuccess={() => {
+              setShowPromoModal(false);
+              alert("Promo code verified!");
+            }}
+          />
+        </div>
       )}
 
       {showSuccessModal && (
@@ -283,6 +308,7 @@ function HomePage() {
     </div>
   );
 }
+
 const actionBtnStyle = {
   flex: "1 1 45%",
   padding: "12px",
