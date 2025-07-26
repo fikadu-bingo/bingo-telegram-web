@@ -61,7 +61,7 @@ const handlePlayNow = () => {
       balance: newBalance,
       stake: selectedStake,
       userJoined: true,
-      username: username,
+      username: firstName,
     },
   });
 };
