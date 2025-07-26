@@ -1,22 +1,19 @@
-// /src/auth/TelegramAuth.js
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+// src/auth/TelegramAuth.js
+import React, { useEffect } from "react";
 
-const TelegramAuth = () => {
-  const navigate = useNavigate();
-
+const TelegramAuth = ({ children }) => {
   useEffect(() => {
-    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+    const telegram = window.Telegram?.WebApp;
+    const user = telegram?.initDataUnsafe?.user;
 
-    if (tgUser) {
-      localStorage.setItem("telegramUser", JSON.stringify(tgUser));
-      navigate("/home");
+    if (user) {
+      localStorage.setItem("telegramUser", JSON.stringify(user));
     } else {
-      alert("Failed to load Telegram user");
+      console.warn("Telegram user not found");
     }
-  }, [navigate]);
+  }, []);
 
-  return null;
+  return <>{children}</>;
 };
 
 export default TelegramAuth;
