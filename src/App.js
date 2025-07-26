@@ -4,8 +4,9 @@ import HomePage from "./pages/HomePage";
 import BingoBoard from "./pages/BingoBoard";
 import Call from "./pages/Call";
 import Preloader from "./Preloader";
-import AgentLogin from "./pages/AgentLogin"; // Make sure it's inside pages folder
+import AgentLogin from "./pages/AgentLogin";
 import AgentDashboard from "./pages/AgentDashBoard";
+import TelegramAuth from "./auth/TelegramAuth"; // ✅ Corrected path
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -22,7 +23,15 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        {/* HomePage wrapped in TelegramAuth */}
+        <Route
+          path="/"
+          element={
+            <TelegramAuth>
+              <HomePage />
+            </TelegramAuth>
+          }
+        />
         <Route path="/bingo" element={<BingoBoard />} />
         <Route path="/call" element={<Call />} />
         <Route path="/agent-login" element={<AgentLogin />} />
