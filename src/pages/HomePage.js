@@ -39,28 +39,32 @@ function HomePage() {
     setActiveButton(amount);
   };
 
-  const handlePlayNow = () => {
-    if (!selectedStake) {
-      setShowModal("stakeWarning");
-      return;
-    }
+const handlePlayNow = () => {
+  if (!selectedStake) {
+    setShowModal("stakeWarning");
+    return;
+  }
 
-    if (balance < selectedStake) {
-      alert("Not enough balance!");
-      return;
-    }
+  if (balance < selectedStake) {
+    alert("Not enough balance!");
+    return;
+  }
 
-    const newBalance = balance - selectedStake;
-    setBalance(newBalance);
+  const newBalance = balance - selectedStake;
+  setBalance(newBalance);
 
-    navigate("/bingo", {
-      state: {
-        balance: newBalance,
-        stake: selectedStake,
-        userJoined: true,
-      },
-    });
-  };
+  const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
+  const username = telegramUser?.username || "User";
+
+  navigate("/bingo", {
+    state: {
+      balance: newBalance,
+      stake: selectedStake,
+      userJoined: true,
+      username: username,
+    },
+  });
+};
 
   const handleDeposit = (amount) => {
     setBalance((prev) => prev + amount);
