@@ -16,7 +16,9 @@ function Call() {
     username: stateUsername,
   } = location.state || {};
 
-  const username = stateUsername || localStorage.getItem("username") || "User";
+ const username =
+  location.state?.username ||
+  localStorage.getItem("firstName") || "User";
 
   const [calledNumbers, setCalledNumbers] = useState([]);
   const [currentNumber, setCurrentNumber] = useState(null);
