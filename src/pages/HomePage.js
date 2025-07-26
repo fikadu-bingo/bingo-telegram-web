@@ -27,6 +27,7 @@ function HomePage() {
     const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
     if (telegramUser && telegramUser.first_name) {
       setFirstName(telegramUser.first_name);
+      localStorage.setItem("firstName", telegramUser.first_name);
     }
   }, []);
 
