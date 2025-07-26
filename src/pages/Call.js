@@ -8,7 +8,15 @@ import "./Call.css";
 function Call() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { card, stake, gameId, cartelaNumber, username } = location.state || {};
+  const {
+    card,
+    stake,
+    gameId,
+    cartelaNumber,
+    username: stateUsername,
+  } = location.state || {};
+
+  const username = stateUsername || localStorage.getItem("username") || "User";
 
   const [calledNumbers, setCalledNumbers] = useState([]);
   const [currentNumber, setCurrentNumber] = useState(null);
@@ -130,7 +138,9 @@ function Call() {
     }
 
     if (!bingo) {
-      bingo = [0, 1, 2, 3, 4].every((i) => isMarked(playerCard[i]?.[4 - i], i, 4 - i));
+      bingo = [0, 1, 2, 3, 4].every((i) =>
+        isMarked(playerCard[i]?.[4 - i], i, 4 - i)
+      );
     }
 
     if (bingo && !winner) {
@@ -138,14 +148,14 @@ function Call() {
       const totalWin = stake * players * 0.8;
       setWinAmount(`Br${totalWin}`);
       setShowPopup(true);
-      socket.emit("bingoWin", { gameId, userId: username || "User" });
+      socket.emit("bingoWin", { gameId, userId: username });
     }
   }, [calledNumbers, playerCard, stake, players, winner, socket, gameId, username]);
-
   useEffect(() => {
     const totalWin = stake * players * 0.8;
     setWinAmount(`Br${totalWin}`);
   }, [players, stake]);
+
   const lastThree = calledNumbers.slice(-3).reverse();
 
   return (
@@ -198,9 +208,7 @@ function Call() {
           </div>
 
           <div className="current-number">{currentNumber || "--"}</div>
-          <h4 style={{ textAlign: "center" }}>
-            Cartela: #{cartelaNumber}
-          </h4>
+          <h4 style={{ textAlign: "center" }}>Cartela: #{cartelaNumber}</h4>
 
           <div className="bingo-header-row">
             {["B", "I", "N", "G", "O"].map((letter) => (
@@ -243,10 +251,10 @@ function Call() {
 
       {showPopup && (
         <WinModal
-          username={username || "User"}
+          username={username}
           amount={winAmount}
           cartela={playerCard}
-           cartelaNumber={cartelaNumber} 
+          cartelaNumber={cartelaNumber}
           onPlayAgain={() => navigate("/")}
         />
       )}
