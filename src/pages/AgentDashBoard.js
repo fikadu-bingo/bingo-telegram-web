@@ -1,196 +1,290 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-const AgentDashboard = () => {
+function AgentDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [depositRequests, setDepositRequests] = useState([]);
-  const [cashoutRequests, setCashoutRequests] = useState([]);
 
-  const login = async () => {
-    const res = await fetch("/api/agent/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-
-    const data = await res.json();
-    if (data.success) {
+  // Dummy login for now
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (username === "agent" && password === "1234") {
       setIsLoggedIn(true);
-      fetchRequests();
     } else {
-      alert("Invalid credentials");
+      alert("Invalid username or password");
     }
+   
   };
 
-  const fetchRequests = async () => {
-    try {
-      const [depositRes, cashoutRes] = await Promise.all([
-        fetch("/api/agent/deposit-requests"),
-        fetch("/api/agent/cashout-requests"),
-      ]);
-      const depositData = await depositRes.json();
-      const cashoutData = await cashoutRes.json();
-      setDepositRequests(depositData);
-      setCashoutRequests(cashoutData);
-    } catch (err) {
-      console.error("Fetch error:", err);
+  const [depositRequests, setDepositRequests] = useState([]);
+
+const [cashoutRequests, setCashoutRequests] = useState([]);
+  useEffect(() => {
+    if (isLoggedIn) {
+      axios
+        .get("https://bingo-server.onrender.com/api/agent/deposit-requests")
+        .then((res) => {
+          setDepositRequests(res.data);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch deposit requests", err);
+        });
+
+      axios
+        .get("https://bingo-server.onrender.com/api/agent/cashouts")
+        .then((res) => {
+          setCashoutRequests(res.data);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch cashout requests", err);
+        });
     }
+  }, [isLoggedIn]);
+
+  const handleFileUpload = (id, file) => {
+    const updated = cashoutRequests.map((req) =>
+      req.id === id ? { ...req, receiptFile: file } : req
+    );
+    setCashoutRequests(updated);
   };
 
-  const handleApproveDeposit = async (id) => {
-    await fetch(`/api/agent/deposit-requests/${id}/approve`, { method: "POST" });
-    setDepositRequests((prev) =>
-      prev.map((d) => (d.id === id ? { ...d, status: "Approved" } : d))
-    );
-  };
-
-  const handleRejectDeposit = async (id) => {
-    await fetch(`/api/agent/deposit-requests/${id}/reject`, { method: "POST" });
-    setDepositRequests((prev) =>
-      prev.map((d) => (d.id === id ? { ...d, status: "Rejected" } : d))
-    );
-  };
-
-  const handleApproveCashout = async (id) => {
-    const cashout = cashoutRequests.find((r) => r.id === id);
-    if (!cashout.receiptFile) return alert("Please upload receipt before approving.");
-
-    const formData = new FormData();
-    formData.append("id", id);
-    formData.append("receipt", cashout.receiptFile);
-
-    await fetch(`/api/agent/cashout-requests/${id}/approve`, {
-      method: "POST",
-      body: formData,
-    });
-
-    setCashoutRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "Approved" } : r))
-    );
-  };
-
-  const handleRejectCashout = async (id) => {
-    await fetch(`/api/agent/cashout-requests/${id}/reject`, { method: "POST" });
-    setCashoutRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: "Rejected" } : r))
-    );
-  };
-
-  const handleReceiptChange = (e, id) => {
-    const file = e.target.files[0];
-    setCashoutRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, receiptFile: file } : r))
-    );
-  };
-
-  if (!isLoggedIn) {
-    return (
-      <div style={{ padding: "40px", textAlign: "center" }}>
-        <h2>Agent Login</h2>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          style={{ margin: "5px" }}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{ margin: "5px" }}
-        />
-        <button onClick={login} style={{ margin: "5px" }}>Login</button>
-      </div>
-    );
+ const handleApproveCashout = async (request) => {
+  if (!request.receiptFile) {
+    alert("Please upload a receipt first.");
+    return;
   }
 
+  const formData = new FormData();
+  formData.append("receipt", request.receiptFile);
+
+  try {
+    await axios.post(`https://bingo-server.onrender.com/api/agent/cashouts/${request.id}/approve`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    // Refresh cashout list
+    const res = await axios.get("https://bingo-server.onrender.com/api/agent/cashouts");
+    setCashoutRequests(res.data);
+  } catch (error) {
+    console.error("Approval failed", error);
+    alert("Approval failed");
+  }
+};
+// Approve Deposit Handler (POST request to backend)
+const handleApproveDeposit = async (requestId) => {
+  try {
+    await axios.post(`https://bingo-server.onrender.com/api/agent/deposit-requests/${requestId}/approve`);
+    
+    // Refresh deposit requests
+    const res = await axios.get("https://bingo-server.onrender.com/api/agent/deposit-requests");
+    setDepositRequests(res.data);
+  } catch (error) {
+    console.error("Deposit approval failed", error);
+    alert("Deposit approval failed");
+  }
+};
+  // 👇 Show login form if not logged in
+  if (!isLoggedIn) {
+ 
+    return (
+      <div style={{ padding: "20px", maxWidth: "400px", margin: "auto" }}>
+        <h2>Agent Login</h2>
+        <form onSubmit={handleLogin}>
+          <div style={{ marginBottom: "10px" }}>
+            <label>Username:</label><br />
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              style={{ width: "100%", padding: "8px" }}
+              required
+            />
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <label>Password:</label><br />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{ width: "100%", padding: "8px" }}
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              padding: "10px",
+              backgroundColor: "blue",
+              color: "white",
+              border: "none",
+              borderRadius: "5px",
+            }}
+          >
+            Login
+          </button>
+        </form>
+      </div>
+    );
+    
+  }
+
+  // 👇 Show dashboard if logged in
   return (
-    <div style={{ padding: "40px" }}>
-      <h2>Agent Dashboard</h2>
-
-      {/* Deposit Requests */}
-      <h3>Deposit Requests</h3>
-      <table border="1" cellPadding="6">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Phone</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Receipt</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {depositRequests.map((req) => (
-            <tr key={req.id}><td>{req.id}</td>
-              <td>{req.phone}</td>
-              <td>{req.amount}</td>
-              <td>{req.status}</td>
-              <td>
-                {req.receipt_url ? (
-                  <a href={req.receipt_url} target="_blank" rel="noreferrer">View</a>
-                ) : (
-                  "No receipt"
-                )}
-              </td>
-              <td>
-                {req.status === "Pending" && (
-                  <>
-                    <button onClick={() => handleApproveDeposit(req.id)}>Approve</button>{" "}
-                    <button onClick={() => handleRejectDeposit(req.id)}>Reject</button>
-                  </>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Cashout Requests */}
-      <h3 style={{ marginTop: "40px" }}>Cashout Requests</h3>
-      <table border="1" cellPadding="6">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Phone</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Receipt Upload</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {cashoutRequests.map((req) => (
-            <tr key={req.id}>
-              <td>{req.id}</td>
-              <td>{req.phone}</td>
-              <td>{req.amount}</td>
-              <td>{req.status}</td>
-              <td>
-                <input
-                  type="file"
-                  accept="image/*,application/pdf"
-                  onChange={(e) => handleReceiptChange(e, req.id)}
-                />
-              </td>
-              <td>
-                {req.status === "Pending" && (
-                  <>
-                    <button onClick={() => handleApproveCashout(req.id)}>Approve</button>{" "}
-                    <button onClick={() => handleRejectCashout(req.id)}>Reject</button>
-                  </>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div style={{ padding: "20px" }}>
+      <h2>Agent Dashboard</h2>{/* Deposit Requests */}
+      <div style={{ marginTop: "30px" }}>
+        <h3>Deposit Requests</h3>
+        <div style={{ border: "1px solid #ccc", padding: "15px", borderRadius: "8px" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ backgroundColor: "#f5f5f5" }}>
+                <th>User</th>
+                <th>Amount</th>
+                <th>Phone</th>
+                <th>Date</th>
+                <th>Receipt</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {depositRequests.map((request) => (
+                <tr key={request.id}>
+                  <td>{request.user}</td>
+                  <td>{request.amount} ETB</td>
+                  <td>{request.phone}</td>
+                  <td>{request.date}</td>
+                  <td>
+                    <a href={request.receiptUrl} target="_blank" rel="noopener noreferrer">
+                        View
+                    </a>
+                  </td>
+                  <td style={{ color: request.status === "Pending" ? "orange" : "green" }}>
+                    {request.status}
+                  </td>
+                  <td>
+                    {request.status === "Pending" ? (
+                      <>
+             <button
+  onClick={() => handleApproveDeposit(request.id)}
+  style={{
+    marginRight: "10px",
+    background: "green",
+    color: "white",
+    border: "none",
+    padding: "5px 10px",
+    borderRadius: "5px",
+  }}
+>
+  Approve
+</button>
+                        <button
+                          style={{
+                            background: "red",
+                            color: "white",
+                            border: "none",
+                            padding: "5px 10px",
+                            borderRadius: "5px",
+                          }}
+                        >
+                          Reject
+                        </button>
+                      </>
+                    ) : (
+                      <span>-</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>{/* Cashout Requests */}
+      <div style={{ marginTop: "30px" }}>
+        <h3>Cashout Requests</h3>
+        <div style={{ border: "1px solid #ccc", padding: "15px", borderRadius: "8px" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ backgroundColor: "#f5f5f5" }}>
+                <th>User</th>
+                <th>Amount</th>
+                <th>Phone</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Upload Receipt</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cashoutRequests.map((request) => (
+                <tr key={request.id}>
+                  <td>{request.user}</td>
+                  <td>{request.amount} ETB</td>
+                  <td>{request.phone}</td>
+                  <td>{request.date}</td>
+                  <td style={{ color: request.status === "Pending" ? "orange" : "green" }}>
+                    {request.status}
+                  </td>
+                  <td>
+                    {request.status === "Pending" ? (
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileUpload(request.id, e.target.files[0])}
+                      />
+                    ) : (
+                      <span>-</span>
+                    )}
+                  </td>
+                  <td>
+                    {request.status === "Pending" ? (
+                      <>
+                        <button
+                          onClick={() => {
+                            if (!request.receiptFile) {
+                              alert("Please upload receipt before approving.");
+                              return;
+                            }
+                            handleApproveCashout(request);
+                          }}
+                          style={{
+                            marginRight: "10px",
+                            background: "green",
+                            color: "white",
+                            border: "none",
+                            padding: "5px 10px",
+                            borderRadius: "5px",
+                          }}
+                        >
+                          Approve</button>
+                        <button
+                          style={{
+                            background: "red",
+                            color: "white",
+                            border: "none",
+                            padding: "5px 10px",
+                            borderRadius: "5px",
+                          }}
+                        >
+                          Reject
+                        </button>
+                      </>
+                    ) : (
+                      <span>-</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
-};
+}
 
 export default AgentDashboard;
