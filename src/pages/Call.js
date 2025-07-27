@@ -19,7 +19,7 @@ function Call() {
  const username =
   location.state?.username ||
   localStorage.getItem("firstName") || "User";
-
+const [selectedStake, setSelectedStake] = useState(null);
   const [calledNumbers, setCalledNumbers] = useState([]);
   const [currentNumber, setCurrentNumber] = useState(null);
   const [playerCard, setPlayerCard] = useState(card || []);
@@ -146,12 +146,19 @@ function Call() {
     }
 
     if (bingo && !winner) {
-      setWinner(true);
-      const totalWin = stake * players * 0.8;
-      setWinAmount(`Br${totalWin}`);
-      setShowPopup(true);
-      socket.emit("bingoWin", { gameId, userId: username });
-    }
+  setWinner(true);
+  
+  const initialBalance = parseFloat(localStorage.getItem("balance") || "0");
+  const wallet = initialBalance + selectedStake ; // This is the in-game wallet
+  const prize = stake * players * 0.8;
+
+  const updatedBalance = wallet + prize;
+
+  localStorage.setItem("balance", updatedBalance);
+  setWinAmount(`Br${prize}`);
+  setShowPopup(true);
+  socket.emit("bingoWin", { gameId, userId: username });
+}
   }, [calledNumbers, playerCard, stake, players, winner, socket, gameId, username]);
   useEffect(() => {
     const totalWin = stake * players * 0.8;
