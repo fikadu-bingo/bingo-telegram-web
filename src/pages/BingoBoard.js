@@ -5,10 +5,10 @@ import logo from "../assets/logo.png"; // adjust if needed
 function BingoBoard() {
   const location = useLocation();
   const navigate = useNavigate();
-  const initialBalance = location.state?.balance ?? 200;
+  const initialBalance = parseFloat(localStorage.getItem("balance") || "200");
   const stake = location.state?.stake ?? 0;
 
-  const [wallet, setWallet] = useState(initialBalance);
+  const [wallet, setWallet] = useState(initialBalance-stake);
   const [gameId, setGameId] = useState("");
   const [selectedNumber, setSelectedNumber] = useState(null);
   const [bingoCard, setBingoCard] = useState([]);
@@ -52,18 +52,22 @@ function BingoBoard() {
       return;
     }
 
-    const newWallet = wallet - stake;
-    if (newWallet < 0) {
-      alert("Not enough balance!");
-      return;
-    }
-    setWallet(newWallet);
+    const initialBalance = parseFloat(localStorage.getItem("balance") || "0");
+const newWallet = initialBalance - stake;
+
+if (newWallet < 0) {
+  alert("Not enough balance!");
+  return;
+}
+
+localStorage.setItem("balance", newWallet);
+setWallet(newWallet);
 
     navigate("/call", {
       state: {
         card: bingoCard,
         stake: stake,
-        wallet: newWallet,
+       // wallet: wallet,
         gameId: gameId,
         cartelaNumber: cartelaId, // pass number only
       },
