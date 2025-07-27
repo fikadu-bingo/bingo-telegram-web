@@ -11,7 +11,10 @@ import logo from "../assets/logo.png";
 function HomePage() {
   const navigate = useNavigate();
 
-  const [balance, setBalance] = useState(200);
+  const [balance, setBalance] = useState(() => {
+  const stored = localStorage.getItem("balance");
+  return stored ? parseFloat(stored) : 200;
+});
   const [selectedStake, setSelectedStake] = useState(null);
   const [activeButton, setActiveButton] = useState(null);
   const [showModal, setShowModal] = useState(null);
@@ -23,13 +26,19 @@ function HomePage() {
 
   const stakes = [200, 100, 50, 20, 10];
 
-  useEffect(() => {
-    const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
-    if (telegramUser && telegramUser.first_name) {
-      setFirstName(telegramUser.first_name);
-      localStorage.setItem("firstName", telegramUser.first_name);
-    }
-  }, []);
+ useEffect(() => {
+  const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
+  const storedBalance = localStorage.getItem("balance");
+
+  if (telegramUser?.first_name) {
+    setFirstName(telegramUser.first_name);
+    localStorage.setItem("firstName", telegramUser.first_name);
+  }
+
+  if (storedBalance !== null) {
+    setBalance(parseInt(storedBalance, 10));
+  }
+}, []);
 
   const handleStakeSelect = (amount) => {
     if (balance < amount) {
@@ -51,27 +60,30 @@ const handlePlayNow = () => {
     return;
   }
 
-  const newBalance = balance - selectedStake;
+  const newBalance = balance;
   setBalance(newBalance);
+  localStorage.setItem("balance", newBalance); // 💾 Update storage
 
   const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
-  const username = telegramUser?.username || "User";
+  const username = telegramUser?.first_name || "User";
 
   navigate("/bingo", {
     state: {
-      balance: newBalance,
+      balance: balance-selectedStake,
       stake: selectedStake,
       userJoined: true,
-      username: firstName,
+      username,
     },
   });
 };
 
   const handleDeposit = (amount) => {
-    setBalance((prev) => prev + amount);
-    setShowModal(null);
-    setShowSuccessModal(true);
-  };
+  const newBalance = balance + amount;
+  setBalance(newBalance);
+  localStorage.setItem("balance", newBalance);
+  setShowModal(null);
+  setShowSuccessModal(true);
+};
 
   const handleCashOut = () => {
     setShowModal(null);
