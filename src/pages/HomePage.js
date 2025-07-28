@@ -26,13 +26,18 @@ function HomePage() {
 
   const stakes = [200, 100, 50, 20, 10];
 
- useEffect(() => {
+useEffect(() => {
   const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
   const storedBalance = localStorage.getItem("balance");
 
   if (telegramUser?.first_name) {
     setFirstName(telegramUser.first_name);
     localStorage.setItem("firstName", telegramUser.first_name);
+  }
+
+  // ✅ Save telegram_id to localStorage for future API headers
+  if (telegramUser?.id) {
+    localStorage.setItem("telegram_id", telegramUser.id);
   }
 
   if (storedBalance !== null) {
@@ -69,7 +74,7 @@ const handlePlayNow = () => {
 
   navigate("/bingo", {
     state: {
-      balance: balance-selectedStake,
+      balance: balance,
       stake: selectedStake,
       userJoined: true,
       username,
