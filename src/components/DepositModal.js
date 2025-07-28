@@ -24,28 +24,25 @@ function DepositModal({ onClose }) {
       alert("Please upload your receipt.");
       return;
     }
+const formData = new FormData();
+formData.append("amount", amount);
+formData.append("phone_number", phone);
+formData.append("receipt", receiptFile); // File input must be 'receipt'
 
-    const formData = new FormData();
-formData.append("amount", depositAmount);
-formData.append("phoneNumber", phone); // ✅ change "phone" ➝ "phoneNumber"
-formData.append("receipt", receipt);
-
-    try {
-      setLoading(true);
-      await axios.post(
-        "https://bingo-server-rw7p.onrender.com/api/user/deposit",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      setShowSuccess(true);
-    } catch (err) {
-      alert("Failed to submit deposit. Please try again.");
-      console.error(err);
-    } finally {
+try {
+  const response = await axios.post(
+    "https://bingo-server-rw7p.onrender.com/api/user/deposit",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  console.log("Deposit success:", response.data);
+} catch (error) {
+  console.error("Deposit error:", error.response?.data || error.message);
+} finally {
       setLoading(false);
     }
   };
