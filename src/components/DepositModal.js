@@ -26,9 +26,9 @@ function DepositModal({ onClose }) {
     }
 
     const formData = new FormData();
-    formData.append("amount", depositAmount);
-    formData.append("phone", phone);
-    formData.append("receipt", receipt);
+formData.append("amount", depositAmount);
+formData.append("phoneNumber", phone); // ✅ change "phone" ➝ "phoneNumber"
+formData.append("receipt", receipt);
 
     try {
       setLoading(true);
