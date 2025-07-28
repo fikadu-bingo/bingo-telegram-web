@@ -12,41 +12,47 @@ function DepositModal({ onClose }) {
 
   const telebirrNumber = "0934461362";
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const depositAmount = parseFloat(amount);
-    if (depositAmount < 10 || depositAmount > 1000) {
-      alert("Amount must be between 10 and 1000 ETB.");
-      return;
-    }
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    if (!receipt) {
-      alert("Please upload your receipt.");
-      return;
-    }
-const formData = new FormData();
-formData.append("amount", amount);
-formData.append("phone_number", phone);
-formData.append("receipt", receiptFile); // File input must be 'receipt'
+  const depositAmount = parseFloat(amount);
+  if (depositAmount < 10 || depositAmount > 1000) {
+    alert("Amount must be between 10 and 1000 ETB.");
+    setLoading(false);
+    return;
+  }
 
-try {
-  const response = await axios.post(
-    "https://bingo-server-rw7p.onrender.com/api/user/deposit",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
-  console.log("Deposit success:", response.data);
-} catch (error) {
-  console.error("Deposit error:", error.response?.data || error.message);
-} finally {
-      setLoading(false);
-    }
-  };
+  if (!receipt) {
+    alert("Please upload your receipt.");
+    setLoading(false);
+    return;
+  }
 
+  const formData = new FormData();
+  formData.append("amount", amount);
+  formData.append("phone_number", phone);
+  formData.append("receipt", receipt); // ✅ FIXED HERE
+
+  try {
+    const response = await axios.post(
+      "https://bingo-server-rw7p.onrender.com/api/user/deposit",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    console.log("Deposit success:", response.data);
+    setShowSuccess(true); // Show success modal
+  } catch (error) {
+    console.error("Deposit error:", error.response?.data || error.message);
+    alert("Deposit failed. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
   const handleCopy = () => {
     navigator.clipboard.writeText(telebirrNumber);
     setCopied(true);
