@@ -31,7 +31,7 @@ const handleSubmit = async (e) => {
 
   const formData = new FormData();
   formData.append("amount", amount);
-  formData.append("phone_number", phone);
+  formData.append("phone", phone);
   formData.append("receipt", receipt); // ✅ FIXED HERE
 
   try {
