@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import axios from "axios";
 import DepositSuccessModal from "./DepositSuccessModal";
 import "./DepositModal.css";
+const telegram_id = localStorage.getItem("telegram_id");
 function DepositModal({ onClose }) {
+  
   const [amount, setAmount] = useState("");
   const [phone, setPhone] = useState("");
   const [receipt, setReceipt] = useState(null);
@@ -35,12 +37,14 @@ const handleSubmit = async (e) => {
   formData.append("receipt", receipt); // ✅ FIXED HERE
 
   try {
+    
     const response = await axios.post(
       "https://bingo-server-rw7p.onrender.com/api/user/deposit",
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
+           "telegram_id": telegram_id, // ✅ Send to backend
         },
       }
     );
