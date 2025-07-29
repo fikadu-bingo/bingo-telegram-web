@@ -21,26 +21,26 @@ function AgentDashboard() {
 
 const [cashoutRequests, setCashoutRequests] = useState([]);
   useEffect(() => {
-    if (isLoggedIn) {
-      axios
-        .get("https://bingo-server.onrender.com/api/agent/deposit-requests")
-        .then((res) => {
-          setDepositRequests(res.data);
-        })
-        .catch((err) => {
-          console.error("Failed to fetch deposit requests", err);
-        });
+  if (isLoggedIn) {
+    // Fetch deposit requests
+    axios
+      .get("https://bingo-server.onrender.com/api/agent/deposit-requests")
+      .then((res) => setDepositRequests(res.data))
+      .catch((err) => console.error("Failed to fetch deposit requests", err));
 
-      axios
-        .get("https://bingo-server.onrender.com/api/agent/cashouts")
-        .then((res) => {
-          setCashoutRequests(res.data);
-        })
-        .catch((err) => {
-          console.error("Failed to fetch cashout requests", err);
-        });
-    }
-  }, [isLoggedIn]);
+    // Fetch cashout requests and add receiptFile field
+    axios
+      .get("https://bingo-server.onrender.com/api/agent/cashouts")
+      .then((res) => {
+        const updatedRequests = res.data.map((req) => ({
+          ...req,
+          receiptFile: null, // Add this field for file input tracking
+        }));
+        setCashoutRequests(updatedRequests);
+      })
+      .catch((err) => console.error("Failed to fetch cashout requests", err));
+  }
+}, [isLoggedIn]);
 
   const handleFileUpload = (id, file) => {
     const updated = cashoutRequests.map((req) =>
