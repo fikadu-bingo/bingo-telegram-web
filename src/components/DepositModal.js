@@ -33,8 +33,8 @@ const handleSubmit = async (e) => {
 
   const formData = new FormData();
   formData.append("amount", amount);
-  formData.append("phone", phone);
-  formData.append("receipt", receipt); // ✅ FIXED HERE
+  formData.append("phone", phoneNumber);
+  formData.append("receipt", selectedFile); // ✅ FIXED HERE
 
   try {
     
@@ -44,7 +44,7 @@ const handleSubmit = async (e) => {
       {
         headers: {
           "Content-Type": "multipart/form-data",
-           "telegram_id": telegram_id, // ✅ Send to backend
+           "telegram_id":localStorage.grtItem(telegram_id), // ✅ Send to backend
         },
       }
     );
