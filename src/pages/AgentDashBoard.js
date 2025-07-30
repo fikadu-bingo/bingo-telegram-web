@@ -134,13 +134,13 @@ const handleApproveDeposit = async (requestId) => {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ backgroundColor: "#f5f5f5" }}>
-                <th>user</th>
-                <th>amount</th>
-                <th>phone</th>
-                <th>date</th>
-                <th>receipt</th>
-                <th>status</th>
-                <th>action</th>
+                <th>User</th>
+                <th>Amount</th>
+                <th>Phone</th>
+                <th>Date</th>
+                <th>Receipt</th>
+                <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
