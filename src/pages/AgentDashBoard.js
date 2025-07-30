@@ -155,12 +155,12 @@ const handleApproveDeposit = async (requestId) => {
             <tbody>
               {depositRequests.map((request) => (
                 <tr key={request.id}>
-                  <td>{request.user}</td>
+                  <td>{request.username}</td>
                   <td>{request.amount} ETB</td>
                   <td>{request.phone}</td>
                   <td>{request.date}</td>
                   <td>
-                    <a href={request.receiptUrl} target="_blank" rel="noopener noreferrer">
+                    <a href={request.receipt_url} target="_blank" rel="noopener noreferrer">
                         View
                     </a>
                   </td>
