@@ -9,7 +9,7 @@ function AgentDashboard() {
   // Dummy login for now
   const handleLogin = (e) => {
     e.preventDefault();
-    if (username === "agent" && password === "12356") {
+    if (username === "agent" && password === "1234") {
       setIsLoggedIn(true);
     } else {
       alert("Invalid username or password");
