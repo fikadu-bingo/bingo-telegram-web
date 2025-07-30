@@ -7,6 +7,15 @@ function AgentDashboard() {
   const [password, setPassword] = useState("");
 
   // Dummy login for now
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (username === "agent" && password === "12356") {
+      setIsLoggedIn(true);
+    } else {
+      alert("Invalid username or password");
+    }
+   
+  };
 
 
   const [depositRequests, setDepositRequests] = useState([]);
