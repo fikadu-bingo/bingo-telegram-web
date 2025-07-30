@@ -3,6 +3,7 @@ import axios from "axios";
 import DepositSuccessModal from "./DepositSuccessModal";
 import "./DepositModal.css";
 const telegram_id = localStorage.getItem("telegram_id");
+
 function DepositModal({ onClose }) {
   
   const [amount, setAmount] = useState("");
@@ -11,6 +12,7 @@ function DepositModal({ onClose }) {
   const [copied, setCopied] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  
 
   const telebirrNumber = "0934461362";
 
@@ -33,8 +35,8 @@ const handleSubmit = async (e) => {
 
   const formData = new FormData();
   formData.append("amount", amount);
-  formData.append("phone", phoneNumber);
-  formData.append("receipt", selectedFile); // ✅ FIXED HERE
+  formData.append("phone", phone);
+  formData.append("receipt", receipt); // ✅ FIXED HERE
 
   try {
     
@@ -44,7 +46,7 @@ const handleSubmit = async (e) => {
       {
         headers: {
           "Content-Type": "multipart/form-data",
-           "telegram_id":localStorage.grtItem(telegram_id), // ✅ Send to backend
+           "telegram_id":telegram_id, // ✅ Send to backend
         },
       }
     );
