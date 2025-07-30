@@ -7,15 +7,7 @@ function AgentDashboard() {
   const [password, setPassword] = useState("");
 
   // Dummy login for now
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (username === "agent" && password === "1234") {
-      setIsLoggedIn(true);
-    } else {
-      alert("Invalid username or password");
-    }
-   
-  };
+
 
   const [depositRequests, setDepositRequests] = useState([]);
 
@@ -142,13 +134,13 @@ const handleApproveDeposit = async (requestId) => {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ backgroundColor: "#f5f5f5" }}>
-                <th>User</th>
-                <th>Amount</th>
-                <th>Phone</th>
-                <th>Date</th>
-                <th>Receipt</th>
-                <th>Status</th>
-                <th>Action</th>
+                <th>user</th>
+                <th>amount</th>
+                <th>phone</th>
+                <th>date</th>
+                <th>receipt</th>
+                <th>status</th>
+                <th>action</th>
               </tr>
             </thead>
             <tbody>
