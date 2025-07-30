@@ -5,7 +5,7 @@ function AgentDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+const backendUrl = "https://bingo-server-rw7p.onrender.com";
   // Dummy login for now
   const handleLogin = (e) => {
     e.preventDefault();
@@ -16,7 +16,6 @@ function AgentDashboard() {
     }
    
   };
-
 
   const [depositRequests, setDepositRequests] = useState([]);
 
@@ -160,9 +159,17 @@ const handleApproveDeposit = async (requestId) => {
                   <td>{request.phone_number}</td>
                   <td>{request.date}</td>
                   <td>
-                    <a href={request.receipt_url} target="_blank" rel="noopener noreferrer">
-                        View
-                    </a>
+                    {request.receipt_url ? (
+    <a
+      href={`${backendUrl}/${request.receipt_url}`}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      View
+    </a>
+  ) : (
+    <span>No receipt</span>
+  )}
                   </td>
                   <td style={{ color: request.status === "Pending" ? "orange" : "green" }}>
                     {request.status}
