@@ -24,13 +24,13 @@ const [cashoutRequests, setCashoutRequests] = useState([]);
   if (isLoggedIn) {
     // Fetch deposit requests
     axios
-      .get("https://bingo-server.onrender.com/api/agent/deposit-requests")
+      .get("https://bingo-server-rw7p.onrender.com/api/agent/deposit-requests")
       .then((res) => setDepositRequests(res.data))
       .catch((err) => console.error("Failed to fetch deposit requests", err));
 
     // Fetch cashout requests and add receiptFile field
     axios
-      .get("https://bingo-server.onrender.com/api/agent/cashouts")
+      .get("https://bingo-server-rw7p.onrender.com/api/agent/cashout-requests")
       .then((res) => {
         const updatedRequests = res.data.map((req) => ({
           ...req,
@@ -59,14 +59,14 @@ const [cashoutRequests, setCashoutRequests] = useState([]);
   formData.append("receipt", request.receiptFile);
 
   try {
-    await axios.post(`https://bingo-server.onrender.com/api/agent/cashouts/${request.id}/approve`, formData, {
+    await axios.post(`https://bingo-server-rw7p.onrender.com/api/agent/cashouts/${request.id}/approve`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
 
     // Refresh cashout list
-    const res = await axios.get("https://bingo-server.onrender.com/api/agent/cashouts");
+    const res = await axios.get("https://bingo-server-rw7p.onrender.com/api/agent/cashouts");
     setCashoutRequests(res.data);
   } catch (error) {
     console.error("Approval failed", error);
@@ -76,10 +76,10 @@ const [cashoutRequests, setCashoutRequests] = useState([]);
 // Approve Deposit Handler (POST request to backend)
 const handleApproveDeposit = async (requestId) => {
   try {
-    await axios.post(`https://bingo-server.onrender.com/api/agent/deposit-requests/${requestId}/approve`);
+    await axios.post(`https://bingo-server-rw7p.onrender.com/api/agent/deposit-requests/${requestId}/approve`);
     
     // Refresh deposit requests
-    const res = await axios.get("https://bingo-server.onrender.com/api/agent/deposit-requests");
+    const res = await axios.get("https://bingo-server-rw7p.onrender.com/api/agent/deposit-requests");
     setDepositRequests(res.data);
   } catch (error) {
     console.error("Deposit approval failed", error);
