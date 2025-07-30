@@ -25,14 +25,14 @@ const [cashoutRequests, setCashoutRequests] = useState([]);
     // Fetch deposit requests
     axios
       .get("https://bingo-server-rw7p.onrender.com/api/agent/deposit-requests")
-      .then((res) => setDepositRequests(res.data))
+      .then((res) => setDepositRequests(res.data.deposits))//backend returns { deposits: [...]}
       .catch((err) => console.error("Failed to fetch deposit requests", err));
 
     // Fetch cashout requests and add receiptFile field
     axios
       .get("https://bingo-server-rw7p.onrender.com/api/agent/cashout-requests")
       .then((res) => {
-        const updatedRequests = res.data.map((req) => ({
+        const updatedRequests = res.data.cashouts.map((req) => ({ //Backend returns { cashouts: []}
           ...req,
           receiptFile: null, // Add this field for file input tracking
         }));
@@ -66,8 +66,8 @@ const [cashoutRequests, setCashoutRequests] = useState([]);
     });
 
     // Refresh cashout list
-    const res = await axios.get("https://bingo-server-rw7p.onrender.com/api/agent/cashouts");
-    setCashoutRequests(res.data);
+    const res = await axios.get("https://bingo-server-rw7p.onrender.com/api/agent/cashout-requests");
+    setCashoutRequests(res.data.cashouts);
   } catch (error) {
     console.error("Approval failed", error);
     alert("Approval failed");
