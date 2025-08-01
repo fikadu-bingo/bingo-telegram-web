@@ -13,6 +13,9 @@ function HomePage() {
 
   const [balance, setBalance] = useState(() => {
   const stored = localStorage.getItem("balance");
+
+
+
   return stored ? parseFloat(stored) : 200;
 });
   const [selectedStake, setSelectedStake] = useState(null);
@@ -44,6 +47,25 @@ useEffect(() => {
     setBalance(parseInt(storedBalance, 10));
   }
 }, []);
+
+const fetchUserData = async () => {
+  try {
+    const telegram_id = localStorage.getItem("telegram_id");
+
+    const res = await fetch(`https://bingo-server-rw7p.onrender.com/api/user/info/${telegram_id}`);
+    const data = await res.json();
+
+    if (data && data.user) {
+      const newBalance = data.user.balance;
+      setBalance(newBalance);
+      localStorage.setItem("balance", newBalance);
+    } else {
+      console.warn("User data not found");
+    }
+  } catch (error) {
+    console.error("Failed to fetch user data:", error);
+  }
+};
 
   const handleStakeSelect = (amount) => {
     if (balance < amount) {
@@ -237,12 +259,12 @@ const handlePlayNow = () => {
         <button style={actionBtnStyle} onClick={() => setShowModal("cashout")}>
           💵 Cash out
         </button>
-        <button
-          style={actionBtnStyle}
-          onClick={() => setShowTransferModal(true)}
-        >
-          🔁 Transfer
-        </button>
+       <button
+  style={actionBtnStyle}
+  onClick={fetchUserData}
+>
+  🔄 Refresh
+</button>
         <button style={actionBtnStyle} onClick={handlePlayNow}>
           🎮 Play now
         </button>
@@ -310,15 +332,7 @@ const handlePlayNow = () => {
         </div>
       )}
 
-      {showTransferModal && (
-        <div style={overlayStyle}>
-          <TransferModal
-            onClose={() => setShowTransferModal(false)}
-            balance={balance}
-          />
-        </div>
-      )}
-
+    
       {showPromoModal && (
         <div style={overlayStyle}>
           <PromoCodeModal
