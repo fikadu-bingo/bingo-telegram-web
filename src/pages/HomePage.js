@@ -48,6 +48,14 @@ useEffect(() => {
   }
 }, []);
 
+  useEffect(() => {
+  const interval = setInterval(() => {
+    fetchUserData();
+  }, 15000); // 15 seconds
+
+  return () => clearInterval(interval); // Cleanup on unmount
+}, []);
+
 const fetchUserData = async () => {
   try {
     const telegram_id = localStorage.getItem("telegram_id");
