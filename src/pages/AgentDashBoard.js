@@ -171,11 +171,11 @@ const handleApproveDeposit = async (requestId) => {
     <span>No receipt</span>
   )}
                   </td>
-                  <td style={{ color: request.status === "Pending" ? "orange" : "green" }}>
+                  <td style={{ color: request.status === "pending" ? "orange" : "green" }}>
                     {request.status}
                   </td>
                   <td>
-                    {request.status === "Pending" ? (
+                    {request.status === "pending" ? (
                       <>
              <button
   onClick={() => handleApproveDeposit(request.id)}
@@ -234,11 +234,11 @@ const handleApproveDeposit = async (requestId) => {
                   <td>{request.amount} ETB</td>
                   <td>{request.phone}</td>
                   <td>{request.date}</td>
-                  <td style={{ color: request.status === "Pending" ? "orange" : "green" }}>
+                  <td style={{ color: request.status === "pending" ? "orange" : "green" }}>
                     {request.status}
                   </td>
                   <td>
-                    {request.status === "Pending" ? (
+                    {request.status === "pending" ? (
                       <input
                         type="file"
                         accept="image/*"
