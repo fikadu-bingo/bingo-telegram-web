@@ -80,7 +80,7 @@ const handleApproveDeposit = async (requestId) => {
     
     // Refresh deposit requests
     const res = await axios.get("https://bingo-server-rw7p.onrender.com/api/agent/deposit-requests");
-    setDepositRequests(res.data);
+    setDepositRequests(res.data.deposits);
   } catch (error) {
     console.error("Deposit approval failed", error);
     alert("Deposit approval failed");
