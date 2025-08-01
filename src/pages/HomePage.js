@@ -13,17 +13,45 @@ function HomePage() {
 
   const [balance, setBalance] = useState(() => {
   const stored = localStorage.getItem("balance");
-
-
-
-  return stored ? parseFloat(stored) : 200;
+    return stored ? parseFloat(stored) : 200;
 });
+
+ const fetchUserData = async () => {
+  try {
+    const telegram_id = localStorage.getItem("telegram_id");
+
+    const res = await fetch(`https://bingo-server-rw7p.onrender.com/api/user/info/${telegram_id}`);
+    const data = await res.json();
+
+    if (data && data.user) {
+      const newBalance = data.user.balance;
+      setBalance(newBalance);
+      localStorage.setItem("balance", newBalance);
+    } else {
+      console.warn("User data not found");
+    }
+  } catch (error) {
+    console.error("Failed to fetch user data:", error);
+  }
+};
+  useEffect(() => {
+  const interval = setInterval(() => {
+    fetchUserData();
+  }, 15000); // 15 seconds
+
+  return () => clearInterval(interval); // Cleanup on unmount
+}, []);
+
+useEffect(() => {
+  fetchUserData(); // 🔄 Fetch from server on first load
+}, []);
+
   const [selectedStake, setSelectedStake] = useState(null);
   const [activeButton, setActiveButton] = useState(null);
   const [showModal, setShowModal] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCashOutSuccess, setShowCashOutSuccess] = useState(false);
-  const [showTransferModal, setShowTransferModal] = useState(false);
+  //const [showTransferModal, setShowTransferModal] = useState(false);
   const [showPromoModal, setShowPromoModal] = useState(false);
   const [firstName, setFirstName] = useState("User");
 
@@ -48,32 +76,8 @@ useEffect(() => {
   }
 }, []);
 
-  useEffect(() => {
-  const interval = setInterval(() => {
-    fetchUserData();
-  }, 15000); // 15 seconds
 
-  return () => clearInterval(interval); // Cleanup on unmount
-}, []);
 
-const fetchUserData = async () => {
-  try {
-    const telegram_id = localStorage.getItem("telegram_id");
-
-    const res = await fetch(`https://bingo-server-rw7p.onrender.com/api/user/info/${telegram_id}`);
-    const data = await res.json();
-
-    if (data && data.user) {
-      const newBalance = data.user.balance;
-      setBalance(newBalance);
-      localStorage.setItem("balance", newBalance);
-    } else {
-      console.warn("User data not found");
-    }
-  } catch (error) {
-    console.error("Failed to fetch user data:", error);
-  }
-};
 
   const handleStakeSelect = (amount) => {
     if (balance < amount) {
