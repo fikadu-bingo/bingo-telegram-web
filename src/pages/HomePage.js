@@ -99,9 +99,6 @@ const handlePlayNow = () => {
     return;
   }
 
-  const newBalance = balance;
-  setBalance(newBalance);
-  localStorage.setItem("balance", newBalance); // 💾 Update storage
 
   const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
   const username = telegramUser?.first_name || "User";
