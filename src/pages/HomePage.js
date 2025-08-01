@@ -20,7 +20,7 @@ function HomePage() {
   try {
     const telegram_id = localStorage.getItem("telegram_id");
 
-    const res = await fetch(`https://bingo-server-rw7p.onrender.com/api/user/info/${telegram_id}`);
+    const res = await fetch(`https://bingo-server-rw7p.onrender.com/api/user/info?telegram_id=${telegram_id}`);
     const data = await res.json();
 
     if (data && data.user) {
