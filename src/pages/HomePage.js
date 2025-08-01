@@ -25,6 +25,7 @@ function HomePage() {
 
     if (data && data.user) {
       const newBalance = data.user.balance;
+      console.log("Fetched balance from server:", newBalance);
       setBalance(newBalance);
       localStorage.setItem("balance", newBalance);
     } else {
