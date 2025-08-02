@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 import CashOutSuccessModal from "./CashOutSuccessModal";
 
@@ -6,26 +7,40 @@ function CashOutModal({ onClose }) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleConfirm = () => {
-    const parsedAmount = parseFloat(amount);
-    const isPhoneValid = /^09\d{8}$/.test(phoneNumber);
+  const handleConfirm = async () => {
+  const parsedAmount = parseFloat(amount);
+  const isPhoneValid = /^09\d{8}$/.test(phoneNumber);
 
-    if (!parsedAmount || parsedAmount < 100 || parsedAmount > 2000) {
-      alert("Amount must be between 100 and 2000 ETB.");
-      return;
+  if (!parsedAmount || parsedAmount < 100 || parsedAmount > 2000) {
+    alert("Amount must be between 100 and 2000 ETB.");
+    return;
+  }
+
+  if (!isPhoneValid) {
+    alert("Please enter a valid 10-digit Ethiopian phone number starting with 09.");
+    return;
+  }
+
+  try {
+    const response = await axios.post("/api/cashout", {
+      amount: parsedAmount,
+      phone_number: phoneNumber,
+    });
+
+    if (response.data.success) {
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onClose();
+      }, 3000);
+    } else {
+      alert("Cashout failed: " + response.data.message);
     }
-
-    if (!isPhoneValid) {
-      alert("Please enter a valid 10-digit Ethiopian phone number starting with 09.");
-      return;
-    }
-
-    setShowSuccess(true);
-    setTimeout(() => {
-      setShowSuccess(false);
-      onClose();
-    }, 3000);
-  };
+  } catch (error) {
+    console.error("Cashout error:", error);
+    alert("Cashout failed. Please try again later.");
+  }
+};
 
   return (
     <>
