@@ -11,6 +11,10 @@ function CashOutModal({ onClose }) {
   const parsedAmount = parseFloat(amount);
   const isPhoneValid = /^09\d{8}$/.test(phoneNumber);
     const telegram_id = localStorage.getItem("telegram_id");
+    if (!telegram_id) {
+  alert("User is not logged in properly. Please refresh the page.");
+  return;
+}
 
   if (!parsedAmount || parsedAmount < 100 || parsedAmount > 2000) {
     alert("Amount must be between 100 and 2000 ETB.");
@@ -166,5 +170,6 @@ const submitButtonStyle = {
   cursor: "pointer",
 
 };
+
 
 
