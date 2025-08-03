@@ -73,6 +73,26 @@ const [cashoutRequests, setCashoutRequests] = useState([]);
     alert("Approval failed");
   }
 };
+
+// Handle rejecting a cashout request
+const handleRejectCashout = async (requestId) => {
+  try {
+    await axios.post(`https://bingo-server-rw7p.onrender.com/api/agent/cashouts/${requestId}/reject`);
+
+    // Re-fetch updated cashout requests
+    const res = await axios.get("https://bingo-server-rw7p.onrender.com/api/agent/cashout-requests");
+    const updatedRequests = res.data.cashouts.map((req) => ({
+      ...req,
+      receiptFile: null,
+    }));
+    setCashoutRequests(updatedRequests);
+  } catch (error) {
+    console.error("Cashout rejection failed", error);
+    alert("Rejection failed");
+  }
+};
+
+
 // Approve Deposit Handler (POST request to backend)
 const handleApproveDeposit = async (requestId) => {
   try {
@@ -84,6 +104,19 @@ const handleApproveDeposit = async (requestId) => {
   } catch (error) {
     console.error("Deposit approval failed", error);
     alert("Deposit approval failed");
+  }
+};
+
+// 👇 ADD THIS FUNCTION
+const handleRejectDeposit = async (requestId) => {
+  try {
+    await axios.post(`https://bingo-server-rw7p.onrender.com/api/agent/deposit-requests/${requestId}/reject`);
+
+    const res = await axios.get("https://bingo-server-rw7p.onrender.com/api/agent/deposit-requests");
+    setDepositRequests(res.data.deposits);
+  } catch (error) {
+    console.error("Deposit rejection failed", error);
+    alert("Rejection failed");
   }
 };
   // 👇 Show login form if not logged in
@@ -191,6 +224,8 @@ const handleApproveDeposit = async (requestId) => {
   Approve
 </button>
                         <button
+
+                      onClick={() => handleRejectDeposit(request.id)}
                           style={{
                             background: "red",
                             color: "white",
@@ -227,67 +262,65 @@ const handleApproveDeposit = async (requestId) => {
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody>
-              {cashoutRequests.map((request) => (
-                <tr key={request.id}>
-                  <td>{request.user}</td>
-                  <td>{request.amount} ETB</td>
-                  <td>{request.phone_number}</td>
-                  <td>{request.date}</td>
-                  <td style={{ color: request.status === "pending" ? "orange" : "green" }}>
-                    {request.status}
-                  </td>
-                  <td>
-                    {request.status === "pending" ? (
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleFileUpload(request.id, e.target.files[0])}
-                      />
-                    ) : (
-                      <span>-</span>
-                    )}
-                  </td>
-                  <td>
-                    {request.status === "Pending" ? (
-                      <>
-                        <button
-                          onClick={() => {
-                            if (!request.receiptFile) {
-                              alert("Please upload receipt before approving.");
-                              return;
-                            }
-                            handleApproveCashout(request);
-                          }}
-                          style={{
-                            marginRight: "10px",
-                            background: "green",
-                            color: "white",
-                            border: "none",
-                            padding: "5px 10px",
-                            borderRadius: "5px",
-                          }}
-                        >
-                          Approve</button>
-                        <button
-                          style={{
-                            background: "red",
-                            color: "white",
-                            border: "none",
-                            padding: "5px 10px",
-                            borderRadius: "5px",
-                          }}
-                        >
-                          Reject
-                        </button>
-                      </>
-                    ) : (
-                      <span>-</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+       <tbody>
+  {cashoutRequests.map((request) => (
+    <tr key={request.id}>
+      <td>{request.user}</td>
+      <td>{request.amount} ETB</td>
+      <td>{request.phone_number}</td>
+      <td>{request.date}</td>
+      <td style={{ color: request.status === "pending" ? "orange" : "green" }}>
+        {request.status}
+      </td>
+      <td>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => handleFileUpload(request.id, e.target.files[0])}
+        />
+      </td>
+      <td>
+        {request.status === "pending" ? (
+          <>
+            <button
+              onClick={() => {
+                if (!request.receiptFile) {
+                  alert("Please upload receipt before approving.");
+                  return;
+                }
+                handleApproveCashout(request);
+              }}
+              style={{
+                marginRight: "10px",
+                background: "green",
+                color: "white",
+                border: "none",
+                padding: "5px 10px",
+                borderRadius: "5px",
+              }}
+            >
+              Approve
+            </button>
+            <button
+              onClick={() => handleRejectCashout(request.id)}
+              style={{
+                background: "red",
+                color: "white",
+                border: "none",
+                padding: "5px 10px",
+                borderRadius: "5px",
+              }}
+            >
+              Reject
+            </button>
+          </>
+        ) : (
+          <span>-</span>
+        )}
+      </td>
+    </tr>
+  ))}
+</tbody>
           </table>
         </div>
       </div>
@@ -296,4 +329,3 @@ const handleApproveDeposit = async (requestId) => {
 }
 
 export default AgentDashboard;
-
