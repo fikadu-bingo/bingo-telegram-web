@@ -27,7 +27,7 @@ function CashOutModal({ onClose }) {
   }
 
   try {
-   const response = await axios.post("/api/user/cashout", {
+   const response = await axios.post("https://bingo-server-rw7p.onrender.com/api/user/cashout", {
       telegram_id,
       amount: parsedAmount,
       phone_number: phoneNumber,
@@ -170,6 +170,7 @@ const submitButtonStyle = {
   cursor: "pointer",
 
 };
+
 
 
 
