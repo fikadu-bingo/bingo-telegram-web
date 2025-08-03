@@ -10,6 +10,7 @@ function CashOutModal({ onClose }) {
   const handleConfirm = async () => {
   const parsedAmount = parseFloat(amount);
   const isPhoneValid = /^09\d{8}$/.test(phoneNumber);
+    const telegram_id = localStorage.getItem("telegram_id");
 
   if (!parsedAmount || parsedAmount < 100 || parsedAmount > 2000) {
     alert("Amount must be between 100 and 2000 ETB.");
@@ -23,6 +24,7 @@ function CashOutModal({ onClose }) {
 
   try {
    const response = await axios.post("/api/user/withdraw", {
+      telegram_id,
       amount: parsedAmount,
       phone_number: phoneNumber,
     });
@@ -164,3 +166,4 @@ const submitButtonStyle = {
   cursor: "pointer",
 
 };
+
