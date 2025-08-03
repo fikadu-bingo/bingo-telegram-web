@@ -265,7 +265,7 @@ const handleRejectDeposit = async (requestId) => {
        <tbody>
   {cashoutRequests.map((request) => (
     <tr key={request.id}>
-      <td>{request.user}</td>
+      <td>{request.username}</td>
       <td>{request.amount} ETB</td>
       <td>{request.phone_number}</td>
       <td>{request.date}</td>
@@ -327,5 +327,6 @@ const handleRejectDeposit = async (requestId) => {
     </div>
   );
 }
+
 
 export default AgentDashboard;
