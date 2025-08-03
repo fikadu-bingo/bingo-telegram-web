@@ -22,7 +22,7 @@ function CashOutModal({ onClose }) {
   }
 
   try {
-    const response = await axios.post("/api/cashout", {
+   const response = await axios.post("/api/user/withdraw", {
       amount: parsedAmount,
       phone_number: phoneNumber,
     });
@@ -162,4 +162,5 @@ const submitButtonStyle = {
   fontSize: "16px",
   fontWeight: "bold",
   cursor: "pointer",
+
 };
