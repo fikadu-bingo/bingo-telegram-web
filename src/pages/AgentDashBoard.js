@@ -232,7 +232,7 @@ const handleApproveDeposit = async (requestId) => {
                 <tr key={request.id}>
                   <td>{request.user}</td>
                   <td>{request.amount} ETB</td>
-                  <td>{request.phone}</td>
+                  <td>{request.phone_number}</td>
                   <td>{request.date}</td>
                   <td style={{ color: request.status === "pending" ? "orange" : "green" }}>
                     {request.status}
@@ -296,3 +296,4 @@ const handleApproveDeposit = async (requestId) => {
 }
 
 export default AgentDashboard;
+
