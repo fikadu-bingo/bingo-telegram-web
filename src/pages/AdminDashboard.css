@@ -1,0 +1,46 @@
+.admin-dashboard {
+  padding: 20px;
+  max-width: 700px;
+  margin: auto;
+  font-family: sans-serif;
+}
+
+h1, h2 {
+  text-align: center;
+}
+
+.card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 20px 0;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+input {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px 20px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+.message {
+  text-align: center;
+  color: green;
+  margin-top: 15px;
+}
