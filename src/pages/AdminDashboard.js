@@ -3,7 +3,7 @@ import axios from 'axios';
 import './AdminDashboard.css'; // optional for styling
 
 const AdminDashboard = () => {
-  const BACKEND_URL='https://bingo-server-rw7p.onrender.com/';
+  const BACKEND_URL='https://bingo-server-rw7p.onrender.com';
   // 🔧 State declarations
   const [promocode, setPromocode] = useState('');
   const [commission, setCommission] = useState(30);
@@ -38,7 +38,7 @@ const AdminDashboard = () => {
 
   const handleAgentSubmit = async () => {
     try {
-      await axios.post('https://bingo-server-rw7p.onrender.com//api/agent', { username: agentUsername, password: agentPassword });
+      await axios.post('https://bingo-server-rw7p.onrender.com/api/agent', { username: agentUsername, password: agentPassword });
       setMessage('Agent created successfully');
       setAgentUsername('');
       setAgentPassword('');
@@ -101,5 +101,6 @@ const AdminDashboard = () => {
     </div>
   );
 };
+
 
 export default AdminDashboard;
