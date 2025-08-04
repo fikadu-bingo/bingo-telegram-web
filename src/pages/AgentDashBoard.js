@@ -59,7 +59,7 @@ const [cashoutRequests, setCashoutRequests] = useState([]);
   formData.append("receipt", request.receiptFile);
 
   try {
-    await axios.post(`https://bingo-server-rw7p.onrender.com/api/agent/cashouts/${request.id}/approve`, formData, {
+    await axios.post(`https://bingo-server-rw7p.onrender.com/api/agent/cashout-requests/${request.id}/approve`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -330,3 +330,4 @@ const handleRejectDeposit = async (requestId) => {
 
 
 export default AgentDashboard;
+
