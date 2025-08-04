@@ -1,3 +1,5 @@
+import AdminDashboard from "./pages/AdminDashboard"; // ✅ New import for admin
+
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
@@ -32,6 +34,7 @@ function App() {
             </TelegramAuth>
           }
         />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/bingo" element={<BingoBoard />} />
         <Route path="/call" element={<Call />} />
         <Route path="/agent-login" element={<AgentLogin />} />
