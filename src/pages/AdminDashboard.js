@@ -3,6 +3,7 @@ import axios from 'axios';
 import './AdminDashboard.css'; // optional for styling
 
 const AdminDashboard = () => {
+  const BACKEND_URL='https://bingo-server-rw7p.onrender.com/';
   // 🔧 State declarations
   const [promocode, setPromocode] = useState('');
   const [commission, setCommission] = useState(30);
@@ -18,7 +19,7 @@ const AdminDashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get('/api/admin/stats');
+      const res = await axios.get('https://bingo-server-rw7p.onrender.com//api/admin/stats');
       setStats(res.data);
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -27,7 +28,7 @@ const AdminDashboard = () => {
 
   const handlePromoSubmit = async () => {
     try {
-      await axios.post('/api/promocode', { code: promocode, commission });
+      await axios.post('https://bingo-server-rw7p.onrender.com//api/promocode', { code: promocode, commission });
       setMessage('Promo code created successfully');
       setPromocode('');
     } catch (error) {
@@ -37,7 +38,7 @@ const AdminDashboard = () => {
 
   const handleAgentSubmit = async () => {
     try {
-      await axios.post('/api/agent', { username: agentUsername, password: agentPassword });
+      await axios.post('https://bingo-server-rw7p.onrender.com//api/agent', { username: agentUsername, password: agentPassword });
       setMessage('Agent created successfully');
       setAgentUsername('');
       setAgentPassword('');
