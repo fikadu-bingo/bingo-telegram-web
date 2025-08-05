@@ -4,7 +4,7 @@ import axios from "axios";
 function AgentDashboard() {
   const backendUrl = "https://bingo-server-rw7p.onrender.com";
 
-  // ✅ Check token in localStorage for initial login state
+  // ✅ Use token to persist login
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("agentToken"));
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -12,24 +12,25 @@ function AgentDashboard() {
   const [depositRequests, setDepositRequests] = useState([]);
   const [cashoutRequests, setCashoutRequests] = useState([]);
 
-  // ✅ Login with backend API
+  // ✅ Login with backend
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.post(`${backendUrl}/api/agent/login`, { username, password });
-      localStorage.setItem("agentToken", res.data.token);
+      localStorage.setItem("agentToken", res.data.token); // store token
       setIsLoggedIn(true);
     } catch (err) {
       alert("Invalid username or password");
     }
   };
 
-  // ✅ Logout function
+  // ✅ Logout
   const handleLogout = () => {
     localStorage.removeItem("agentToken");
     setIsLoggedIn(false);
   };
 
+  // ✅ Fetch requests with token
   useEffect(() => {
     if (isLoggedIn) {
       const token = localStorage.getItem("agentToken");
@@ -56,31 +57,27 @@ function AgentDashboard() {
     }
   }, [isLoggedIn]);
 
-  const handleFileUpload = (id, file) => {
-    const updated = cashoutRequests.map((req) =>
-      req.id === id ? { ...req, receiptFile: file } : req
-    );
-    setCashoutRequests(updated);
-  };
-
+  // ✅ Add token to all action requests
   const handleApproveCashout = async (request) => {
     if (!request.receiptFile) {
       alert("Please upload a receipt first.");
       return;
     }
-
+    const token = localStorage.getItem("agentToken");
     const formData = new FormData();
     formData.append("receipt", request.receiptFile);
 
     try {
-      const token = localStorage.getItem("agentToken");
-      await axios.post(`${backendUrl}/api/agent/cashout-requests/${request.id}/approve`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
+      await axios.post(
+        `${backendUrl}/api/agent/cashout-requests/${request.id}/approve`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       const res = await axios.get(`${backendUrl}/api/agent/cashout-requests`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -92,20 +89,17 @@ function AgentDashboard() {
   };
 
   const handleRejectCashout = async (requestId) => {
+    const token = localStorage.getItem("agentToken");
     try {
-      const token = localStorage.getItem("agentToken");
-      await axios.post(`${backendUrl}/api/agent/cashout-requests/${requestId}/reject`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
+      await axios.post(
+        `${backendUrl}/api/agent/cashouts/${requestId}/reject`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       const res = await axios.get(`${backendUrl}/api/agent/cashout-requests`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const updatedRequests = res.data.cashouts.map((req) => ({
-        ...req,
-        receiptFile: null,
-      }));
-      setCashoutRequests(updatedRequests);
+      setCashoutRequests(res.data.cashouts.map((req) => ({ ...req, receiptFile: null })));
     } catch (error) {
       console.error("Cashout rejection failed", error);
       alert("Rejection failed");
@@ -113,11 +107,13 @@ function AgentDashboard() {
   };
 
   const handleApproveDeposit = async (requestId) => {
+    const token = localStorage.getItem("agentToken");
     try {
-      const token = localStorage.getItem("agentToken");
-      await axios.post(`${backendUrl}/api/agent/deposit-requests/${requestId}/approve`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        `${backendUrl}/api/agent/deposit-requests/${requestId}/approve`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       const res = await axios.get(`${backendUrl}/api/agent/deposit-requests`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -127,14 +123,14 @@ function AgentDashboard() {
       alert("Deposit approval failed");
     }
   };
-
   const handleRejectDeposit = async (requestId) => {
+    const token = localStorage.getItem("agentToken");
     try {
-      const token = localStorage.getItem("agentToken");
-      await axios.post(`${backendUrl}/api/agent/deposit-requests/${requestId}/reject`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
+      await axios.post(
+        $`{backendUrl}/api/agent/deposit-requests/${requestId}/reject`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       const res = await axios.get(`${backendUrl}/api/agent/deposit-requests`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -145,6 +141,7 @@ function AgentDashboard() {
     }
   };
 
+  // ✅ Login form
   if (!isLoggedIn) {
     return (
       <div style={{ padding: "20px", maxWidth: "400px", margin: "auto" }}>
@@ -188,23 +185,14 @@ function AgentDashboard() {
     );
   }
 
+  // ✅ Add logout button
   return (
     <div style={{ padding: "20px" }}>
       <h2>Agent Dashboard</h2>
-      <button
-        onClick={handleLogout}
-        style={{
-          background: "gray",
-          color: "white",
-          padding: "5px 10px",
-          borderRadius: "5px",
-          marginBottom: "20px",
-        }}
-      >
+      <button onClick={handleLogout} style={{ marginBottom: "20px" }}>
         Logout
       </button>
-
-      {/* Your existing deposit and cashout requests tables remain unchanged */}
+      {/* existing tables unchanged */}
     </div>
   );
 }
