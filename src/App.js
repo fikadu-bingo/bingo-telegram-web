@@ -1,14 +1,13 @@
-import AdminDashboard from "./pages/AdminDashboard"; // ✅ New import for admin
-
+import AdminDashboard from "./pages/AdminDashboard";
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"; // ✅ added Navigate
 import HomePage from "./pages/HomePage";
 import BingoBoard from "./pages/BingoBoard";
 import Call from "./pages/Call";
 import Preloader from "./Preloader";
 import AgentLogin from "./pages/AgentLogin";
 import AgentDashboard from "./pages/AgentDashBoard";
-import TelegramAuth from "./auth/TelegramAuth"; // ✅ Corrected path
+import TelegramAuth from "./auth/TelegramAuth";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -38,10 +37,20 @@ function App() {
         <Route path="/bingo" element={<BingoBoard />} />
         <Route path="/call" element={<Call />} />
         <Route path="/agent-login" element={<AgentLogin />} />
-        <Route path="/agent-dashboard" element={<AgentDashboard />} />
+        <Route
+          path="/agent-dashboard"
+          element={
+            localStorage.getItem("agentToken") ? (
+              <AgentDashboard />
+            ) : (
+              <Navigate to="/agent-login" replace />
+            )
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
 }
+
 
 export default App;
