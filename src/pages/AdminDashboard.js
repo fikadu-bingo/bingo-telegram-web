@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './AdminDashboard.css'; // optional for styling
+import './AdminDashboard.css';
 
 const AdminDashboard = () => {
-  const BACKEND_URL='https://bingo-server-rw7p.onrender.com';
-  // 🔧 State declarations
+  const BACKEND_URL = 'https://bingo-server-rw7p.onrender.com';
+
+  // 🔑 Authentication states
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [adminUsername, setAdminUsername] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
+
+  // 💾 Admin dashboard states
   const [promocode, setPromocode] = useState('');
   const [commission, setCommission] = useState(30);
   const [agentUsername, setAgentUsername] = useState('');
@@ -12,23 +18,49 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState({});
   const [message, setMessage] = useState('');
 
-  // 🔄 Fetch system stats on load
-  useEffect(() => {
-    fetchStats();
-  }, []);
+  // 📌 Handle admin login
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(`${BACKEND_URL}/api/admin/login`, {
+        username: adminUsername,
+        password: adminPassword
+      });
+      if (res.data.success) {
+        localStorage.setItem('adminToken', res.data.token); // store JWT
+        setIsLoggedIn(true);
+        fetchStats(); // load stats after login
+      } else {
+        alert(res.data.message || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Login failed. Please check credentials.');
+    }
+  };
 
+  // 🔄 Fetch system stats (after login)
   const fetchStats = async () => {
     try {
-      const res = await axios.get('https://bingo-server-rw7p.onrender.com//api/admin/stats');
+      const token = localStorage.getItem('adminToken');
+      const res = await axios.get(`${BACKEND_URL}/api/admin/stats`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setStats(res.data);
     } catch (error) {
       console.error('Error fetching stats:', error);
     }
   };
 
+  // ➕ Create promo code
   const handlePromoSubmit = async () => {
     try {
-      await axios.post('https://bingo-server-rw7p.onrender.com//api/promocode', { code: promocode, commission });
+      const token = localStorage.getItem('adminToken');
+      await axios.post(
+        `${BACKEND_URL}/api/promocode`,
+        { code: promocode, commission },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setMessage('Promo code created successfully');
       setPromocode('');
     } catch (error) {
@@ -36,9 +68,15 @@ const AdminDashboard = () => {
     }
   };
 
+  // ➕ Create agent account
   const handleAgentSubmit = async () => {
     try {
-      await axios.post('https://bingo-server-rw7p.onrender.com/api/agent', { username: agentUsername, password: agentPassword });
+      const token = localStorage.getItem('adminToken');
+      await axios.post(
+        `${BACKEND_URL}/api/agent`,
+        { username: agentUsername, password: agentPassword },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setMessage('Agent created successfully');
       setAgentUsername('');
       setAgentPassword('');
@@ -47,6 +85,50 @@ const AdminDashboard = () => {
     }
   };
 
+  // 🚪 Show login form if not logged in
+  if (!isLoggedIn) {
+    return (
+      <div style={{ padding: '20px', maxWidth: '400px', margin: 'auto' }}>
+        <h2>Admin Login</h2>
+        <form onSubmit={handleLogin}>
+          <div style={{ marginBottom: '10px' }}>
+            <label>Username:</label><br />
+            <input
+              type="text"
+              value={adminUsername}
+              onChange={(e) => setAdminUsername(e.target.value)}
+              style={{ width: '100%', padding: '8px' }}
+              required
+            />
+          </div>
+          <div style={{ marginBottom: '10px' }}>
+            <label>Password:</label><br />
+            <input
+              type="password"
+              value={adminPassword}
+              onChange={(e) => setAdminPassword(e.target.value)}
+              style={{ width: '100%', padding: '8px' }}
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            style={{
+              width: '100%',
+              padding: '10px',
+              backgroundColor: 'blue',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+            }}
+          >
+            Login
+          </button>
+        </form>
+      </div>
+    );
+  }
+  // 📊 Show dashboard if logged in
   return (
     <div className="admin-dashboard">
       <h1>Admin Dashboard</h1>
