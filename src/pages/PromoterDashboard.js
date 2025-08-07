@@ -26,8 +26,10 @@ function PromoterDashboard() {
         promo_code: promoCode,
       });
 
-      setToken(res.data.token);
-      setIsLoggedIn(true);
+      const authToken = res.data.token;
+localStorage.setItem("promoterToken", authToken); // ✅ store in browser
+setToken(authToken);
+setIsLoggedIn(true);
       setMessage("");
     } catch (err) {
       setMessage("Invalid Promo Code");
@@ -47,11 +49,13 @@ function PromoterDashboard() {
     }
   };
 
-  useEffect(() => {
-    if (token) {
-      fetchDashboard();
-    }
-  }, [token]);
+ useEffect(() => {
+  const savedToken = localStorage.getItem("promoterToken");
+  if (savedToken) {
+    setToken(savedToken);
+    setIsLoggedIn(true);
+  }
+}, []);
 
   // Handle cashout request
   const handleCashout = async () => {
@@ -110,6 +114,25 @@ function PromoterDashboard() {
   // Logged-in dashboard
   return (
     <div style={{ padding: "20px" }}>
+<button
+  onClick={() => {
+    localStorage.removeItem("promoterToken"); // remove token
+    setIsLoggedIn(false);
+    setToken("");
+  }}
+  style={{
+    float: "right",
+    padding: "6px 12px",
+    background: "red",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    marginBottom: "10px",
+  }}
+>
+  Logout
+</button>
+
       <h2>Welcome, {stats.promo_code}</h2>
       <h3>Your Commission Balance: {stats.balance} ETB</h3>
       <p>Total Referrals: {stats.total_referrals}</p>
