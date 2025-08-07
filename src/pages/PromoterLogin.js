@@ -7,7 +7,7 @@ const PromoterLogin = () => {
 
   const handleLogin = async () => {
     try {
-      const res = await fetch("https://your-backend.com/api/promoter/login", {
+      const res = await fetch("https://bingo-server-rw7p.onrender.com/api/promoter/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
        body: JSON.stringify({ promo_code: code }),
@@ -39,5 +39,6 @@ const PromoterLogin = () => {
     </div>
   );
 };
+
 
 export default PromoterLogin;
