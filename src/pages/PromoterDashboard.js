@@ -14,29 +14,32 @@ function PromoterDashboard() {
   const [cashouts, setCashouts] = useState([]);
   const [message, setMessage] = useState("");
 
-  // Cashout request state
   const [cashoutAmount, setCashoutAmount] = useState("");
 
-  // Handle promoter login
+  // ✅ Login handler
   const handleLogin = async (e) => {
     e.preventDefault();
+
     try {
       const res = await axios.post(`${BACKEND_URL}/api/promoter/login`, {
         promo_code: promoCode,
       });
 
       const authToken = res.data.token;
-      localStorage.setItem("promoterToken", authToken); // ✅ store token
+      localStorage.setItem("promoterToken", authToken);
       setToken(authToken);
       setIsLoggedIn(true);
       setMessage("");
+
+      // ✅ Fetch data immediately after login
+      fetchDashboard(authToken);
     } catch (err) {
       setMessage("Invalid Promo Code");
     }
   };
 
-  // Fetch promoter dashboard data
-  const fetchDashboard = async (authToken) => {
+  // ✅ Fetch dashboard data
+  const fetchDashboard = async (authToken = token) => {
     try {
       const res = await axios.get(`${BACKEND_URL}/api/promoter/dashboard`, {
         headers: { Authorization: `Bearer ${authToken}` },
@@ -48,24 +51,17 @@ function PromoterDashboard() {
     }
   };
 
-  // On load: check for saved token and fetch data
+  // ✅ Auto-login if token is saved
   useEffect(() => {
     const savedToken = localStorage.getItem("promoterToken");
     if (savedToken) {
       setToken(savedToken);
       setIsLoggedIn(true);
-      fetchDashboard(savedToken);
+      fetchDashboard(savedToken); // ✅ Load dashboard
     }
   }, []);
 
-  // After login token change, fetch dashboard
-  useEffect(() => {
-    if (isLoggedIn && token) {
-      fetchDashboard(token);
-    }
-  }, [isLoggedIn, token]);
-
-  // Handle cashout request
+  // ✅ Handle cashout request
   const handleCashout = async () => {
     if (!cashoutAmount || cashoutAmount <= 0) {
       setMessage("Please enter a valid amount");
@@ -80,13 +76,23 @@ function PromoterDashboard() {
       );
       setMessage("Cashout request submitted!");
       setCashoutAmount("");
-      fetchDashboard(token);
+      fetchDashboard();
     } catch (err) {
       setMessage("Cashout request failed");
     }
   };
 
-  // If not logged in, show login form
+  // ✅ Logout handler
+  const handleLogout = () => {
+    localStorage.removeItem("promoterToken");
+    setIsLoggedIn(false);
+    setToken("");
+    setStats({});
+    setCashouts([]);
+    setPromoCode("");
+  };
+
+  // ✅ Login screen
   if (!isLoggedIn) {
     return (
       <div style={{ padding: "20px", maxWidth: "400px", margin: "auto" }}>
@@ -119,16 +125,12 @@ function PromoterDashboard() {
     );
   }
 
-  // Logged-in dashboard UI
+  // ✅ Dashboard screen
   return (
     <div style={{ padding: "20px" }}>
-      {/* ✅ Logout button in proper place */}
+      {/* ✅ Logout Button */}
       <button
-        onClick={() => {
-          localStorage.removeItem("promoterToken");
-          setIsLoggedIn(false);
-          setToken("");
-        }}
+        onClick={handleLogout}
         style={{
           float: "right",
           padding: "6px 12px",
@@ -145,7 +147,7 @@ function PromoterDashboard() {
       <h2>Welcome, {stats.promo_code}</h2>
       <h3>Your Commission Balance: {stats.balance} ETB</h3>
       <p>Total Referrals: {stats.total_referrals}</p>
-      {/* Cashout Request */}
+      {/* ✅ Cashout Request */}
       <div
         style={{ marginTop: "20px", border: "1px solid #ccc", padding: "15px" }}
       >
@@ -171,7 +173,7 @@ function PromoterDashboard() {
         </button>
       </div>
 
-      {/* Cashout History */}
+      {/* ✅ Cashout History */}
       <div style={{ marginTop: "30px" }}>
         <h3>Cashout History</h3>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -194,7 +196,7 @@ function PromoterDashboard() {
         </table>
       </div>
 
-      {/* Message Feedback */}
+      {/* ✅ Success/Error Message */}
       {message && (
         <p style={{ color: "green", marginTop: "10px" }}>{message}</p>
       )}
