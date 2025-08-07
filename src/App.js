@@ -8,6 +8,8 @@ import Preloader from "./Preloader";
 import AgentLogin from "./pages/AgentLogin";
 import AgentDashboard from "./pages/AgentDashBoard";
 import TelegramAuth from "./auth/TelegramAuth";
+import PromoterDashboard from './pages/PromoterDashboard';
+import PromoterLogin from './pages/PromoterLogin';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -37,6 +39,17 @@ function App() {
         <Route path="/bingo" element={<BingoBoard />} />
         <Route path="/call" element={<Call />} />
         <Route path="/agent-login" element={<AgentLogin />} />
+        <Route path="/promoter" element={<PromoterLogin />} />
+        <Route
+  path="/promoter-dashboard"
+  element={
+    localStorage.getItem("promoterCode") ? (
+      <PromoterDashboard />
+    ) : (
+      <Navigate to="/promoter" replace />
+    )
+  }
+/>
         <Route
           path="/agent-dashboard"
           element={
