@@ -10,12 +10,12 @@ const PromoterLogin = () => {
       const res = await fetch("https://your-backend.com/api/promoter/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code }),
+       body: JSON.stringify({ promo_code: code }),
       });
       const data = await res.json();
 
       if (res.ok) {
-        localStorage.setItem("promoter", JSON.stringify(data.promoter));
+       localStorage.setItem("promoterToken", data.token);
         navigate("/promoter-dashboard");
       } else {
         alert(data.message || "Login failed");
