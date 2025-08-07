@@ -96,18 +96,35 @@ useEffect(() => {
   const storedBalance = localStorage.getItem("balance");
 
   if (telegramUser?.first_name) {
-
     setFirstName(telegramUser.first_name);
     localStorage.setItem("firstName", telegramUser.first_name);
   }
 
-  // ✅ Save telegram_id to localStorage for future API headers
+  // ✅ Save telegram_id to localStorage and state
   if (telegramUser?.id) {
     localStorage.setItem("telegram_id", telegramUser.id);
+    setTelegramId(telegramUser.id); // ✅ Ensure telegramId state is also set
   }
 
   if (storedBalance !== null) {
     setBalance(parseInt(storedBalance, 10));
+  }
+
+  // ✅ Check if user already exists in backend — if not, backend should auto-create on first deposit
+  if (telegramUser?.id) {
+    fetch(`/api/user/check/${telegramUser.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.exists) {
+          setBalance(data.user.balance);
+          localStorage.setItem("balance", data.user.balance);
+        } else {
+          console.log("User does not exist yet. Will be created on first deposit.");
+        }
+      })
+      .catch((err) => {
+        console.error("Error checking user:", err);
+      });
   }
 }, []);
 
