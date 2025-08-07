@@ -17,6 +17,7 @@ function HomePage() {
 });
 
 const [firstName, setFirstName] = useState("User");
+const [telegramId, setTelegramId] = useState(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
