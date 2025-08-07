@@ -16,18 +16,48 @@ function HomePage() {
     return stored ? parseFloat(stored) : 200;
 });
 
- const fetchUserData = async () => {
+const [firstName, setFirstName] = useState("User");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const telegram_id = params.get("telegram_id");
+    const first_name = params.get("first_name");
+    const username = params.get("username");
+
+    if (telegram_id && first_name) {
+      const telegramUser = { id: telegram_id, first_name, username };
+      localStorage.setItem("telegramUser", JSON.stringify(telegramUser));
+      localStorage.setItem("telegram_id", telegram_id);
+      setFirstName(first_name);
+    } else {
+      const storedUser = JSON.parse(localStorage.getItem("telegramUser"));
+      if (storedUser?.first_name) {
+        setFirstName(storedUser.first_name);
+      } else {
+        const fallback = localStorage.getItem("firstName");
+        if (fallback) setFirstName(fallback);
+      }
+    }
+  }, []);
+
+const fetchUserData = async () => {
   try {
     const telegram_id = localStorage.getItem("telegram_id");
+    if (!telegram_id) return;
 
     const res = await fetch(`https://bingo-server-rw7p.onrender.com/api/user/me?telegram_id=${telegram_id}`);
     const data = await res.json();
 
     if (data && data.user) {
       const newBalance = data.user.balance;
-      console.log("Fetched balance from server:", newBalance);
       setBalance(newBalance);
       localStorage.setItem("balance", newBalance);
+
+      if (data.user.first_name) {
+        setFirstName(data.user.first_name);
+        localStorage.setItem("firstName", data.user.first_name);
+        localStorage.setItem("telegramUser", JSON.stringify(data.user));
+      }
     } else {
       console.warn("User data not found");
     }
@@ -35,6 +65,9 @@ function HomePage() {
     console.error("Failed to fetch user data:", error);
   }
 };
+
+
+
   useEffect(() => {
   const interval = setInterval(() => {
     fetchUserData();
@@ -54,7 +87,7 @@ useEffect(() => {
   const [showCashOutSuccess, setShowCashOutSuccess] = useState(false);
   //const [showTransferModal, setShowTransferModal] = useState(false);
   const [showPromoModal, setShowPromoModal] = useState(false);
-  const [firstName, setFirstName] = useState("User");
+  
 
   const stakes = [200, 100, 50, 20, 10];
 
@@ -63,6 +96,7 @@ useEffect(() => {
   const storedBalance = localStorage.getItem("balance");
 
   if (telegramUser?.first_name) {
+
     setFirstName(telegramUser.first_name);
     localStorage.setItem("firstName", telegramUser.first_name);
   }
@@ -99,7 +133,6 @@ const handlePlayNow = () => {
     alert("Not enough balance!");
     return;
   }
-
 
   const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
   const username = telegramUser?.first_name || "User";
