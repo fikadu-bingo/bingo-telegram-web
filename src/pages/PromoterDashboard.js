@@ -20,16 +20,15 @@ function PromoterDashboard() {
   // Handle promoter login
   const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
       const res = await axios.post(`${BACKEND_URL}/api/promoter/login`, {
         promo_code: promoCode,
       });
 
       const authToken = res.data.token;
-localStorage.setItem("promoterToken", authToken); // ✅ store in browser
-setToken(authToken);
-setIsLoggedIn(true);
+      localStorage.setItem("promoterToken", authToken); // ✅ store token
+      setToken(authToken);
+      setIsLoggedIn(true);
       setMessage("");
     } catch (err) {
       setMessage("Invalid Promo Code");
@@ -37,10 +36,10 @@ setIsLoggedIn(true);
   };
 
   // Fetch promoter dashboard data
-  const fetchDashboard = async () => {
+  const fetchDashboard = async (authToken) => {
     try {
       const res = await axios.get(`${BACKEND_URL}/api/promoter/dashboard`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${authToken}` },
       });
       setStats(res.data.stats);
       setCashouts(res.data.cashouts);
@@ -49,13 +48,22 @@ setIsLoggedIn(true);
     }
   };
 
- useEffect(() => {
-  const savedToken = localStorage.getItem("promoterToken");
-  if (savedToken) {
-    setToken(savedToken);
-    setIsLoggedIn(true);
-  }
-}, []);
+  // On load: check for saved token and fetch data
+  useEffect(() => {
+    const savedToken = localStorage.getItem("promoterToken");
+    if (savedToken) {
+      setToken(savedToken);
+      setIsLoggedIn(true);
+      fetchDashboard(savedToken);
+    }
+  }, []);
+
+  // After login token change, fetch dashboard
+  useEffect(() => {
+    if (isLoggedIn && token) {
+      fetchDashboard(token);
+    }
+  }, [isLoggedIn, token]);
 
   // Handle cashout request
   const handleCashout = async () => {
@@ -72,7 +80,7 @@ setIsLoggedIn(true);
       );
       setMessage("Cashout request submitted!");
       setCashoutAmount("");
-      fetchDashboard();
+      fetchDashboard(token);
     } catch (err) {
       setMessage("Cashout request failed");
     }
@@ -111,32 +119,33 @@ setIsLoggedIn(true);
     );
   }
 
-  // Logged-in dashboard
+  // Logged-in dashboard UI
   return (
     <div style={{ padding: "20px" }}>
-<button
-  onClick={() => {
-    localStorage.removeItem("promoterToken"); // remove token
-    setIsLoggedIn(false);
-    setToken("");
-  }}
-  style={{
-    float: "right",
-    padding: "6px 12px",
-    background: "red",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    marginBottom: "10px",
-  }}
->
-  Logout
-</button>
+      {/* ✅ Logout button in proper place */}
+      <button
+        onClick={() => {
+          localStorage.removeItem("promoterToken");
+          setIsLoggedIn(false);
+          setToken("");
+        }}
+        style={{
+          float: "right",
+          padding: "6px 12px",
+          background: "red",
+          color: "white",
+          border: "none",
+          borderRadius: "5px",
+          marginBottom: "10px",
+        }}
+      >
+        Logout
+      </button>
 
       <h2>Welcome, {stats.promo_code}</h2>
       <h3>Your Commission Balance: {stats.balance} ETB</h3>
       <p>Total Referrals: {stats.total_referrals}</p>
-
+      {/* Cashout Request */}
       <div
         style={{ marginTop: "20px", border: "1px solid #ccc", padding: "15px" }}
       >
@@ -161,6 +170,8 @@ setIsLoggedIn(true);
           Request
         </button>
       </div>
+
+      {/* Cashout History */}
       <div style={{ marginTop: "30px" }}>
         <h3>Cashout History</h3>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -183,6 +194,7 @@ setIsLoggedIn(true);
         </table>
       </div>
 
+      {/* Message Feedback */}
       {message && (
         <p style={{ color: "green", marginTop: "10px" }}>{message}</p>
       )}
