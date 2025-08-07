@@ -1,6 +1,7 @@
-import AdminDashboard from "./pages/AdminDashboard";
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"; // ✅ added Navigate
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+import AdminDashboard from "./pages/AdminDashboard";
 import HomePage from "./pages/HomePage";
 import BingoBoard from "./pages/BingoBoard";
 import Call from "./pages/Call";
@@ -8,8 +9,8 @@ import Preloader from "./Preloader";
 import AgentLogin from "./pages/AgentLogin";
 import AgentDashboard from "./pages/AgentDashBoard";
 import TelegramAuth from "./auth/TelegramAuth";
-import PromoterDashboard from './pages/PromoterDashboard';
-import PromoterLogin from './pages/PromoterLogin';
+import PromoterDashboard from "./pages/PromoterDashboard";
+import PromoterLogin from "./pages/PromoterLogin";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -26,7 +27,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* HomePage wrapped in TelegramAuth */}
+        {/* User routes */}
         <Route
           path="/"
           element={
@@ -35,21 +36,14 @@ function App() {
             </TelegramAuth>
           }
         />
-        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/bingo" element={<BingoBoard />} />
         <Route path="/call" element={<Call />} />
+
+        {/* Admin */}
+        <Route path="/admin" element={<AdminDashboard />} />
+
+        {/* Agent */}
         <Route path="/agent-login" element={<AgentLogin />} />
-        <Route path="/promoter" element={<PromoterLogin />} />
-        <Route
-  path="/promoter-dashboard"
-  element={
-    localStorage.getItem("promoterCode") ? (
-      <PromoterDashboard />
-    ) : (
-      <Navigate to="/promoter" replace />
-    )
-  }
-/>
         <Route
           path="/agent-dashboard"
           element={
@@ -60,10 +54,22 @@ function App() {
             )
           }
         />
+
+        {/* Promoter */}
+        <Route path="/promoter" element={<PromoterLogin />} />
+        <Route
+          path="/promoter-dashboard"
+          element={
+            localStorage.getItem("promoterToken") ? (
+              <PromoterDashboard />
+            ) : (
+              <Navigate to="/promoter" replace />
+            )
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
 }
-
 
 export default App;
