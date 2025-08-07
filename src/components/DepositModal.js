@@ -157,7 +157,7 @@ const handleSubmit = async (e) => {
               <label>Upload Your Receipt</label>
               <input
                 type="file"
-                accept=".jpg,.png,.pdf"
+                accept=".jpg,.jpeg,.png,.pdf"
                 onChange={(e) => setReceipt(e.target.files[0])}
                 required
                 style={{ width: "150px" }}
