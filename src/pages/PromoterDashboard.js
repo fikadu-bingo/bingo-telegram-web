@@ -4,41 +4,16 @@ import axios from "axios";
 function PromoterDashboard() {
   const BACKEND_URL = "https://bingo-server-rw7p.onrender.com";
 
-  // State for login
   const [promoCode, setPromoCode] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState("");
 
-  // State for promoter data
   const [stats, setStats] = useState({});
   const [cashouts, setCashouts] = useState([]);
   const [message, setMessage] = useState("");
-
   const [cashoutAmount, setCashoutAmount] = useState("");
 
-  // ✅ Login handler
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
-    try {
-      const res = await axios.post(`${BACKEND_URL}/api/promoter/login`, {
-        promo_code: promoCode,
-      });
-
-      const authToken = res.data.token;
-      localStorage.setItem("promoterToken", authToken);
-      setToken(authToken);
-      setIsLoggedIn(true);
-      setMessage("");
-
-      // ✅ Fetch data immediately after login
-      fetchDashboard(authToken);
-    } catch (err) {
-      setMessage("Invalid Promo Code");
-    }
-  };
-
-  // ✅ Fetch dashboard data
+  // ✅ Fetch promoter dashboard data
   const fetchDashboard = async (authToken = token) => {
     try {
       const res = await axios.get(`${BACKEND_URL}/api/promoter/dashboard`, {
@@ -51,15 +26,41 @@ function PromoterDashboard() {
     }
   };
 
-  // ✅ Auto-login if token is saved
+  // ✅ On component mount, check token from localStorage
   useEffect(() => {
     const savedToken = localStorage.getItem("promoterToken");
     if (savedToken) {
       setToken(savedToken);
       setIsLoggedIn(true);
-      fetchDashboard(savedToken); // ✅ Load dashboard
+      fetchDashboard(savedToken); // ✅ fetch data immediately
     }
   }, []);
+
+  // ✅ On token change, fetch dashboard data
+  useEffect(() => {
+    if (isLoggedIn && token) {
+      fetchDashboard(token);
+    }
+  }, [token, isLoggedIn]);
+
+  // ✅ Handle login
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(`${BACKEND_URL}/api/promoter/login`, {
+        promo_code: promoCode,
+      });
+
+      const authToken = res.data.token;
+      localStorage.setItem("promoterToken", authToken);
+      setToken(authToken);
+      setIsLoggedIn(true);
+      setMessage("");
+      fetchDashboard(authToken); // ✅ Fetch dashboard after login
+    } catch (err) {
+      setMessage("Invalid Promo Code");
+    }
+  };
 
   // ✅ Handle cashout request
   const handleCashout = async () => {
@@ -76,23 +77,13 @@ function PromoterDashboard() {
       );
       setMessage("Cashout request submitted!");
       setCashoutAmount("");
-      fetchDashboard();
+      fetchDashboard(); // ✅ Refresh dashboard
     } catch (err) {
       setMessage("Cashout request failed");
     }
   };
 
-  // ✅ Logout handler
-  const handleLogout = () => {
-    localStorage.removeItem("promoterToken");
-    setIsLoggedIn(false);
-    setToken("");
-    setStats({});
-    setCashouts([]);
-    setPromoCode("");
-  };
-
-  // ✅ Login screen
+  // ✅ Not logged in
   if (!isLoggedIn) {
     return (
       <div style={{ padding: "20px", maxWidth: "400px", margin: "auto" }}>
@@ -125,12 +116,16 @@ function PromoterDashboard() {
     );
   }
 
-  // ✅ Dashboard screen
+  // ✅ Logged-in dashboard
   return (
     <div style={{ padding: "20px" }}>
-      {/* ✅ Logout Button */}
+      {/* ✅ Logout button */}
       <button
-        onClick={handleLogout}
+        onClick={() => {
+          localStorage.removeItem("promoterToken");
+          setIsLoggedIn(false);
+          setToken("");
+        }}
         style={{
           float: "right",
           padding: "6px 12px",
@@ -147,7 +142,7 @@ function PromoterDashboard() {
       <h2>Welcome, {stats.promo_code}</h2>
       <h3>Your Commission Balance: {stats.balance} ETB</h3>
       <p>Total Referrals: {stats.total_referrals}</p>
-      {/* ✅ Cashout Request */}
+      {/* ✅ Cashout Section */}
       <div
         style={{ marginTop: "20px", border: "1px solid #ccc", padding: "15px" }}
       >
@@ -196,7 +191,6 @@ function PromoterDashboard() {
         </table>
       </div>
 
-      {/* ✅ Success/Error Message */}
       {message && (
         <p style={{ color: "green", marginTop: "10px" }}>{message}</p>
       )}
