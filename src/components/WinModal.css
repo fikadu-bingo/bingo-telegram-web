@@ -83,19 +83,29 @@
   width: 40px;
   height: 40px;
   background-color: #1e1e3f;
-  color: #fff;
+  color: #ccc;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
+  font-weight: normal;
   border-radius: 5px;
-  font-size: 14px;
-}
-.cartela-number {
+  font-size: 16px;
   text-align: center;
   margin-top: 8px;
-  font-size: 16px;
+}
+
+.cartela-number.marked {
+  background-color: #00C9FF; /* bright blue for marked numbers */
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 0 8px #00C9FF;
+}
+
+.cartela-number.unmarked {
+  background-color: #1e1e3f; /* existing background */
   color: #ccc;
+  font-weight: normal;
+  box-shadow: none;
 }
 
 .no-card-text {
