@@ -32,15 +32,16 @@
 .cartela-grid {
   display: grid;
   grid-template-columns: repeat(5, 30px);
-  gap: 10px;
+  gap: 5px;
   justify-content: center;
   margin-bottom: 10px;
   padding-left: 10px;
+  padding-right: 10px;
 }
 
 .cartela-cell {
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   padding: 5px;
   background: #ffcc99;
   color: #663300;
@@ -74,5 +75,6 @@
   background: #cc6600;
 
 }
+
 
 
