@@ -5,7 +5,7 @@ import logo from "../assets/logo.png";
 function BingoBoard() {
   const location = useLocation();
   const navigate = useNavigate();
-  const initialBalance = parseFloat(localStorage.getItem("balance") || "200");
+  const initialBalance = parseFloat(localStorage.getItem("balance") ?? "200");
   const stake = location.state?.stake ?? 0;
 
   const [wallet, setWallet] = useState(initialBalance - stake);
@@ -21,7 +21,7 @@ function BingoBoard() {
   }, []);
 
   const generateCard = (selected) => {
-    let numbers = Array.from({ length: 200 }, (_, i) => i + 1); // now 1-200
+    let numbers = Array.from({ length: 100 }, (_, i) => i + 1); // now 1-100
     numbers = numbers.filter((num) => num !== selected);
 
     for (let i = numbers.length - 1; i > 0; i--) {
@@ -52,7 +52,7 @@ function BingoBoard() {
       return;
     }
 
-    const initialBalance = parseFloat(localStorage.getItem("balance") || "0");
+    const initialBalance = parseFloat(localStorage.getItem("balance") ?? "0");
     const newWallet = initialBalance - stake;
 
     if (newWallet < 0) {
@@ -77,7 +77,7 @@ function BingoBoard() {
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #1e3c72, #2a5298)", // blue gradient
+        background: "linear-gradient(135deg, #4B0082, #6A5ACD)", // violet-blue gradient
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-start",
@@ -134,9 +134,11 @@ function BingoBoard() {
             gridTemplateColumns: "repeat(8, 1fr)", // 8 columns
             gap: "6px",
             margin: "10px 0",
+            background: "linear-gradient(135deg, #6a5acd, #9370db)", // violet-blue background
+            padding: "15px",borderRadius: "12px",
           }}
         >
-          {Array.from({ length: 200 }, (_, i) => i + 1).map((num) => (
+          {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => (
             <button
               key={num}
               onClick={() => handleNumberClick(num)}
@@ -268,6 +270,4 @@ function BingoBoard() {
   );
 }
 
-
 export default BingoBoard;
-
