@@ -14,6 +14,9 @@ function BingoBoard() {
   const [bingoCard, setBingoCard] = useState([]);
   const [cartelaId, setCartelaId] = useState("");
   const [showModal, setShowModal] = useState(false);
+  
+  // NEW: State to control cartela popup visibility
+  const [showCartelaModal, setShowCartelaModal] = useState(false);
 
   useEffect(() => {
     const id = "G" + Math.floor(1000 + Math.random() * 9000);
@@ -21,7 +24,7 @@ function BingoBoard() {
   }, []);
 
   const generateCard = (selected) => {
-    let numbers = Array.from({ length: 100 }, (_, i) => i + 1); // now 1-100
+    let numbers = Array.from({ length: 100 }, (_, i) => i + 1);
     numbers = numbers.filter((num) => num !== selected);
 
     for (let i = numbers.length - 1; i > 0; i--) {
@@ -44,6 +47,9 @@ function BingoBoard() {
     setSelectedNumber(number);
     setCartelaId(number);
     generateCard(number);
+
+    // Show cartela modal on ticket selection
+    setShowCartelaModal(true);
   };
 
   const handleStartGame = () => {
@@ -77,7 +83,7 @@ function BingoBoard() {
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #4B0082, #6A5ACD)", // violet-blue gradient
+        background: "linear-gradient(135deg, #4B0082, #6A5ACD)",
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-start",
@@ -131,11 +137,12 @@ function BingoBoard() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(8, 1fr)", // 8 columns
+            gridTemplateColumns: "repeat(8, 1fr)",
             gap: "6px",
             margin: "10px 0",
-            background: "linear-gradient(135deg, #6a5acd, #9370db)", // violet-blue background
-            padding: "15px",borderRadius: "12px",
+            background: "linear-gradient(135deg, #6a5acd, #9370db)",
+            padding: "15px",
+            borderRadius: "12px",
           }}
         >
           {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => (
@@ -215,6 +222,7 @@ function BingoBoard() {
         </button>
       </div>
 
+      {/* Existing "please select a ticket" modal */}
       {showModal && (
         <div
           style={{
@@ -262,6 +270,92 @@ function BingoBoard() {
               }}
             >
               OK
+            </button>
+          </div>
+        </div>
+      )}
+      {/* NEW: Cartela modal popup */}
+      {showCartelaModal && (
+        <div
+          onClick={() => setShowCartelaModal(false)} // close modal on background click
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(255, 165, 0, 0.85)", // light orange with some transparency
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 10000,
+            padding: "20px",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside modal content
+            style={{
+              background: "#fff8f0",
+              padding: "30px",
+              borderRadius: "15px",
+              boxShadow: "0 8px 15px rgba(255, 165, 0, 0.7)",
+              maxWidth: "350px",
+              width: "100%",
+              textAlign: "center",
+            }}
+          >
+            <h3 style={{ marginBottom: "20px", color: "#e67300" }}>
+              Your Bingo Card (Cartela: #{cartelaId})
+            </h3>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(5, 50px)",
+                justifyContent: "center",
+                gap: "8px",
+                marginBottom: "20px",
+              }}
+            >
+              {bingoCard.flat().map((num, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    width: "50px",
+                    height: "50px",
+                    background: num === selectedNumber ? "#e67300" : "#ffcc99",
+                    color: num === selectedNumber ? "white" : "#663300",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: "8px",
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    userSelect: "none",
+                  }}
+                >
+                  {num === selectedNumber ? "*" : num}
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowCartelaModal(false)}
+              style={{
+                padding: "10px 25px",
+                background: "#e67300",
+                color: "white",
+                border: "none",
+                borderRadius: "12px",
+                fontWeight: "bold",
+                cursor: "pointer",
+                fontSize: "16px",
+                transition: "background 0.3s",
+              }}
+              onMouseEnter={(e) => (e.target.style.background = "#fb1515ff")}
+              onMouseLeave={(e) => (e.target.style.background = "#f41111ff")}
+            >
+              Close
             </button>
           </div>
         </div>
