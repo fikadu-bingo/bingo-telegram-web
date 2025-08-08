@@ -247,7 +247,7 @@ function BingoBoard() {
       onClick={(e) => e.stopPropagation()}
     >
       <h3 className="cartela-title">
-        Your Bingo Card (Cartela: #{cartelaId})
+        (Cartela: #{cartelaId})
       </h3>
 
       <div className="cartela-grid">
@@ -275,5 +275,6 @@ function BingoBoard() {
     </div>
   );
 }
+
 
 export default BingoBoard;
