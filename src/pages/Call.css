@@ -1,7 +1,7 @@
 .container {
   padding: 10px;
   /* 3D transparent blue frosted glass effect */
-  background: rgba(30, 60, 120, 0.4);
+  background: rgba(2, 46, 133, 0.4);
   backdrop-filter: blur(12px) saturate(150%);
   -webkit-backdrop-filter: blur(12px) saturate(150%);
   border-radius: 15px;
@@ -188,3 +188,4 @@
 .bingo-g { background: #2196F3; }
 
 .bingo-o { background: #9C27B0; }
+
