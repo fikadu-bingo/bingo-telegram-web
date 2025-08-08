@@ -16,7 +16,7 @@ function BingoBoard() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const id = "G" + Math.floor(1000 + Math.random() * 9000);ss
+    const id = "G" + Math.floor(1000 + Math.random() * 9000);
     setGameId(id);
   }, []);
 
