@@ -14,10 +14,10 @@
 
 .cartela-container {
   background: #fff8f0;
-  padding: 30px;
+  padding: 15px 20px;
   border-radius: 15px;
   box-shadow: 0 8px 15px rgba(255, 165, 0, 0.7);
-  max-width: 200px; /* same max width as call page cartela */
+  max-width: 170px; /* same max width as call page cartela */
   width: 100%;
   text-align: center;
 }
@@ -32,21 +32,21 @@
 .cartela-grid {
   display: grid;
   grid-template-columns: repeat(5, 30px);
-  gap: 3px;
+  gap: 4px;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .cartela-cell {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   background: #ffcc99;
   color: #663300;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 4px;
-  font-size: 10px;
+  border-radius: 6px;
+  font-size: 14px;
   font-weight: bold;
   user-select: none;
 }
