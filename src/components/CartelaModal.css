@@ -14,39 +14,43 @@
 
 .cartela-container {
   background: #fff8f0;
-  padding: 30px;
+  padding: 20px 25px; /* less vertical padding */
   border-radius: 15px;
   box-shadow: 0 8px 15px rgba(255, 165, 0, 0.7);
-  max-width: 350px;
+  max-width: 320px; /* a bit narrower */
   width: 100%;
   text-align: center;
 }
 
 .cartela-title {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   color: #e67300;
+  font-weight: 700;
+  font-size: 20px;
 }
 
 .cartela-grid {
   display: grid;
-  grid-template-columns: repeat(5, 50px);
+  grid-template-columns: repeat(5, 45px); /* slightly smaller cells */
   justify-content: center;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 6px; /* smaller gap to avoid excess whitespace */
+  margin-bottom: 15px;
 }
 
 .cartela-cell {
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 45px;
   background: #ffcc99;
   color: #663300;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 8px;
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 16px; /* smaller font for clarity */
+  font-weight: 700;
   user-select: none;
+  box-sizing: border-box; /* ensures padding/borders don't increase size */
+  line-height: 1;
 }
 
 .cartela-cell.selected {
@@ -60,7 +64,7 @@
   color: white;
   border: none;
   border-radius: 12px;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
   font-size: 16px;
   transition: background 0.3s;
