@@ -31,10 +31,10 @@
 
 .cartela-grid {
   display: grid;
-  grid-template-columns: repeat(5, 45px); /* slightly smaller cells */
+  grid-template-columns: repeat(5,30px); /* slightly smaller cells */
   justify-content: center;
-  gap: 10px; /* smaller gap to avoid excess whitespace */
-  margin-bottom: 15px;
+  gap: 3px; /* smaller gap to avoid excess whitespace */
+  margin-bottom: 5px;
 }
 
 .cartela-cell {
