@@ -14,15 +14,15 @@ function Call() {
     gameId,
     cartelaNumber,
     username: stateUsername,
-  } = location.state || {};
+  } = location.state ?? {};
 
- const username =
-  location.state?.username ||
-  localStorage.getItem("firstName") || "User";
-const [selectedStake, setSelectedStake] = useState(null);
+  const username =
+    location.state?.username ?? localStorage.getItem("firstName") ?? "User";
+
+  const [selectedStake, setSelectedStake] = useState(null);
   const [calledNumbers, setCalledNumbers] = useState([]);
   const [currentNumber, setCurrentNumber] = useState(null);
-  const [playerCard, setPlayerCard] = useState(card || []);
+  const [playerCard, setPlayerCard] = useState(card ?? []);
   const [countdown, setCountdown] = useState(50);
   const [gameStarted, setGameStarted] = useState(false);
   const [winner, setWinner] = useState(false);
@@ -146,24 +146,34 @@ const [selectedStake, setSelectedStake] = useState(null);
     }
 
     if (bingo && !winner) {
-  setWinner(true);
-  
-  const initialBalance = parseFloat(localStorage.getItem("balance") || "0");
-  const wallet = initialBalance + selectedStake ; // This is the in-game wallet
-  const prize = stake * players * 0.8;
+      setWinner(true);
 
-  const updatedBalance = wallet + prize;
+      const initialBalance = parseFloat(localStorage.getItem("balance") ?? "0");
+      const wallet = initialBalance + selectedStake; // This is the in-game wallet
+      const prize = stake * players * 0.8;const updatedBalance = wallet + prize;
 
-  localStorage.setItem("balance", updatedBalance);
-  setWinAmount(`Br${prize}`);
-  setShowPopup(true);
-  socket.emit("bingoWin", { gameId, userId: username });
-}
+      localStorage.setItem("balance", updatedBalance);
+      setWinAmount(`Br${prize}`);
+      setShowPopup(true);
+      socket.emit("bingoWin", { gameId, userId: username });
+    }
   }, [calledNumbers, playerCard, stake, players, winner, socket, gameId, username]);
+
   useEffect(() => {
     const totalWin = stake * players * 0.8;
     setWinAmount(`Br${totalWin}`);
   }, [players, stake]);
+
+  // --- New helper function to get marked cartela for WinModal ---
+  const getMarkedCartela = () => {
+    return playerCard.map((row, rowIndex) =>
+      row.map((num, colIndex) => {
+        const isCenter = rowIndex === 2 && colIndex === 2;
+        const marked = isCenter || calledNumbers.includes(num);
+        return { num, marked, isCenter };
+      })
+    );
+  };
 
   const lastThree = calledNumbers.slice(-3).reverse();
 
@@ -216,7 +226,7 @@ const [selectedStake, setSelectedStake] = useState(null);
             ))}
           </div>
 
-          <div className="current-number">{currentNumber || "--"}</div>
+          <div className="current-number">{currentNumber ?? "--"}</div>
           <h4 style={{ textAlign: "center" }}>Cartela: #{cartelaNumber}</h4>
 
           <div className="bingo-header-row">
@@ -262,7 +272,7 @@ const [selectedStake, setSelectedStake] = useState(null);
         <WinModal
           username={username}
           amount={winAmount}
-          cartela={playerCard}
+          cartela={getMarkedCartela()}  /* <-- pass marked cartela here */
           cartelaNumber={cartelaNumber}
           onPlayAgain={() => navigate("/")}
         />
