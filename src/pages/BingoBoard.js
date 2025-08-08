@@ -237,39 +237,41 @@ function BingoBoard() {
       )}
 
       {/* Modal: Cartela popup */}
-      {showCartelaModal && (
-        <div
-          className="cartela-overlay"
-          onClick={() => setShowCartelaModal(false)}
-        >
+   {showCartelaModal && (
+  <div
+    className="cartela-overlay"
+    onClick={() => setShowCartelaModal(false)}
+  >
+    <div
+      className="cartela-container"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <h3 className="cartela-title">
+        Your Bingo Card (Cartela: #{cartelaId})
+      </h3>
+
+      <div className="cartela-grid">
+        {bingoCard.flat().map((num, idx) => (
           <div
-            className="cartela-container"
-            onClick={(e) => e.stopPropagation()}
+            key={idx}
+            className={`cartela-cell ${
+              num === selectedNumber ? "selected" : ""
+            }`}
           >
-            <h3 className="cartela-title">
-              Your Bingo Card (Cartela: #{cartelaId})
-            </h3>
-
-            <div className="cartela-grid">
-              {bingoCard.flat().map((num, idx) => (
-                <div
-                  key={idx}
-                  className={`cartela-cell ${num === selectedNumber ? "selected" : ""}`}
-                >
-                  {num === selectedNumber ? "*" : num}
-                </div>
-              ))}
-            </div>
-
-            <button
-              className="cartela-close"
-              onClick={() => setShowCartelaModal(false)}
-            >
-              Close
-            </button>
+            {num === selectedNumber ? "*" : num}
           </div>
-        </div>
-      )}
+        ))}
+      </div>
+
+      <button
+        onClick={() => setShowCartelaModal(false)}
+        className="cartela-close"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
 }
