@@ -177,7 +177,7 @@ function BingoBoard() {
                     width: "40px",
                     height: "40px",
                     background: num === selectedNumber ? "#FF5722" : "#333",
-                    color: "white",
+                    color: "blue",
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
@@ -267,5 +267,6 @@ function BingoBoard() {
     </div>
   );
 }
+
 
 export default BingoBoard;
