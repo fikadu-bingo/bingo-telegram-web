@@ -13,10 +13,10 @@
 }
 
 .cartela-container {
-  background: #fff8f0;
+  background: #a4e0fa;
   padding: 15px 20px;
   border-radius: 15px;
-  box-shadow: 0 8px 15px rgba(255, 165, 0, 0.7);
+  box-shadow: 0 8px 15px rgb(252, 252, 251);
   max-width: 200px; /* same max width as call page cartela */
   width: 100%;
   text-align: center;
@@ -24,7 +24,7 @@
 
 .cartela-title {
   margin-bottom: 10px;
-  color: #e67300;
+  color: #151514;
   font-weight: bold;
   font-size: 16px;
 }
@@ -43,8 +43,8 @@
   width: 25px;
   height: 25px;
   /* Remove padding */
-  background: #ffcc99;
-  color: #663300;
+  background: #f4f3f2;
+  color: #0c0c0c;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -55,7 +55,7 @@
 }
 
 .cartela-cell.selected {
-  background: #e67300;
+  background: #1f0439;
   color: white;
 }
 
@@ -75,8 +75,3 @@
   background: #cc6600;
 
 }
-
-
-
-
-
