@@ -16,10 +16,10 @@ function Call() {
     username: stateUsername,
   } = location.state ?? {};
 
-  const username =
-    location.state?.username ?? localStorage.getItem("firstName") ?? "User";
-
-  const [selectedStake, setSelectedStake] = useState(null);
+ const username =
+  location.state?.username 
+  localStorage.getItem("firstName") || "User";
+const [selectedStake, setSelectedStake] = useState(null);
   const [calledNumbers, setCalledNumbers] = useState([]);
   const [currentNumber, setCurrentNumber] = useState(null);
   const [playerCard, setPlayerCard] = useState(card ?? []);
@@ -143,37 +143,25 @@ function Call() {
       bingo = [0, 1, 2, 3, 4].every((i) =>
         isMarked(playerCard[i]?.[4 - i], i, 4 - i)
       );
-    }
+    }if (bingo && !winner) {
+  setWinner(true);
+  
+  const initialBalance = parseFloat(localStorage.getItem("balance") ?? "0");
+  const wallet = initialBalance + selectedStake ; // This is the in-game wallet
+  const prize = stake * players * 0.8;
 
-    if (bingo && !winner) {
-      setWinner(true);
+  const updatedBalance = wallet + prize;
 
-      const initialBalance = parseFloat(localStorage.getItem("balance") ?? "0");
-      const wallet = initialBalance + selectedStake; // This is the in-game wallet
-      const prize = stake * players * 0.8;const updatedBalance = wallet + prize;
-
-      localStorage.setItem("balance", updatedBalance);
-      setWinAmount(`Br${prize}`);
-      setShowPopup(true);
-      socket.emit("bingoWin", { gameId, userId: username });
-    }
+  localStorage.setItem("balance", updatedBalance);
+  setWinAmount(`Br${prize}`);
+  setShowPopup(true);
+  socket.emit("bingoWin", { gameId, userId: username });
+}
   }, [calledNumbers, playerCard, stake, players, winner, socket, gameId, username]);
-
   useEffect(() => {
     const totalWin = stake * players * 0.8;
     setWinAmount(`Br${totalWin}`);
   }, [players, stake]);
-
-  // --- New helper function to get marked cartela for WinModal ---
-  const getMarkedCartela = () => {
-    return playerCard.map((row, rowIndex) =>
-      row.map((num, colIndex) => {
-        const isCenter = rowIndex === 2 && colIndex === 2;
-        const marked = isCenter || calledNumbers.includes(num);
-        return { num, marked, isCenter };
-      })
-    );
-  };
 
   const lastThree = calledNumbers.slice(-3).reverse();
 
@@ -226,7 +214,7 @@ function Call() {
             ))}
           </div>
 
-          <div className="current-number">{currentNumber ?? "--"}</div>
+          <div className="current-number">{currentNumber ??  "--"}</div>
           <h4 style={{ textAlign: "center" }}>Cartela: #{cartelaNumber}</h4>
 
           <div className="bingo-header-row">
@@ -272,7 +260,7 @@ function Call() {
         <WinModal
           username={username}
           amount={winAmount}
-          cartela={getMarkedCartela()}  /* <-- pass marked cartela here */
+          cartela={playerCard}
           cartelaNumber={cartelaNumber}
           onPlayAgain={() => navigate("/")}
         />
