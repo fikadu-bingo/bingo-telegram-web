@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
-import "../components/CartelaModal.css"; // Import the separate CSS for the cartela popup
+import "../components/CartelaModal.css";  // <-- Make sure this path is correct
 
 function BingoBoard() {
   const location = useLocation();
@@ -161,42 +161,7 @@ function BingoBoard() {
           ))}
         </div>
 
-        {bingoCard.length > 0 && (
-          <>
-            <h4 style={{ marginTop: "20px", color: "#4CAF50" }}>
-              Your Bingo Card (Cartela: #{cartelaId})
-            </h4>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(5, 40px)",
-                justifyContent: "center",
-                gap: "5px",
-                margin: "10px auto",
-              }}
-            >
-              {bingoCard.flat().map((num, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    background: num === selectedNumber ? "#FF5722" : "#333",
-                    color: "white",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: "6px",
-                    fontSize: "13px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {num === selectedNumber ? "*" : num}
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+        {/* Removed the below card display */}
 
         <button
           onClick={handleStartGame}
@@ -218,7 +183,7 @@ function BingoBoard() {
         </button>
       </div>
 
-      {/* "Please select a ticket" modal */}
+      {/* Modal: Please select a ticket */}
       {showModal && (
         <div
           style={{
@@ -269,7 +234,9 @@ function BingoBoard() {
             </button>
           </div>
         </div>
-      )}{/* Cartela modal popup using external CSS */}
+      )}
+
+      {/* Modal: Cartela popup */}
       {showCartelaModal && (
         <div
           className="cartela-overlay"
@@ -282,18 +249,18 @@ function BingoBoard() {
             <h3 className="cartela-title">
               Your Bingo Card (Cartela: #{cartelaId})
             </h3>
+
             <div className="cartela-grid">
               {bingoCard.flat().map((num, idx) => (
                 <div
                   key={idx}
-                  className={`cartela-cell ${
-                    num === selectedNumber ? "selected" : ""
-                  }`}
+                  className={`cartela-cell ${num === selectedNumber ? "selected" : ""}`}
                 >
                   {num === selectedNumber ? "*" : num}
                 </div>
               ))}
             </div>
+
             <button
               className="cartela-close"
               onClick={() => setShowCartelaModal(false)}
