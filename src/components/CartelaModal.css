@@ -4,7 +4,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(173, 97, 244, 0.85); /* light orange backdrop */
+  background: rgba(255, 165, 0, 0.85); /* light orange backdrop */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13,44 +13,42 @@
 }
 
 .cartela-container {
-  background: #f91414;
-  padding: 20px 25px; /* less vertical padding */
+  background: #fff8f0;
+  padding: 30px;
   border-radius: 15px;
   box-shadow: 0 8px 15px rgba(255, 165, 0, 0.7);
-  max-width: 320px; /* a bit narrower */
+  max-width: 200px; /* same max width as call page cartela */
   width: 100%;
   text-align: center;
 }
 
 .cartela-title {
-  margin-bottom: 15px;
-  color: #f5efe9;
-  font-weight: 700;
+  margin-bottom: 10px;
+  color: #e67300;
+  font-weight: bold;
   font-size: 16px;
 }
 
 .cartela-grid {
   display: grid;
-  grid-template-columns: repeat(5,30px); /* slightly smaller cells */
+  grid-template-columns: repeat(5, 30px);
+  gap: 3px;
   justify-content: center;
-  gap: 3px; /* smaller gap to avoid excess whitespace */
-  margin-bottom: 5px;
+  margin-bottom: 20px;
 }
 
 .cartela-cell {
-  width: 55px;
-  height: 45px;
-  background: #46028a;
-  color: #ebe1d8;
+  width: 30px;
+  height: 30px;
+  background: #ffcc99;
+  color: #663300;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 8px;
-  font-size: 16px; /* smaller font for clarity */
-  font-weight: 700;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: bold;
   user-select: none;
-  box-sizing: border-box; /* ensures padding/borders don't increase size */
-  line-height: 1;
 }
 
 .cartela-cell.selected {
@@ -59,14 +57,14 @@
 }
 
 .cartela-close {
-  padding: 10px 25px;
+  padding: 8px 20px;
   background: #e67300;
   color: white;
   border: none;
-  border-radius: 12px;
-  font-weight: 700;
+  border-radius: 10px;
+  font-weight: bold;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   transition: background 0.3s;
 }
 
