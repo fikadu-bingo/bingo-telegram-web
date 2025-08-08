@@ -1,7 +1,7 @@
 import React from "react";
 import "./WinModal.css";
 
-function WinModal({ username, amount, cartela, onPlayAgain, cartelaNumber }) {
+function WinModal({ username, amount, cartela, markedNumbers = [], onPlayAgain, cartelaNumber }) {
   return (
     <div className="win-modal-overlay">
       <div className="win-modal">
@@ -27,10 +27,11 @@ function WinModal({ username, amount, cartela, onPlayAgain, cartelaNumber }) {
             {cartela.map((row, rowIndex) =>
               row.map((num, colIndex) => {
                 const isCenter = rowIndex === 2 && colIndex === 2;
+                const isMarked = isCenter || markedNumbers.includes(num);
                 return (
                   <div
                     key={`${rowIndex}-${colIndex}`}
-                    className="cartela-number"
+                    className={`cartela-number ${isMarked ? "marked" : "unmarked"}`}
                   >
                     {isCenter ? "*" : num}
                   </div>
