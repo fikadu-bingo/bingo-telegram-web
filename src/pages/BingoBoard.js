@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
+import "./CartelaModal.css"; // Import the separate CSS for the cartela popup
 
 function BingoBoard() {
   const location = useLocation();
@@ -14,8 +15,6 @@ function BingoBoard() {
   const [bingoCard, setBingoCard] = useState([]);
   const [cartelaId, setCartelaId] = useState("");
   const [showModal, setShowModal] = useState(false);
-  
-  // NEW: State to control cartela popup visibility
   const [showCartelaModal, setShowCartelaModal] = useState(false);
 
   useEffect(() => {
@@ -47,8 +46,6 @@ function BingoBoard() {
     setSelectedNumber(number);
     setCartelaId(number);
     generateCard(number);
-
-    // Show cartela modal on ticket selection
     setShowCartelaModal(true);
   };
 
@@ -139,8 +136,7 @@ function BingoBoard() {
             display: "grid",
             gridTemplateColumns: "repeat(8, 1fr)",
             gap: "6px",
-            margin: "10px 0",
-            background: "linear-gradient(135deg, #6a5acd, #9370db)",
+            margin: "10px 0",background: "linear-gradient(135deg, #6a5acd, #9370db)",
             padding: "15px",
             borderRadius: "12px",
           }}
@@ -222,7 +218,7 @@ function BingoBoard() {
         </button>
       </div>
 
-      {/* Existing "please select a ticket" modal */}
+      {/* "Please select a ticket" modal */}
       {showModal && (
         <div
           style={{
@@ -273,87 +269,34 @@ function BingoBoard() {
             </button>
           </div>
         </div>
-      )}
-      {/* NEW: Cartela modal popup */}
+      )}{/* Cartela modal popup using external CSS */}
       {showCartelaModal && (
         <div
-          onClick={() => setShowCartelaModal(false)} // close modal on background click
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(255, 165, 0, 0.85)", // light orange with some transparency
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 10000,
-            padding: "20px",
-          }}
+          className="cartela-overlay"
+          onClick={() => setShowCartelaModal(false)}
         >
           <div
-            onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside modal content
-            style={{
-              background: "#fff8f0",
-              padding: "30px",
-              borderRadius: "15px",
-              boxShadow: "0 8px 15px rgba(255, 165, 0, 0.7)",
-              maxWidth: "350px",
-              width: "100%",
-              textAlign: "center",
-            }}
+            className="cartela-container"
+            onClick={(e) => e.stopPropagation()}
           >
-            <h3 style={{ marginBottom: "20px", color: "#e67300" }}>
+            <h3 className="cartela-title">
               Your Bingo Card (Cartela: #{cartelaId})
             </h3>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(5, 50px)",
-                justifyContent: "center",
-                gap: "8px",
-                marginBottom: "20px",
-              }}
-            >
+            <div className="cartela-grid">
               {bingoCard.flat().map((num, idx) => (
                 <div
                   key={idx}
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    background: num === selectedNumber ? "#e67300" : "#ffcc99",
-                    color: num === selectedNumber ? "white" : "#663300",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: "8px",
-                    fontSize: "18px",
-                    fontWeight: "bold",
-                    userSelect: "none",
-                  }}
+                  className={`cartela-cell ${
+                    num === selectedNumber ? "selected" : ""
+                  }`}
                 >
                   {num === selectedNumber ? "*" : num}
                 </div>
               ))}
             </div>
-
             <button
+              className="cartela-close"
               onClick={() => setShowCartelaModal(false)}
-              style={{
-                padding: "10px 25px",
-                background: "#e67300",
-                color: "white",
-                border: "none",
-                borderRadius: "12px",
-                fontWeight: "bold",
-                cursor: "pointer",
-                fontSize: "16px",
-                transition: "background 0.3s",
-              }}
-              onMouseEnter={(e) => (e.target.style.background = "#fb1515ff")}
-              onMouseLeave={(e) => (e.target.style.background = "#f41111ff")}
             >
               Close
             </button>
