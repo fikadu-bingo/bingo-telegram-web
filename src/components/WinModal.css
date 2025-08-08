@@ -87,25 +87,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: normal;
+  font-weight: bold;
   border-radius: 5px;
   font-size: 16px;
   text-align: center;
   margin-top: 8px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Highlight marked numbers */
 .cartela-number.marked {
-  background-color: #00C9FF; /* bright blue for marked numbers */
-  color: white;
-  font-weight: bold;
-  box-shadow: 0 0 8px #00C9FF;
+  background-color: #00ffc8;
+  color: #000;
+  box-shadow: 0 0 8px #00ffc8;
 }
 
-.cartela-number.unmarked {
-  background-color: #1e1e3f; /* existing background */
-  color: #ccc;
-  font-weight: normal;
-  box-shadow: none;
+/* Highlight the center cell (usually a free space *) */
+.cartela-number.center {
+  background-color: gold;
+  color: #000;
+  font-weight: bolder;
+  box-shadow: 0 0 10px gold;
 }
 
 .no-card-text {
