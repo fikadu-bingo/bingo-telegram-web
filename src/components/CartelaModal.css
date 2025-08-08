@@ -1,0 +1,71 @@
+.cartela-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 165, 0, 0.85); /* light orange backdrop */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.cartela-container {
+  background: #fff8f0;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 15px rgba(255, 165, 0, 0.7);
+  max-width: 350px;
+  width: 100%;
+  text-align: center;
+}
+
+.cartela-title {
+  margin-bottom: 20px;
+  color: #e67300;
+}
+
+.cartela-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 50px);
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.cartela-cell {
+  width: 50px;
+  height: 50px;
+  background: #ffcc99;
+  color: #663300;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  user-select: none;
+}
+
+.cartela-cell.selected {
+  background: #e67300;
+  color: white;
+}
+
+.cartela-close {
+  padding: 10px 25px;
+  background: #e67300;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s;
+}
+
+.cartela-close:hover {
+  background: #cc6600;
+}
