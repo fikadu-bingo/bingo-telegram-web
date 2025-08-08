@@ -17,7 +17,7 @@
   padding: 15px 20px;
   border-radius: 15px;
   box-shadow: 0 8px 15px rgba(255, 165, 0, 0.7);
-  max-width: 200px; /* same max width as call page cartela */
+  max-width: 360px; /* same max width as call page cartela */
   width: 100%;
   text-align: center;
 }
@@ -71,4 +71,5 @@
 
 .cartela-close:hover {
   background: #cc6600;
+
 }
