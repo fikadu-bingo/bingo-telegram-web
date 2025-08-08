@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
-import "./CartelaModal.css"; // Import the separate CSS for the cartela popup
+import "../components/CartelaModal.css"; // Import the separate CSS for the cartela popup
 
 function BingoBoard() {
   const location = useLocation();
