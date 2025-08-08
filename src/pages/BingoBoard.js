@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import logo from "../assets/logo.png"; // adjust if needed
+import logo from "../assets/logo.png";
 
 function BingoBoard() {
   const location = useLocation();
@@ -8,7 +8,7 @@ function BingoBoard() {
   const initialBalance = parseFloat(localStorage.getItem("balance") || "200");
   const stake = location.state?.stake ?? 0;
 
-  const [wallet, setWallet] = useState(initialBalance-stake);
+  const [wallet, setWallet] = useState(initialBalance - stake);
   const [gameId, setGameId] = useState("");
   const [selectedNumber, setSelectedNumber] = useState(null);
   const [bingoCard, setBingoCard] = useState([]);
@@ -16,12 +16,12 @@ function BingoBoard() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const id = "G" + Math.floor(1000 + Math.random() * 9000);
+    const id = "G" + Math.floor(1000 + Math.random() * 9000);ss
     setGameId(id);
   }, []);
 
   const generateCard = (selected) => {
-    let numbers = Array.from({ length: 100 }, (_, i) => i + 1);
+    let numbers = Array.from({ length: 200 }, (_, i) => i + 1); // now 1-200
     numbers = numbers.filter((num) => num !== selected);
 
     for (let i = numbers.length - 1; i > 0; i--) {
@@ -42,7 +42,7 @@ function BingoBoard() {
 
   const handleNumberClick = (number) => {
     setSelectedNumber(number);
-    setCartelaId(number); // store only number
+    setCartelaId(number);
     generateCard(number);
   };
 
@@ -53,23 +53,22 @@ function BingoBoard() {
     }
 
     const initialBalance = parseFloat(localStorage.getItem("balance") || "0");
-const newWallet = initialBalance - stake;
+    const newWallet = initialBalance - stake;
 
-if (newWallet < 0) {
-  alert("Not enough balance!");
-  return;
-}
+    if (newWallet < 0) {
+      alert("Not enough balance!");
+      return;
+    }
 
-localStorage.setItem("balance", newWallet);
-setWallet(newWallet);
+    localStorage.setItem("balance", newWallet);
+    setWallet(newWallet);
 
     navigate("/call", {
       state: {
         card: bingoCard,
         stake: stake,
-       // wallet: wallet,
         gameId: gameId,
-        cartelaNumber: cartelaId, // pass number only
+        cartelaNumber: cartelaId,
       },
     });
   };
@@ -78,7 +77,7 @@ setWallet(newWallet);
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #FFDEE9, #B5FFFC)",
+        background: "linear-gradient(135deg, #1e3c72, #2a5298)", // blue gradient
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-start",
@@ -132,18 +131,19 @@ setWallet(newWallet);
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)",
+            gridTemplateColumns: "repeat(8, 1fr)", // 8 columns
             gap: "6px",
             margin: "10px 0",
           }}
         >
-          {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => (
+          {Array.from({ length: 200 }, (_, i) => i + 1).map((num) => (
             <button
               key={num}
               onClick={() => handleNumberClick(num)}
               style={{
                 padding: "8px",
-                background: selectedNumber === num ? "#00C9FF" : "#333",color: "white",
+                background: selectedNumber === num ? "#00C9FF" : "#333",
+                color: "white",
                 border: "none",
                 borderRadius: "6px",
                 fontSize: "12px",
@@ -213,7 +213,6 @@ setWallet(newWallet);
         </button>
       </div>
 
-      {/* Modal */}
       {showModal && (
         <div
           style={{
