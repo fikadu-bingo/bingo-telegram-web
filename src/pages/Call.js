@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import logo from "../assets/logo.png";
@@ -16,10 +16,10 @@ function Call() {
     username: stateUsername,
   } = location.state ?? {};
 
- const username =
-  location.state?.username 
-  localStorage.getItem("firstName") || "User";
-const [selectedStake, setSelectedStake] = useState(null);
+  const username =
+    location.state?.username ?? localStorage.getItem("firstName") ?? "User";
+
+  const [selectedStake, setSelectedStake] = useState(null);
   const [calledNumbers, setCalledNumbers] = useState([]);
   const [currentNumber, setCurrentNumber] = useState(null);
   const [playerCard, setPlayerCard] = useState(card ?? []);
@@ -30,7 +30,33 @@ const [selectedStake, setSelectedStake] = useState(null);
   const [players, setPlayers] = useState(1);
   const [winAmount, setWinAmount] = useState("Br0");
 
-  const socket = io("http://localhost:5000");
+  // Use useRef to create socket once
+  const socket = useRef(null);
+
+  useEffect(() => {
+    socket.current = io("http://localhost:5000");
+
+    if (gameId) {
+      socket.current.emit("joinGame", gameId);
+    }
+
+    socket.current.on("numberCalled", (number) => {
+      setCurrentNumber(number);
+      setCalledNumbers((prev) => [...prev, number]);
+    });
+
+    socket.current.on("playerJoined", () => {
+      setPlayers((prev) => prev + 1);
+    });
+
+    socket.current.on("gameWon", ({ userId }) => {
+      console.log("Game won by:", userId);
+    });
+
+    return () => {
+      socket.current.disconnect();
+    };
+  }, [gameId]);
 
   useEffect(() => {
     if (!card) {
@@ -38,37 +64,6 @@ const [selectedStake, setSelectedStake] = useState(null);
       navigate("/");
     }
   }, [card, navigate]);
-
-  useEffect(() => {
-    if (gameId) {
-      socket.emit("joinGame", gameId);
-    }
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [gameId]);
-
-  useEffect(() => {
-    socket.on("numberCalled", (number) => {
-      setCurrentNumber(number);
-      setCalledNumbers((prev) => [...prev, number]);
-    });
-
-    socket.on("playerJoined", () => {
-      setPlayers((prev) => prev + 1);
-    });
-
-    socket.on("gameWon", ({ userId }) => {
-      console.log("Game won by:", userId);
-    });
-
-    return () => {
-      socket.off("numberCalled");
-      socket.off("playerJoined");
-      socket.off("gameWon");
-    };
-  }, [socket]);
 
   useEffect(() => {
     if (countdown > 0 && !gameStarted) {
@@ -93,7 +88,7 @@ const [selectedStake, setSelectedStake] = useState(null);
             newNumber = Math.floor(Math.random() * 100) + 1;
           } while (prev.includes(newNumber));
 
-          socket.emit("callNumber", { gameId, number: newNumber });
+          socket.current.emit("callNumber", { gameId, number: newNumber });
           setCurrentNumber(newNumber);
           return [...prev, newNumber];
         });
@@ -102,7 +97,7 @@ const [selectedStake, setSelectedStake] = useState(null);
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [gameStarted, winner, socket, gameId]);
+  }, [gameStarted, winner, gameId]);
 
   useEffect(() => {
     const isMarked = (num, row, col) => {
@@ -143,25 +138,38 @@ const [selectedStake, setSelectedStake] = useState(null);
       bingo = [0, 1, 2, 3, 4].every((i) =>
         isMarked(playerCard[i]?.[4 - i], i, 4 - i)
       );
-    }if (bingo && !winner) {
-  setWinner(true);
-  
-  const initialBalance = parseFloat(localStorage.getItem("balance") ?? "0");
-  const wallet = initialBalance + selectedStake ; // This is the in-game wallet
-  const prize = stake * players * 0.8;
+    }
 
-  const updatedBalance = wallet + prize;
+    if (bingo && !winner) {
+      setWinner(true);
 
-  localStorage.setItem("balance", updatedBalance);
-  setWinAmount(`Br${prize}`);
-  setShowPopup(true);
-  socket.emit("bingoWin", { gameId, userId: username });
-}
-  }, [calledNumbers, playerCard, stake, players, winner, socket, gameId, username]);
+      const initialBalance = parseFloat(localStorage.getItem("balance") ?? "0");
+      const wallet = initialBalance + (selectedStake ?? 0); // Avoid adding null
+      const prize = stake * players * 0.8;
+
+      const updatedBalance = wallet + prize;
+      localStorage.setItem("balance", updatedBalance);
+      setWinAmount(`Br${prize}`);
+      setShowPopup(true);
+      socket.current.emit("bingoWin", { gameId, userId: username });
+    }
+  }, [calledNumbers, playerCard, stake, players, winner, gameId, username, selectedStake]);
+
   useEffect(() => {
     const totalWin = stake * players * 0.8;
     setWinAmount(`Br${totalWin}`);
   }, [players, stake]);
+
+  // Helper to get marked cartela for WinModal
+  const getMarkedCartela = () => {
+    return playerCard.map((row, rowIndex) =>
+      row.map((num, colIndex) => {
+        const isCenter = rowIndex === 2 && colIndex === 2;
+        const marked = isCenter || calledNumbers.includes(num);
+        return { num, marked, isCenter };
+      })
+    );
+  };
 
   const lastThree = calledNumbers.slice(-3).reverse();
 
@@ -214,7 +222,7 @@ const [selectedStake, setSelectedStake] = useState(null);
             ))}
           </div>
 
-          <div className="current-number">{currentNumber ??  "--"}</div>
+          <div className="current-number">{currentNumber ?? "--"}</div>
           <h4 style={{ textAlign: "center" }}>Cartela: #{cartelaNumber}</h4>
 
           <div className="bingo-header-row">
@@ -260,7 +268,7 @@ const [selectedStake, setSelectedStake] = useState(null);
         <WinModal
           username={username}
           amount={winAmount}
-          cartela={playerCard}
+          cartela={getMarkedCartela()} // pass marked cartela
           cartelaNumber={cartelaNumber}
           onPlayAgain={() => navigate("/")}
         />
