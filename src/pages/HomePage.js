@@ -94,26 +94,22 @@ function HomePage() {
       }
     });
 
-    socket.on("winAmountUpdate", (payload) => {
+    socket.on("winAmountUpdate", (winAmount) => {
       const gameId = joinedGameIdRef.current;
-      if (!gameId || !payload) return;
+      if (!gameId || winAmount === undefined) return;
       const amount = parseInt(String(gameId).replace(/\D/g, ""), 10);
       if (!isNaN(amount)) {
         setStakeInfo((prev) => ({
           ...prev,
-          [amount]: { ...(prev[amount] || {}), potentialWin: payload.winAmount },
+          [amount]: { ...(prev[amount] || {}), potentialWin: winAmount },
         }));
       }
     });
 
-    socket.on("ticketNumbersUpdated", () => {});
-    socket.on("numberCalled", () => {});
-
     return () => {
       try {
         const telegram_id = localStorage.getItem("telegram_id");
-        if (joinedGameIdRef.current && socketRef.current && telegram_id) {
-          socketRef.current.emit("leaveGame", { gameId: joinedGameIdRef.current, userId: telegram_id });
+        if (joinedGameIdRef.current && socketRef.current && telegram_id) {socketRef.current.emit("leaveGame", { gameId: joinedGameIdRef.current, userId: telegram_id });
         }
       } catch (err) {
         console.warn("Error leaving game on unmount:", err);
@@ -237,9 +233,9 @@ function HomePage() {
     }));
   };
 
-  const leaveCurrentStake = () => {const socket = socketRef.current;
-    const userId = localStorage.getItem("telegram_id") || telegramId;
-    if (socket && joinedGameIdRef.current && userId) {
+  const leaveCurrentStake = () => {
+    const socket = socketRef.current;
+    const userId = localStorage.getItem("telegram_id") || telegramId;if (socket && joinedGameIdRef.current && userId) {
       socket.emit("leaveGame", { gameId: joinedGameIdRef.current, userId });
       setJoinedGameId(null);
       joinedGameIdRef.current = null;
@@ -361,6 +357,9 @@ function HomePage() {
           ? `${info.potentialWin} Br`
           : "...";
 
+        // Disable join button if countdown running (timeLeft > 0)
+        const countdownActive = typeof info.timeLeft === "number" && info.timeLeft > 0;
+
         return (
           <div
             key={amount}
@@ -371,8 +370,8 @@ function HomePage() {
               background: activeButton === amount ? "#0E0E2C" : "#22224A",
               border:
                 activeButton === amount
-                  ? "1px solid orange"
-                  : "1px solid transparent",borderRadius: "10px",
+                  ? "1px solid orange": "1px solid transparent",
+              borderRadius: "10px",
               padding: "10px",
               margin: "8px 0",
             }}
@@ -406,14 +405,16 @@ function HomePage() {
               ) : (
                 <button
                   onClick={() => handleStakeSelect(amount)}
+                  disabled={countdownActive}
+                  title={countdownActive ? "Game already started for this stake" : ""}
                   style={{
-                    background: "#00BFFF",
+                    background: countdownActive ? "#555" : "#00BFFF",
                     color: "white",
                     border: "none",
                     padding: "5px 10px",
                     borderRadius: "8px",
                     fontWeight: "bold",
-                    cursor: "pointer",
+                    cursor: countdownActive ? "not-allowed" : "pointer",
                   }}
                 >
                   Start
@@ -499,9 +500,7 @@ function HomePage() {
             onDeposit={handleDeposit}
           />
         </div>
-      )}
-
-      {showModal === "cashout" && (
+      )}{showModal === "cashout" && (
         <div style={overlayStyle}>
           <CashOutModal
             onClose={() => setShowModal(null)}
@@ -509,6 +508,7 @@ function HomePage() {
           />
         </div>
       )}
+
       {showPromoModal && (
         <div style={overlayStyle}>
           <PromoCodeModal
@@ -553,8 +553,7 @@ const overlayStyle = {
   backgroundColor: "rgba(0, 0, 0, 0.7)",
   display: "flex",
   justifyContent: "center",
-  alignItems: "center",
-  zIndex: 1000,
+  Index: 1000,
 };
 
 export default HomePage;
