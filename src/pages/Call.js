@@ -22,14 +22,13 @@ function Call() {
   const [calledNumbers, setCalledNumbers] = useState([]);
   const [currentNumber, setCurrentNumber] = useState(null);
   const [playerCard, setPlayerCard] = useState(card ?? []);
-  const [countdown, setCountdown] = useState(50);
+  const [countdown, setCountdown] = useState(null); // Will be controlled by server
   const [gameStarted, setGameStarted] = useState(false);
   const [winner, setWinner] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [players, setPlayers] = useState(1);
   const [winAmount, setWinAmount] = useState("Br0");
 
-  // Use useRef to create socket once
   const socket = useRef(null);
 
   useEffect(() => {
@@ -40,6 +39,13 @@ function Call() {
     if (gameId && username) {
       socket.current.emit("joinGame", { gameId, userId: username });
     }
+
+    socket.current.on("countdownUpdate", (time) => {
+      setCountdown(time);
+      if (time === 0) {
+        setGameStarted(true);
+      }
+    });
 
     socket.current.on("numberCalled", (number) => {
       setCurrentNumber(number);
@@ -84,15 +90,7 @@ function Call() {
     }
   }, [card, navigate]);
 
-  useEffect(() => {
-    if (countdown > 0 && !gameStarted) {
-      const timer = setTimeout(() => setCountdown((prev) => prev - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [countdown, gameStarted]);
-
-  // Calling numbers logic handled by server; this client just listens and displays
-
+  // Bingo win check logic
   useEffect(() => {
     const isMarked = (num, row, col) => {
       if (row === 2 && col === 2) return true;
@@ -149,14 +147,13 @@ function Call() {
       setShowPopup(true);
       socket.current.emit("bingoWin", { gameId, userId: username });
     }
-  }, [calledNumbers, playerCard, stake, players, winner, gameId, username]);
-  // Update win amount if players or stake changes
+  }, [calledNumbers, playerCard, stake, players, winner, gameId, username]);// Update win amount on players or stake changes
   useEffect(() => {
     const totalWin = stake * players * 0.8;
     setWinAmount(`Br${totalWin}`);
   }, [players, stake]);
 
-  // Helper to get marked cartela for WinModal
+  // Prepare marked cartela for WinModal
   const getMarkedCartela = () => {
     return playerCard.map((row, rowIndex) =>
       row.map((num, colIndex) => {
@@ -205,10 +202,10 @@ function Call() {
         </div>
 
         <div className="cartela">
-          {countdown > 0 && !gameStarted && (
+          {countdown !== null && !gameStarted && (
             <div className="circle">
               <div style={{ fontSize: "12px" }}>Wait</div>
-              <div>{countdown}</div>
+              <div>{countdown > 0 ? countdown : "0"}</div>
             </div>
           )}
 
@@ -264,7 +261,7 @@ function Call() {
         <WinModal
           username={username}
           amount={winAmount}
-          cartela={getMarkedCartela()} // pass marked cartela
+          cartela={getMarkedCartela()}
           cartelaNumber={cartelaNumber}
           onPlayAgain={() => navigate("/")}
         />
