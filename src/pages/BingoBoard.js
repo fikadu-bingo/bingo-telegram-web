@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
-import "../components/CartelaModal.css";  // <-- Make sure this path is correct
+import io from "socket.io-client";
+import "../components/CartelaModal.css";
+
+const SOCKET_SERVER_URL = "https://bingo-server-rw7p.onrender.com"; // Adjust if different
 
 function BingoBoard() {
   const location = useLocation();
@@ -17,10 +20,37 @@ function BingoBoard() {
   const [showModal, setShowModal] = useState(false);
   const [showCartelaModal, setShowCartelaModal] = useState(false);
 
+  // Store all players' ticket selections: { userId: [numbers...] }
+  const [allTicketSelections, setAllTicketSelections] = useState({});
+
+  const socketRef = useRef();
+
   useEffect(() => {
-    const id = "G" + Math.floor(1000 + Math.random() * 9000);
+    // Generate a unique game ID (for demo - in prod probably from server or passed in)
+    const id = "stake-" + stake; // Use stake as gameId to sync users in same stake group
     setGameId(id);
-  }, []);
+
+    // Setup socket connection
+    socketRef.current = io(SOCKET_SERVER_URL, {
+      transports: ["websocket"],
+    });
+
+    // On connect, join game room with userId
+    const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
+    const userId = telegramUser?.id || "anonymous";
+
+    socketRef.current.emit("joinGame", { gameId: id, userId });
+
+    // Listen for ticket number updates
+    socketRef.current.on("ticketNumbersUpdated", (tickets) => {
+      setAllTicketSelections(tickets);
+    });
+
+    // Clean up on unmount
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, [stake]);
 
   const generateCard = (selected) => {
     let numbers = Array.from({ length: 100 }, (_, i) => i + 1);
@@ -47,6 +77,16 @@ function BingoBoard() {
     setCartelaId(number);
     generateCard(number);
     setShowCartelaModal(true);
+
+    // Emit selection to server for realtime update
+    const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
+    const userId = telegramUser?.id || "anonymous";
+
+    socketRef.current.emit("selectTicketNumber", {
+      gameId,
+      userId,
+      number,
+    });
   };
 
   const handleStartGame = () => {
@@ -76,7 +116,17 @@ function BingoBoard() {
     });
   };
 
-  return (
+  // Helper: Check if a number is selected by any user
+  // returns { isSelected: boolean, selectedBy: userId[] }
+  const isNumberSelected = (num) => {
+    const selectedBy = [];
+    for (const [userId, numbers] of Object.entries(allTicketSelections)) {
+      if (numbers.includes(num)) {
+        selectedBy.push(userId);
+      }
+    }
+    return { isSelected: selectedBy.length > 0, selectedBy };
+  };return (
     <div
       style={{
         minHeight: "100vh",
@@ -136,32 +186,52 @@ function BingoBoard() {
             display: "grid",
             gridTemplateColumns: "repeat(8, 1fr)",
             gap: "6px",
-            margin: "10px 0",background: "linear-gradient(135deg, #6a5acd, #9370db)",
+            margin: "10px 0",
+            background: "linear-gradient(135deg, #6a5acd, #9370db)",
             padding: "15px",
             borderRadius: "12px",
           }}
         >
-          {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => (
-            <button
-              key={num}
-              onClick={() => handleNumberClick(num)}
-              style={{
-                padding: "8px",
-                background: selectedNumber === num ? "#00C9FF" : "#333",
-                color: "white",
-                border: "none",
-                borderRadius: "6px",
-                fontSize: "12px",
-                cursor: "pointer",
-                transition: "all 0.2s ease-in-out",
-              }}
-            >
-              {num}
-            </button>
-          ))}
-        </div>
+          {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => {
+            const { isSelected, selectedBy } = isNumberSelected(num);
+            // Highlight if selected by current user or others (different style)
+            const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
+            const currentUserId = telegramUser?.id || "anonymous";
 
-        {/* Removed the below card display */}
+            const isCurrentUserSelected = selectedBy.includes(currentUserId);
+
+            return (
+              <button
+                key={num}
+                onClick={() => handleNumberClick(num)}
+                disabled={isSelected && !isCurrentUserSelected}
+                style={{
+                  padding: "8px",
+                  background: isCurrentUserSelected
+                    ? "#00C9FF"
+                    : isSelected
+                    ? "#FF5722" // different color for others' selection
+                    : "#333",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontSize: "12px",
+                  cursor: isSelected && !isCurrentUserSelected ? "not-allowed" : "pointer",
+                  transition: "all 0.2s ease-in-out",
+                }}
+                title={
+                  isSelected
+                    ? selectedBy.length > 1
+                      ? `Selected by multiple players`
+                      : `Selected by another player`
+                    : "Click to select"
+                }
+              >
+                {num}
+              </button>
+            );
+          })}
+        </div>
 
         <button
           onClick={handleStartGame}
@@ -181,9 +251,7 @@ function BingoBoard() {
         >
           🎮 Start Game
         </button>
-      </div>
-
-      {/* Modal: Please select a ticket */}
+      </div>{/* Modal: Please select a ticket */}
       {showModal && (
         <div
           style={{
@@ -237,44 +305,30 @@ function BingoBoard() {
       )}
 
       {/* Modal: Cartela popup */}
-   {showCartelaModal && (
-  <div
-    className="cartela-overlay"
-    onClick={() => setShowCartelaModal(false)}
-  >
-    <div
-      className="cartela-container"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <h3 className="cartela-title">
-        (Cartela: #{cartelaId})
-      </h3>
+      {showCartelaModal && (
+        <div className="cartela-overlay" onClick={() => setShowCartelaModal(false)}>
+          <div className="cartela-container" onClick={(e) => e.stopPropagation()}>
+            <h3 className="cartela-title">(Cartela: #{cartelaId})</h3>
 
-      <div className="cartela-grid">
-        {bingoCard.flat().map((num, idx) => (
-          <div
-            key={idx}
-            className={`cartela-cell ${
-              num === selectedNumber ? "selected" : ""
-            }`}
-          >
-            {num === selectedNumber ? "*" : num}
+            <div className="cartela-grid">
+              {bingoCard.flat().map((num, idx) => (
+                <div
+                  key={idx}
+                  className={`cartela-cell ${num === selectedNumber ? "selected" : ""}`}
+                >
+                  {num === selectedNumber ? "*" : num}
+                </div>
+              ))}
+            </div>
+
+            <button onClick={() => setShowCartelaModal(false)} className="cartela-close">
+              Close
+            </button>
           </div>
-        ))}
-      </div>
-
-      <button
-        onClick={() => setShowCartelaModal(false)}
-        className="cartela-close"
-      >
-        Close
-      </button>
-    </div>
-  </div>
-)}
+        </div>
+      )}
     </div>
   );
 }
-
 
 export default BingoBoard;
