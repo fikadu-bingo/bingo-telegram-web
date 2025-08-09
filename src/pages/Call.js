@@ -28,7 +28,7 @@ function Call() {
   const [winner, setWinner] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [players, setPlayers] = useState(1);
-  const [winAmount, setWinAmount] = useState(Br0);
+  const [winAmount, setWinAmount] = useState("Br0");
 
   const socket = useRef(null);
 
