@@ -12,7 +12,7 @@ import logo from "../assets/logo.png";
 function HomePage() {
   const navigate = useNavigate();
 
-  // --- user & balance state (kept your original behavior)
+  // --- user & balance state
   const [balance, setBalance] = useState(() => {
     const stored = localStorage.getItem("balance");
     return stored ? parseFloat(stored) : 200;
@@ -23,38 +23,29 @@ function HomePage() {
 
   // --- socket & realtime stake info
   const socketRef = useRef(null);
-  const joinedGameIdRef = useRef(null); // keep latest joined gameId for handlers
+  const joinedGameIdRef = useRef(null);
   const [joinedGameId, setJoinedGameId] = useState(null);
-  const [stakeInfo, setStakeInfo] = useState({}); 
-  // stakeInfo shape: { [amount]: { users: number, timeLeft: number | undefined } }
+  const [stakeInfo, setStakeInfo] = useState({});
 
-  // --- original UI state
+  // --- UI state
   const [selectedStake, setSelectedStake] = useState(null);
   const [activeButton, setActiveButton] = useState(null);
   const [showModal, setShowModal] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCashOutSuccess, setShowCashOutSuccess] = useState(false);
-  //const [showTransferModal, setShowTransferModal] = useState(false);
   const [showPromoModal, setShowPromoModal] = useState(false);
 
   const stakes = [10, 20, 50, 100, 200];
 
-  // ----------------------------
-  // Setup socket on mount
-  // ----------------------------
   useEffect(() => {
-    // connect socket
     socketRef.current = io("https://bingo-server-rw7p.onrender.com");
-
     const socket = socketRef.current;
 
     socket.on("connect", () => {
       console.log("Socket connected:", socket.id);
     });
 
-    // Global updates: server emits 'stakePlayerCount' for changes on any stake
     socket.on("stakePlayerCount", ({ gameId, count } = {}) => {
-      // Try to extract numeric stake amount from gameId (e.g., "Br10" -> 10)
       const parsed = parseInt(String(gameId).replace(/\D/g, ""), 10);
       if (!isNaN(parsed)) {
         setStakeInfo((prev) => ({
@@ -67,7 +58,6 @@ function HomePage() {
       }
     });
 
-    // Room-specific events (you will receive these when you've joined the room)
     socket.on("playerCountUpdate", (count) => {
       const gameId = joinedGameIdRef.current;
       if (!gameId) return;
@@ -92,8 +82,19 @@ function HomePage() {
       }
     });
 
+    socket.on("countdownStopped", () => {
+      const gameId = joinedGameIdRef.current;
+      if (!gameId) return;
+      const amount = parseInt(String(gameId).replace(/\D/g, ""), 10);
+      if (!isNaN(amount)) {
+        setStakeInfo((prev) => ({
+          ...prev,
+          [amount]: { ...(prev[amount] || {}), timeLeft: undefined },
+        }));
+      }
+    });
+
     socket.on("winAmountUpdate", (payload) => {
-      // payload: { winAmount, totalStake, stakePerPlayer }
       const gameId = joinedGameIdRef.current;
       if (!gameId || !payload) return;
       const amount = parseInt(String(gameId).replace(/\D/g, ""), 10);
@@ -103,12 +104,11 @@ function HomePage() {
           [amount]: { ...(prev[amount] || {}), potentialWin: payload.winAmount },
         }));
       }
-    });// ticketNumbersUpdated and numberCalled etc are handled on Bingo page / call page
-    // but we keep them available (no-op here)
+    });
+
     socket.on("ticketNumbersUpdated", () => {});
     socket.on("numberCalled", () => {});
 
-    // clean up on unmount
     return () => {
       try {
         const telegram_id = localStorage.getItem("telegram_id");
@@ -123,17 +123,12 @@ function HomePage() {
         socketRef.current = null;
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // run once
+  }, []);
 
-  // keep ref in sync when joinedGameId changes
   useEffect(() => {
     joinedGameIdRef.current = joinedGameId;
   }, [joinedGameId]);
 
-  // ----------------------------
-  // Telegram user & fetching
-  // ----------------------------
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const telegram_id = params.get("telegram_id");
@@ -190,53 +185,15 @@ function HomePage() {
   useEffect(() => {
     const interval = setInterval(() => {
       fetchUserData();
-    }, 15000); // 15 seconds
+    }, 15000);
 
-    return () => clearInterval(interval); // Cleanup on unmount
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    fetchUserData(); // fetch on first load
+    fetchUserData();
   }, []);
 
-  // also check backend for user existence (fixed URL)
-  useEffect(() => {
-    const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
-    const storedBalance = localStorage.getItem("balance");
-
-    if (telegramUser?.first_name) {
-      setFirstName(telegramUser.first_name);
-      localStorage.setItem("firstName", telegramUser.first_name);
-    }
-
-    if (telegramUser?.id) {
-      localStorage.setItem("telegram_id", telegramUser.id);
-      setTelegramId(telegramUser.id);
-    }
-
-    if (storedBalance !== null) {
-      setBalance(parseInt(storedBalance, 10));
-    }
-
-    if (telegramUser?.id) {
-      fetch(`https://bingo-server-rw7p.onrender.com/api/user/check/${telegramUser.id}`).then((res) => res.json())
-        .then((data) => {
-          if (data.exists) {
-            setBalance(data.user.balance);
-            localStorage.setItem("balance", data.user.balance);
-          } else {
-            console.log("User does not exist yet. Will be created on first deposit.");
-          }
-        })
-        .catch((err) => {
-          console.error("Error checking user:", err);
-        });
-    }
-  }, []);
-
-  // ----------------------------
-  // Stake selection / join / leave
-  // ----------------------------
   const handleStakeSelect = (amount) => {
     if (balance < amount) {
       alert("Not enough balance!");
@@ -249,7 +206,6 @@ function HomePage() {
       return;
     }
 
-    // prepare userId (use telegram_id or create a temporary guest id)
     let userId = localStorage.getItem("telegram_id") || telegramId;
     if (!userId) {
       userId = `guest_${Date.now()}`;
@@ -259,35 +215,29 @@ function HomePage() {
 
     const newGameId = `Br${amount}`;
 
-    // if already joined another stake, leave it first
     if (joinedGameIdRef.current && joinedGameIdRef.current !== newGameId) {
       socket.emit("leaveGame", { gameId: joinedGameIdRef.current, userId });
     }
 
-    // join the chosen stake room (this registers user in activeGames on server)
     socket.emit("joinGame", { gameId: newGameId, userId, username: firstName, stake: amount });
 
-    // update local UI state
     setSelectedStake(amount);
     setActiveButton(amount);
     setJoinedGameId(newGameId);
     joinedGameIdRef.current = newGameId;
 
-    // optimistic local display if server hasn't sent updates yet
     setStakeInfo((prev) => ({
       ...prev,
       [amount]: {
         ...(prev[amount] || {}),
         users: prev[amount]?.users ? prev[amount].users : 1,
-        timeLeft: prev[amount]?.timeLeft ?? "...",
+        timeLeft: prev[amount]?.timeLeft ?? undefined,
         potentialWin: prev[amount]?.potentialWin ?? Math.floor(amount * 0.8),
       },
     }));
   };
 
-  // allow explicit leave (optional)
-  const leaveCurrentStake = () => {
-    const socket = socketRef.current;
+  const leaveCurrentStake = () => {const socket = socketRef.current;
     const userId = localStorage.getItem("telegram_id") || telegramId;
     if (socket && joinedGameIdRef.current && userId) {
       socket.emit("leaveGame", { gameId: joinedGameIdRef.current, userId });
@@ -298,9 +248,6 @@ function HomePage() {
     }
   };
 
-  // ----------------------------
-  // Play now (navigate to bingo)
-  // ----------------------------
   const handlePlayNow = () => {
     if (!selectedStake) {
       setShowModal("stakeWarning");
@@ -325,9 +272,6 @@ function HomePage() {
     });
   };
 
-  // ----------------------------
-  // Deposit & Cashout handlers
-  // ----------------------------
   const handleDeposit = (amount) => {
     const newBalance = balance + amount;
     setBalance(newBalance);
@@ -341,9 +285,6 @@ function HomePage() {
     setShowCashOutSuccess(true);
   };
 
-  // ----------------------------
-  // Render
-  // ----------------------------
   return (
     <div
       style={{
@@ -351,7 +292,8 @@ function HomePage() {
         margin: "20px auto",
         background: "#1C1C3A",
         borderRadius: "15px",
-        boxShadow: "0 4px 15px rgba(0,0,0,0.2)",padding: "20px",
+        boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
+        padding: "20px",
         textAlign: "center",
         color: "white",
         fontFamily: "Arial, sans-serif",
@@ -363,7 +305,6 @@ function HomePage() {
         style={{ width: "120px", height: "auto", marginBottom: "10px" }}
       />
 
-      {/* 👋 Welcome, Firstname */}
       <div style={{ fontSize: "18px", marginBottom: "10px", color: "#00BFFF" }}>
         👋 Welcome, {firstName}
       </div>
@@ -411,8 +352,14 @@ function HomePage() {
       {stakes.map((amount) => {
         const info = stakeInfo[amount] || {};
         const users = typeof info.users === "number" ? info.users : activeButton === amount ? 1 : 0;
-        const timer = info.timeLeft !== undefined && info.timeLeft !== "..." ? `${info.timeLeft}s` : activeButton === amount && info.timeLeft === "..." ? "50s" : "...";
-        const winAmount = users > 0 ? `${Math.floor(amount * users * 0.8)} Br` : info.potentialWin ? `${info.potentialWin} Br` : "...";
+        const timer = (typeof info.timeLeft === "number" && users >= 2)
+          ? `${info.timeLeft}s`
+          : "...";
+        const winAmount = users > 0
+          ? `${Math.floor(amount * users * 0.8)} Br`
+          : info.potentialWin
+          ? `${info.potentialWin} Br`
+          : "...";
 
         return (
           <div
@@ -425,8 +372,7 @@ function HomePage() {
               border:
                 activeButton === amount
                   ? "1px solid orange"
-                  : "1px solid transparent",
-              borderRadius: "10px",
+                  : "1px solid transparent",borderRadius: "10px",
               padding: "10px",
               margin: "8px 0",
             }}
@@ -476,7 +422,9 @@ function HomePage() {
             </div>
           </div>
         );
-      })}<div
+      })}
+
+      <div
         style={{
           display: "flex",
           flexWrap: "wrap",
@@ -491,12 +439,9 @@ function HomePage() {
         <button style={actionBtnStyle} onClick={() => setShowModal("cashout")}>
           💵 Cash out
         </button>
-       <button
-  style={actionBtnStyle}
-  onClick={fetchUserData}
->
-  🔄 Refresh
-</button>
+        <button style={actionBtnStyle} onClick={fetchUserData}>
+          🔄 Refresh
+        </button>
         <button style={actionBtnStyle} onClick={handlePlayNow}>
           🎮 Play now
         </button>
@@ -564,7 +509,6 @@ function HomePage() {
           />
         </div>
       )}
-
       {showPromoModal && (
         <div style={overlayStyle}>
           <PromoCodeModal
@@ -582,9 +526,7 @@ function HomePage() {
       )}
 
       {showCashOutSuccess && (
-        <CashOutSuccessModal
-          onClose={() => setShowCashOutSuccess(false)}
-        />
+        <CashOutSuccessModal onClose={() => setShowCashOutSuccess(false)} />
       )}
     </div>
   );
