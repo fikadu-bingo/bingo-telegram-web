@@ -16,30 +16,38 @@ function Call() {
     username: stateUsername,
   } = location.state ?? {};
 
+  // Use username from props or fallback from localStorage or "User"
   const username =
-    location.state?.username ?? localStorage.getItem("firstName") ?? "User";
+    stateUsername ?? localStorage.getItem("firstName") ?? "User";
 
   const [calledNumbers, setCalledNumbers] = useState([]);
   const [currentNumber, setCurrentNumber] = useState(null);
   const [playerCard, setPlayerCard] = useState(card ?? []);
-  const [countdown, setCountdown] = useState(null); // Will be controlled by server
+  const [countdown, setCountdown] = useState(null);
   const [gameStarted, setGameStarted] = useState(false);
   const [winner, setWinner] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [players, setPlayers] = useState(1);
-  const [winAmount, setWinAmount] = useState("Br0");
+  const [winAmount, setWinAmount] = useState(Br0);
 
   const socket = useRef(null);
 
+  // Connect socket and setup event handlers for this gameId
   useEffect(() => {
+    if (!gameId || !username) {
+      alert("Invalid game data. Returning to home...");
+      navigate("/");
+      return;
+    }
+
     socket.current = io("https://bingo-server-rw7p.onrender.com", {
       transports: ["websocket"],
     });
 
-    if (gameId && username) {
-      socket.current.emit("joinGame", { gameId, userId: username });
-    }
+    // Join the specific game room by gameId and userId (username)
+    socket.current.emit("joinGame", { gameId, userId: username });
 
+    // Listen to countdown updates for this game
     socket.current.on("countdownUpdate", (time) => {
       setCountdown(time);
       if (time === 0) {
@@ -47,6 +55,7 @@ function Call() {
       }
     });
 
+    // Listen for number called event in this game
     socket.current.on("numberCalled", (number) => {
       setCurrentNumber(number);
       setCalledNumbers((prev) => {
@@ -57,18 +66,22 @@ function Call() {
       });
     });
 
+    // Update players count for this game
     socket.current.on("playerListUpdated", ({ players: playerList }) => {
       setPlayers(playerList.length);
     });
 
+    // Update win amount dynamically (stake * players * 0.8)
     socket.current.on("winAmountUpdated", (amount) => {
       setWinAmount(`Br${amount}`);
     });
 
+    // Listen for game started event
     socket.current.on("gameStarted", () => {
       setGameStarted(true);
     });
 
+    // Listen for game won event
     socket.current.on("gameWon", ({ userId }) => {
       if (userId === username) {
         setWinner(true);
@@ -76,13 +89,22 @@ function Call() {
       }
     });
 
+    // Automatically start calling numbers when countdown reaches 0 (server logic)
+    // If server doesn't handle it, can emit startGame here
+    socket.current.on("countdownEnded", () => {
+      setGameStarted(true);
+      socket.current.emit("startCallingNumbers", { gameId });
+    });
+
     return () => {
       if (socket.current) {
         socket.current.disconnect();
+        socket.current = null;
       }
     };
-  }, [gameId, username]);
+  }, [gameId, username, navigate]);
 
+  // Redirect home if no card data
   useEffect(() => {
     if (!card) {
       alert("No card data found. Returning...");
@@ -90,10 +112,12 @@ function Call() {
     }
   }, [card, navigate]);
 
-  // Bingo win check logic
+  // Bingo win check logic - runs on calledNumbers update
   useEffect(() => {
+    if (winner) return; // Already have winner, skip
+
     const isMarked = (num, row, col) => {
-      if (row === 2 && col === 2) return true;
+      if (row === 2 && col === 2) return true; // center free space
       return calledNumbers.includes(num);
     };
 
@@ -105,9 +129,7 @@ function Call() {
         bingo = true;
         break;
       }
-    }
-
-    // Check columns
+    }// Check columns
     if (!bingo) {
       for (let j = 0; j < 5; j++) {
         let colWin = true;
@@ -130,30 +152,38 @@ function Call() {
     }
 
     if (!bingo) {
-      bingo = [0, 1, 2, 3, 4].every((i) =>
-        isMarked(playerCard[i]?.[4 - i], i, 4 - i)
+      bingo = [0, 1, 2, 3, 4].every(
+        (i) => isMarked(playerCard[i]?.[4 - i], i, 4 - i)
       );
     }
 
-    if (bingo && !winner) {
+    if (bingo) {
       setWinner(true);
+
       const prize = stake * players * 0.8;
 
+      // Update local balance
       const initialBalance = parseFloat(localStorage.getItem("balance") ?? "0");
       const updatedBalance = initialBalance + prize;
       localStorage.setItem("balance", updatedBalance);
 
       setWinAmount(`Br${prize}`);
       setShowPopup(true);
-      socket.current.emit("bingoWin", { gameId, userId: username });
+
+      // Notify server of bingo win
+      if (socket.current) {
+        socket.current.emit("bingoWin", { gameId, userId: username });
+      }
     }
-  }, [calledNumbers, playerCard, stake, players, winner, gameId, username]);// Update win amount on players or stake changes
+  }, [calledNumbers, playerCard, stake, players, winner, gameId, username]);
+
+  // Update win amount when players or stake changes
   useEffect(() => {
     const totalWin = stake * players * 0.8;
     setWinAmount(`Br${totalWin}`);
   }, [players, stake]);
 
-  // Prepare marked cartela for WinModal
+  // Prepare the marked cartela data for WinModal
   const getMarkedCartela = () => {
     return playerCard.map((row, rowIndex) =>
       row.map((num, colIndex) => {
@@ -228,8 +258,7 @@ function Call() {
 
           <div className="cartela-grid">
             {playerCard.flat().map((num, idx) => {
-              const row = Math.floor(idx / 5);
-              const col = idx % 5;
+              const row = Math.floor(idx / 5);const col = idx % 5;
               const isCenter = row === 2 && col === 2;
               const marked = isCenter || calledNumbers.includes(num);
               return (
