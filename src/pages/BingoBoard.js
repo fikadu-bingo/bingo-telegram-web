@@ -4,16 +4,21 @@ import logo from "../assets/logo.png";
 import io from "socket.io-client";
 import "../components/CartelaModal.css";
 
-const SOCKET_SERVER_URL = "https://bingo-server-rw7p.onrender.com"; // Adjust if different
+const SOCKET_SERVER_URL = "https://bingo-server-rw7p.onrender.com";
 
 function BingoBoard() {
   const location = useLocation();
   const navigate = useNavigate();
-  const initialBalance = parseFloat(localStorage.getItem("balance") ?? "200");
+
   const stake = location.state?.stake ?? 0;
 
+  // Initialize wallet from localStorage, deduct stake immediately for UI
+  const initialBalance = parseFloat(localStorage.getItem("balance") ?? "200");
   const [wallet, setWallet] = useState(initialBalance - stake);
+
+  // Use "Br" prefix to align with HomePage gameId format
   const [gameId, setGameId] = useState("");
+
   const [selectedNumber, setSelectedNumber] = useState(null);
   const [bingoCard, setBingoCard] = useState([]);
   const [cartelaId, setCartelaId] = useState("");
@@ -23,47 +28,57 @@ function BingoBoard() {
   // Store all players' ticket selections: { userId: [numbers...] }
   const [allTicketSelections, setAllTicketSelections] = useState({});
 
+  // Track if game has started to prevent changes
+  const [gameStarted, setGameStarted] = useState(false);
+
   const socketRef = useRef();
 
   useEffect(() => {
-    // Generate a unique game ID (for demo - in prod probably from server or passed in)
-    const id = "stake-" + stake; // Use stake as gameId to sync users in same stake group
+    // Consistent gameId format "Br" + stake
+    const id = "Br" + stake;
     setGameId(id);
 
-    // Setup socket connection
     socketRef.current = io(SOCKET_SERVER_URL, {
       transports: ["websocket"],
     });
 
-    // On connect, join game room with userId
     const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
     const userId = telegramUser?.id || "anonymous";
 
+    // Join the game room on socket
     socketRef.current.emit("joinGame", { gameId: id, userId });
 
-    // Listen for ticket number updates
+    // Listen for live ticket updates from server
     socketRef.current.on("ticketNumbersUpdated", (tickets) => {
       setAllTicketSelections(tickets);
     });
 
-    // Clean up on unmount
+    // Clean up: leave game and disconnect socket on unmount
     return () => {
-      socketRef.current.disconnect();
+      if (socketRef.current) {
+        socketRef.current.emit("leaveGame", { gameId: id, userId });
+        socketRef.current.disconnect();
+      }
     };
   }, [stake]);
 
+  // Generate 5x5 bingo card with selected number centered
   const generateCard = (selected) => {
     let numbers = Array.from({ length: 100 }, (_, i) => i + 1);
+    // Remove the selected number to avoid duplicates
     numbers = numbers.filter((num) => num !== selected);
 
+    // Shuffle remaining numbers
     for (let i = numbers.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
     }
 
+    // Pick 24 numbers + selected number = 25 total for 5x5
     const cardNumbers = numbers.slice(0, 24);
-    cardNumbers.splice(12, 0, selected);
+    cardNumbers.splice(12, 0, selected); // Center of 5x5
 
+    // Create 5 rows of 5 numbers
     const card = [];
     for (let i = 0; i < 5; i++) {
       card.push(cardNumbers.slice(i * 5, i * 5 + 5));
@@ -72,13 +87,15 @@ function BingoBoard() {
     setBingoCard(card);
   };
 
+  // Handle when user clicks a ticket number
   const handleNumberClick = (number) => {
+    if (gameStarted) return; // Prevent changing after start
+
     setSelectedNumber(number);
     setCartelaId(number);
     generateCard(number);
     setShowCartelaModal(true);
 
-    // Emit selection to server for realtime update
     const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
     const userId = telegramUser?.id || "anonymous";
 
@@ -89,14 +106,15 @@ function BingoBoard() {
     });
   };
 
+  // Start game: deduct balance and navigate to Call page
   const handleStartGame = () => {
     if (!selectedNumber) {
       setShowModal(true);
       return;
     }
 
-    const initialBalance = parseFloat(localStorage.getItem("balance") ?? "0");
-    const newWallet = initialBalance - stake;
+    const currentBalance = parseFloat(localStorage.getItem("balance") ?? "0");
+    const newWallet = currentBalance - stake;
 
     if (newWallet < 0) {
       alert("Not enough balance!");
@@ -105,7 +123,7 @@ function BingoBoard() {
 
     localStorage.setItem("balance", newWallet);
     setWallet(newWallet);
-
+    setGameStarted(true);
     navigate("/call", {
       state: {
         card: bingoCard,
@@ -117,7 +135,7 @@ function BingoBoard() {
   };
 
   // Helper: Check if a number is selected by any user
-  // returns { isSelected: boolean, selectedBy: userId[] }
+  // Returns { isSelected: boolean, selectedBy: userId[] }
   const isNumberSelected = (num) => {
     const selectedBy = [];
     for (const [userId, numbers] of Object.entries(allTicketSelections)) {
@@ -126,7 +144,9 @@ function BingoBoard() {
       }
     }
     return { isSelected: selectedBy.length > 0, selectedBy };
-  };return (
+  };
+
+  return (
     <div
       style={{
         minHeight: "100vh",
@@ -194,7 +214,6 @@ function BingoBoard() {
         >
           {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => {
             const { isSelected, selectedBy } = isNumberSelected(num);
-            // Highlight if selected by current user or others (different style)
             const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
             const currentUserId = telegramUser?.id || "anonymous";
 
@@ -210,20 +229,23 @@ function BingoBoard() {
                   background: isCurrentUserSelected
                     ? "#00C9FF"
                     : isSelected
-                    ? "#FF5722" // different color for others' selection
+                    ? "#FF5722"
                     : "#333",
                   color: "white",
                   border: "none",
                   borderRadius: "6px",
                   fontSize: "12px",
-                  cursor: isSelected && !isCurrentUserSelected ? "not-allowed" : "pointer",
+                  cursor:
+                    isSelected && !isCurrentUserSelected
+                      ? "not-allowed"
+                      : "pointer",
                   transition: "all 0.2s ease-in-out",
                 }}
                 title={
                   isSelected
                     ? selectedBy.length > 1
-                      ? `Selected by multiple players`
-                      : `Selected by another player`
+                      ? "Selected by multiple players"
+                      : "Selected by another player"
                     : "Click to select"
                 }
               >
@@ -231,27 +253,28 @@ function BingoBoard() {
               </button>
             );
           })}
-        </div>
-
-        <button
+        </div><button
           onClick={handleStartGame}
+          disabled={gameStarted}
           style={{
             marginTop: "20px",
             width: "100%",
             padding: "12px",
-            background: "#4CAF50",
+            background: gameStarted ? "#888" : "#4CAF50",
             color: "white",
             border: "none",
             borderRadius: "10px",
             fontWeight: "bold",
-            cursor: "pointer",
+            cursor: gameStarted ? "not-allowed" : "pointer",
             fontSize: "16px",
             transition: "background 0.3s",
           }}
         >
           🎮 Start Game
         </button>
-      </div>{/* Modal: Please select a ticket */}
+      </div>
+
+      {/* Modal: Please select a ticket */}
       {showModal && (
         <div
           style={{
