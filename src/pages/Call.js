@@ -50,19 +50,17 @@ function Call() {
       transports: ["websocket"],
     });
 
-    // Join game room
-    socket.current.emit("joinGame", { gameId, userId: username });
+    // * Updated joinGame emit to include username and stake as server expects *
+    socket.current.emit("joinGame", { userId: username, username, stake });
 
-    // Listen for player list updates to set player count
     socket.current.on("playerListUpdated", ({ players: playerList }) => {
       setPlayers(playerList.length);
-      // Start countdown only if players >= 2, countdown not started, and game not started
       if (playerList.length >= 2 && countdown === null && !gameStarted) {
         startCountdown();
       }
     });
 
-    // Countdown update from server (fallback)
+    // Countdown update from server
     socket.current.on("countdownUpdate", (time) => {
       setCountdown(time);
       if (time === 0) {
@@ -70,42 +68,59 @@ function Call() {
       }
     });
 
+    // Handle countdown stopped if needed
+    socket.current.on("countdownStopped", () => {
+      setCountdown(null);
+      setGameStarted(false);
+    });
+
     // Number called event
     socket.current.on("numberCalled", (number) => {
       setCurrentNumber(number);
-      setCalledNumbers((prev) => (prev.includes(number) ? prev : [...prev, number]));
+      setCalledNumbers((prev) => {
+        if (!prev.includes(number)) return [...prev, number];
+        return prev;
+      });
     });
 
-    // Win amount update
-    socket.current.on("winAmountUpdated", (amount) => {
+    // * Listen to "winAmountUpdate" event as per server code *
+    socket.current.on("winAmountUpdate", (amount) => {
       setWinAmount(`Br${amount}`);
     });
 
-    // Game started event
     socket.current.on("gameStarted", () => {
       setGameStarted(true);
     });
 
-    // Game won event
     socket.current.on("gameWon", ({ userId }) => {
       if (userId === username) {
         handleWin();
       }
     });
 
-    // Clean up on unmount
+    socket.current.on("gameReset", () => {
+      // Reset local state on game reset
+      setCalledNumbers([]);
+      setCurrentNumber(null);
+      setCountdown(null);
+      setGameStarted(false);
+      setWinner(false);
+      setShowPopup(false);
+    });
+
+    // Cleanup on unmount
     return () => {
       if (socket.current) {
-        socket.current.emit("leaveGame", { gameId, userId: username });
+        socket.current.emit("leaveGame", { userId: username });
         socket.current.disconnect();
         socket.current = null;
       }
       clearInterval(countdownIntervalRef.current);
       clearInterval(callIntervalRef.current);
     };
-  }, [gameId, username, countdown, gameStarted, navigate]);
+  }, [gameId, username, stake]);
 
-  // Start countdown timer locally
+  // Start countdown locally if no server countdown (non-concurrent enforcement)
   const startCountdown = () => {
     setCountdown(COUNTDOWN_START);
     let timeLeft = COUNTDOWN_START;
@@ -119,19 +134,17 @@ function Call() {
       }
     }, 1000);
   };
-
-  // Start calling numbers one by one
+  // Start calling numbers automatically
   const startCallingNumbers = () => {
     setGameStarted(true);
-    setIsCallingNumbers(true);
-
-    // Generate shuffled numbers 1-100 for calling
     let nums = Array.from({ length: 100 }, (_, i) => i + 1);
     nums = shuffleArray(nums);
     setNumbersToCall(nums);
     setCalledNumbers([]);
     setCurrentNumber(null);
-    // Notify server that game has started
+    setIsCallingNumbers(true);
+
+    // Emit gameStarted event to server so all sync
     socket.current.emit("gameStarted", { gameId });
 
     let index = 0;
@@ -145,16 +158,14 @@ function Call() {
       setCurrentNumber(number);
       setCalledNumbers((prev) => [...prev, number]);
 
-      // Emit numberCalled to server
       socket.current.emit("numberCalled", { gameId, number });
 
       index++;
     }, CALL_INTERVAL);
   };
 
-  // Shuffle helper
   const shuffleArray = (array) => {
-    const arr = [...array];
+    let arr = [...array];
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -162,7 +173,6 @@ function Call() {
     return arr;
   };
 
-  // Handle a winning player locally
   const handleWin = () => {
     setWinner(true);
     setShowPopup(true);
@@ -173,27 +183,22 @@ function Call() {
     localStorage.setItem("balance", updatedBalance);
     setWinAmount(`Br${prize}`);
 
-    // TODO: Deduct stake from other players on backend
-
-    // Auto-close winner modal after WIN_MODAL_DURATION ms, then navigate home
     setTimeout(() => {
       setShowPopup(false);
       navigate("/");
     }, WIN_MODAL_DURATION);
   };
 
-  // Check for Bingo win condition
   useEffect(() => {
     if (!gameStarted || winner) return;
 
     const isMarked = (num, row, col) => {
-      if (row === 2 && col === 2) return true; // center free space
+      if (row === 2 && col === 2) return true;
       return calledNumbers.includes(num);
     };
 
     let bingo = false;
 
-    // Check rows
     for (let i = 0; i < 5; i++) {
       if (playerCard[i]?.every((num, j) => isMarked(num, i, j))) {
         bingo = true;
@@ -201,7 +206,6 @@ function Call() {
       }
     }
 
-    // Check columns
     if (!bingo) {
       for (let j = 0; j < 5; j++) {
         let colWin = true;
@@ -218,10 +222,10 @@ function Call() {
       }
     }
 
-    // Check diagonals
     if (!bingo) {
       bingo = [0, 1, 2, 3, 4].every((i) => isMarked(playerCard[i]?.[i], i, i));
     }
+
     if (!bingo) {
       bingo = [0, 1, 2, 3, 4].every(
         (i) => isMarked(playerCard[i]?.[4 - i], i, 4 - i)
@@ -229,26 +233,25 @@ function Call() {
     }
 
     if (bingo) {
-      socket.current.emit("gameWon", { gameId, userId: username });
+      socket.current.emit("bingoWin", { gameId, userId: username });
       handleWin();
     }
-  }, [calledNumbers, playerCard, stake, players, winner, gameStarted, gameId, username]);
+  }, [calledNumbers, playerCard, stake, players, winner, gameStarted]);
 
-  // Update win amount on stake or players change
   useEffect(() => {
     const totalWin = stake * players * 0.8;
     setWinAmount(`Br${totalWin}`);
   }, [players, stake]);
 
-  // Prepare marked cartela for WinModal
-  const getMarkedCartela = () =>
-    playerCard.map((row, rowIndex) =>
+  const getMarkedCartela = () => {
+    return playerCard.map((row, rowIndex) =>
       row.map((num, colIndex) => {
         const isCenter = rowIndex === 2 && colIndex === 2;
         const marked = isCenter || calledNumbers.includes(num);
         return { num, marked, isCenter };
       })
     );
+  };
 
   const lastThree = calledNumbers.slice(-3).reverse();
 
@@ -264,12 +267,14 @@ function Call() {
         <div>Win: {winAmount}</div>
         <div>Call: {calledNumbers.length}</div>
       </div>
-
       <div className="main-content">
         <div className="board">
           <div className="bingo-header-row">
             {["B", "I", "N", "G", "O"].map((letter) => (
-              <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
+              <div
+                key={letter}
+                className={`bingo-letter bingo-${letter.toLowerCase()}`}
+              >
                 {letter}
               </div>
             ))}
@@ -278,7 +283,9 @@ function Call() {
             {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => (
               <div
                 key={num}
-                className={`number-box ${calledNumbers.includes(num) ? "marked" : "unmarked"}`}
+                className={`number-box ${
+                  calledNumbers.includes(num) ? "marked" : "unmarked"
+                }`}
               >
                 {num}
               </div>
@@ -305,7 +312,10 @@ function Call() {
 
           <div className="bingo-header-row">
             {["B", "I", "N", "G", "O"].map((letter) => (
-              <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
+              <div
+                key={letter}
+                className={`bingo-letter bingo-${letter.toLowerCase()}`}
+              >
                 {letter}
               </div>
             ))}
@@ -336,7 +346,11 @@ function Call() {
             >
               🎉 Bingo
             </button>
-            <button onClick={() => navigate("/")} className="action-btn" disabled={gameStarted && !winner}>
+            <button
+              onClick={() => navigate("/")}
+              className="action-btn"
+              disabled={gameStarted && !winner}
+            >
               🚪 Leave
             </button>
           </div>
