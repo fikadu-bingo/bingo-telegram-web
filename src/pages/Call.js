@@ -5,13 +5,13 @@ import logo from "../assets/logo.png";
 import WinModal from "../components/WinModal";
 import "./Call.css";
 
-const COUNTDOWN_START = 50; // seconds
-const CALL_INTERVAL = 1000; // 1 second between called numbers
-const WIN_MODAL_DURATION = 5000; // 5 seconds
+const COUNTDOWN_START = 50;
+const CALL_INTERVAL = 1000;
 
 function Call() {
   const location = useLocation();
   const navigate = useNavigate();
+
   const {
     card,
     stake,
@@ -28,7 +28,7 @@ function Call() {
   const [playerCard, setPlayerCard] = useState(card ?? []);
   const [countdown, setCountdown] = useState(null);
   const [gameStarted, setGameStarted] = useState(false);
-  const [winner, setWinner] = useState(false);
+  const [winnerInfo, setWinnerInfo] = useState(null); // { userId, prize }
   const [showPopup, setShowPopup] = useState(false);
   const [players, setPlayers] = useState(1);
   const [winAmount, setWinAmount] = useState("Br0");
@@ -46,21 +46,25 @@ function Call() {
       return;
     }
 
+    // Connect to server
     socket.current = io("https://bingo-server-rw7p.onrender.com", {
       transports: ["websocket"],
     });
 
-    // * Updated joinGame emit to include username and stake as server expects *
+    // Join game room with user info and stake
     socket.current.emit("joinGame", { userId: username, username, stake });
 
+    // Update players list
     socket.current.on("playerListUpdated", ({ players: playerList }) => {
       setPlayers(playerList.length);
+
+      // Auto start countdown if enough players and not started yet
       if (playerList.length >= 2 && countdown === null && !gameStarted) {
         startCountdown();
       }
     });
 
-    // Countdown update from server
+    // Update countdown timer from server
     socket.current.on("countdownUpdate", (time) => {
       setCountdown(time);
       if (time === 0) {
@@ -68,13 +72,12 @@ function Call() {
       }
     });
 
-    // Handle countdown stopped if needed
     socket.current.on("countdownStopped", () => {
       setCountdown(null);
       setGameStarted(false);
     });
 
-    // Number called event
+    // Update when new number called
     socket.current.on("numberCalled", (number) => {
       setCurrentNumber(number);
       setCalledNumbers((prev) => {
@@ -83,32 +86,43 @@ function Call() {
       });
     });
 
-    // * Listen to "winAmountUpdate" event as per server code *
+    // Update win amount (80% of total stake)
     socket.current.on("winAmountUpdate", (amount) => {
       setWinAmount(`Br${amount}`);
     });
 
+    // Mark game as started
     socket.current.on("gameStarted", () => {
       setGameStarted(true);
     });
 
-    socket.current.on("gameWon", ({ userId }) => {
-      if (userId === username) {
-        handleWin();
+    // Handle game won event with winner info & balances for all players
+    socket.current.on("gameWon", ({ winnerId, prize, balances }) => {
+      setWinnerInfo({ userId: winnerId, prize });
+      setShowPopup(true);
+
+      // Update local balance for this user if provided
+      if (balances && balances[username] !== undefined) {
+        localStorage.setItem("balance", balances[username]);
       }
     });
 
+    // Listen for balanceChange event to update local balance dynamically
+    socket.current.on("balanceChange", ({ balances }) => {
+      if (balances && balances[username] !== undefined) {
+        localStorage.setItem("balance", balances[username]);
+      }
+    });
+
+    // Reset game state on server reset event
     socket.current.on("gameReset", () => {
-      // Reset local state on game reset
       setCalledNumbers([]);
       setCurrentNumber(null);
       setCountdown(null);
       setGameStarted(false);
-      setWinner(false);
+      setWinnerInfo(null);
       setShowPopup(false);
     });
-
-    // Cleanup on unmount
     return () => {
       if (socket.current) {
         socket.current.emit("leaveGame", { userId: username });
@@ -118,9 +132,9 @@ function Call() {
       clearInterval(countdownIntervalRef.current);
       clearInterval(callIntervalRef.current);
     };
-  }, [gameId, username, stake]);
+  }, [gameId, username, stake, countdown, gameStarted, navigate]);
 
-  // Start countdown locally if no server countdown (non-concurrent enforcement)
+  // Start countdown locally (this is mainly UI effect; actual countdown sync from server)
   const startCountdown = () => {
     setCountdown(COUNTDOWN_START);
     let timeLeft = COUNTDOWN_START;
@@ -134,7 +148,8 @@ function Call() {
       }
     }, 1000);
   };
-  // Start calling numbers automatically
+
+  // Start calling numbers automatically (client-side UI)
   const startCallingNumbers = () => {
     setGameStarted(true);
     let nums = Array.from({ length: 100 }, (_, i) => i + 1);
@@ -144,7 +159,7 @@ function Call() {
     setCurrentNumber(null);
     setIsCallingNumbers(true);
 
-    // Emit gameStarted event to server so all sync
+    // Inform server that game started
     socket.current.emit("gameStarted", { gameId });
 
     let index = 0;
@@ -164,6 +179,7 @@ function Call() {
     }, CALL_INTERVAL);
   };
 
+  // Fisher-Yates shuffle
   const shuffleArray = (array) => {
     let arr = [...array];
     for (let i = arr.length - 1; i > 0; i--) {
@@ -173,32 +189,18 @@ function Call() {
     return arr;
   };
 
-  const handleWin = () => {
-    setWinner(true);
-    setShowPopup(true);
-
-    const initialBalance = parseFloat(localStorage.getItem("balance") ?? "0");
-    const prize = stake * players * 0.8;
-    const updatedBalance = initialBalance + prize;
-    localStorage.setItem("balance", updatedBalance);
-    setWinAmount(`Br${prize}`);
-
-    setTimeout(() => {
-      setShowPopup(false);
-      navigate("/");
-    }, WIN_MODAL_DURATION);
-  };
-
+  // Check bingo pattern for current player card and called numbers
   useEffect(() => {
-    if (!gameStarted || winner) return;
+    if (!gameStarted || winnerInfo) return;
 
     const isMarked = (num, row, col) => {
-      if (row === 2 && col === 2) return true;
+      if (row === 2 && col === 2) return true; // center free space
       return calledNumbers.includes(num);
     };
 
     let bingo = false;
 
+    // Check rows
     for (let i = 0; i < 5; i++) {
       if (playerCard[i]?.every((num, j) => isMarked(num, i, j))) {
         bingo = true;
@@ -206,6 +208,7 @@ function Call() {
       }
     }
 
+    // Check columns
     if (!bingo) {
       for (let j = 0; j < 5; j++) {
         let colWin = true;
@@ -222,10 +225,12 @@ function Call() {
       }
     }
 
+    // Check main diagonal
     if (!bingo) {
       bingo = [0, 1, 2, 3, 4].every((i) => isMarked(playerCard[i]?.[i], i, i));
     }
 
+    // Check anti diagonal
     if (!bingo) {
       bingo = [0, 1, 2, 3, 4].every(
         (i) => isMarked(playerCard[i]?.[4 - i], i, 4 - i)
@@ -234,15 +239,19 @@ function Call() {
 
     if (bingo) {
       socket.current.emit("bingoWin", { gameId, userId: username });
-      handleWin();
+      // Wait for server to broadcast "gameWon" event
     }
-  }, [calledNumbers, playerCard, stake, players, winner, gameStarted]);
+  }, [calledNumbers, playerCard, gameStarted, winnerInfo, gameId, username]);
 
+  // Calculate and set win amount (80% of total stakes)
   useEffect(() => {
-    const totalWin = stake * players * 0.8;
-    setWinAmount(`Br${totalWin}`);
+    if (players && stake) {
+      const totalWin = stake * players * 0.8;
+      setWinAmount(`Br${totalWin.toFixed(2)}`);
+    }
   }, [players, stake]);
 
+  // Prepare marked cartela for WinModal
   const getMarkedCartela = () => {
     return playerCard.map((row, rowIndex) =>
       row.map((num, colIndex) => {
@@ -260,13 +269,13 @@ function Call() {
       <div className="logo-container">
         <img src={logo} alt="Logo" className="logo" />
       </div>
-
       <div className="top-menu">
         <div>Players: {players}</div>
         <div>Bet: Br{stake}</div>
         <div>Win: {winAmount}</div>
         <div>Call: {calledNumbers.length}</div>
       </div>
+
       <div className="main-content">
         <div className="board">
           <div className="bingo-header-row">
@@ -342,14 +351,14 @@ function Call() {
             <button
               onClick={() => alert("Bingo button logic (coming soon)!")}
               className="action-btn"
-              disabled={!gameStarted || winner}
+              disabled={!gameStarted || winnerInfo !== null}
             >
               🎉 Bingo
             </button>
             <button
               onClick={() => navigate("/")}
               className="action-btn"
-              disabled={gameStarted && !winner}
+              disabled={gameStarted && winnerInfo === null}
             >
               🚪 Leave
             </button>
@@ -357,13 +366,17 @@ function Call() {
         </div>
       </div>
 
-      {showPopup && (
+      {showPopup && winnerInfo && (
         <WinModal
-          username={username}
-          amount={winAmount}
+          username={winnerInfo.userId}
+          amount={`Br${winnerInfo.prize}`}
           cartela={getMarkedCartela()}
           cartelaNumber={cartelaNumber}
-          onPlayAgain={() => navigate("/")}
+          onPlayAgain={() => {
+            setWinnerInfo(null);
+            setShowPopup(false);
+            navigate("/");
+          }}
         />
       )}
     </div>
