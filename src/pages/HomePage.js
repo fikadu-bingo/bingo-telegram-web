@@ -40,20 +40,26 @@ function HomePage() {
 
   const stakes = [10, 20, 50, 100, 200];
 
-  // Initialize socket connection & listeners
+  // Initialize socket connection & listeners - only ONCE
   useEffect(() => {
     const socket = io("https://bingo-server-rw7p.onrender.com");
 
+    socketRef.current = socket;
+
     socket.on("connect", () => {
       console.log("Socket connected:", socket.id);
+      // Rejoin game if stake selected and userId exists
+      const userId = localStorage.getItem("telegram_id") || telegramId;
+      if (selectedStake && userId) {
+        const username = firstName || "User";
+        socket.emit("joinGame", { userId, username, stake: selectedStake });
+      }
     });
 
-    // Update live player count
     socket.on("playerCountUpdate", (count) => {
       setLivePlayerCount(count);
     });
 
-    // Update countdown timer
     socket.on("countdownUpdate", (time) => {
       setCountdown(time);
     });
@@ -62,14 +68,12 @@ function HomePage() {
       setCountdown(null);
     });
 
-    // Update win amount
     socket.on("winAmountUpdate", (amount) => {
       setWinAmount(amount);
     });
 
     // Cleanup on unmount
     return () => {
-      // Leave game room if joined
       const userId = localStorage.getItem("telegram_id") || telegramId;
       if (socket && userId) {
         socket.emit("leaveGame", { userId });
@@ -77,14 +81,8 @@ function HomePage() {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [telegramId]);
-
-  // Save socket instance in ref for emits
-  useEffect(() => {
-    if (!socketRef.current) {
-      socketRef.current = io("https://bingo-server-rw7p.onrender.com");
-    }
-  }, []);
+    // We include these dependencies because we want to handle re-join on user or stake changes
+  }, [telegramId, selectedStake, firstName]);
 
   // Fetch and sync user data (balance etc.)
   const fetchUserData = async () => {
@@ -92,8 +90,8 @@ function HomePage() {
       const telegram_id = localStorage.getItem("telegram_id");
       if (!telegram_id) return;
 
-      const res = await fetch(`
-        https://bingo-server-rw7p.onrender.com/api/user/me?telegram_id=${telegram_id}`
+      const res = await fetch(
+        `https://bingo-server-rw7p.onrender.com/api/user/me?telegram_id=${telegram_id}`
       );
       const data = await res.json();
 
@@ -114,9 +112,8 @@ function HomePage() {
       console.error("Failed to fetch user data:", error);
     }
   };
-
+  // Load user info on mount from URL or localStorage
   useEffect(() => {
-    // On mount, get user info from URL or localStorage
     const params = new URLSearchParams(window.location.search);
     const telegram_id = params.get("telegram_id");
     const first_name = params.get("first_name");
@@ -172,7 +169,7 @@ function HomePage() {
 
     const username = firstName || "User";
 
-    // If already joined a stake, leave first
+    // Leave previous stake if different
     if (selectedStake !== null && selectedStake !== amount) {
       socket.emit("leaveGame", { userId });
       setLivePlayerCount(0);
@@ -198,6 +195,7 @@ function HomePage() {
     setWinAmount(null);
   };
 
+  // Play now button navigates to bingo with all needed info
   const handlePlayNow = () => {
     if (!selectedStake) {
       setShowModal("stakeWarning");
@@ -211,13 +209,15 @@ function HomePage() {
 
     const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
     const username = telegramUser?.first_name || firstName || "User";
+    const userId = localStorage.getItem("telegram_id") || telegramId;
 
     navigate("/bingo", {
       state: {
-        balance: balance,
+        balance,
         stake: selectedStake,
         userJoined: true,
         username,
+        userId, // important for Call.js to join socket
       },
     });
   };
@@ -254,7 +254,6 @@ function HomePage() {
         alt="1Bingo Logo"
         style={{ width: "120px", height: "auto", marginBottom: "10px" }}
       />
-
       <div style={{ fontSize: "18px", marginBottom: "10px", color: "#00BFFF" }}>
         👋 Welcome, {firstName}
       </div>
@@ -266,7 +265,7 @@ function HomePage() {
           padding: "15px",
           margin: "20px 0",
         }}
-        >
+      >
         <h3 style={{ margin: "0", fontSize: "18px" }}>Your Balance</h3>
         <p
           style={{
@@ -370,7 +369,6 @@ function HomePage() {
           </div>
         );
       })}
-
       <div
         style={{
           display: "flex",
