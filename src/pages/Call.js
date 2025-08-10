@@ -53,16 +53,16 @@ function Call() {
     // Join game room
     socket.current.emit("joinGame", { gameId, userId: username });
 
-    // Players list updates, set players count
+    // Listen for player list updates to set player count
     socket.current.on("playerListUpdated", ({ players: playerList }) => {
       setPlayers(playerList.length);
-      // Start countdown only if players >= 2 and countdown not started yet and game not started
+      // Start countdown only if players >= 2, countdown not started, and game not started
       if (playerList.length >= 2 && countdown === null && !gameStarted) {
         startCountdown();
       }
     });
 
-    // Countdown update from server (optional fallback)
+    // Countdown update from server (fallback)
     socket.current.on("countdownUpdate", (time) => {
       setCountdown(time);
       if (time === 0) {
@@ -70,16 +70,13 @@ function Call() {
       }
     });
 
-    // Number called event - update called numbers and current number
+    // Number called event
     socket.current.on("numberCalled", (number) => {
       setCurrentNumber(number);
-      setCalledNumbers((prev) => {
-        if (!prev.includes(number)) return [...prev, number];
-        return prev;
-      });
+      setCalledNumbers((prev) => (prev.includes(number) ? prev : [...prev, number]));
     });
 
-    // Win amount update (stake * players * 0.8)
+    // Win amount update
     socket.current.on("winAmountUpdated", (amount) => {
       setWinAmount(`Br${amount}`);
     });
@@ -106,9 +103,9 @@ function Call() {
       clearInterval(countdownIntervalRef.current);
       clearInterval(callIntervalRef.current);
     };
-  }, [gameId, username]);
+  }, [gameId, username, countdown, gameStarted, navigate]);
 
-  // Start countdown locally if no server countdown (non-concurrent enforcement)
+  // Start countdown timer locally
   const startCountdown = () => {
     setCountdown(COUNTDOWN_START);
     let timeLeft = COUNTDOWN_START;
@@ -123,21 +120,20 @@ function Call() {
     }, 1000);
   };
 
-  // Start calling numbers automatically
+  // Start calling numbers one by one
   const startCallingNumbers = () => {
     setGameStarted(true);
+    setIsCallingNumbers(true);
+
     // Generate shuffled numbers 1-100 for calling
     let nums = Array.from({ length: 100 }, (_, i) => i + 1);
     nums = shuffleArray(nums);
     setNumbersToCall(nums);
     setCalledNumbers([]);
     setCurrentNumber(null);
-    setIsCallingNumbers(true);
-
-    // Emit gameStarted to server so others sync
+    // Notify server that game has started
     socket.current.emit("gameStarted", { gameId });
 
-    // Start interval to call numbers one by one
     let index = 0;
     callIntervalRef.current = setInterval(() => {
       if (index >= nums.length) {
@@ -149,16 +145,16 @@ function Call() {
       setCurrentNumber(number);
       setCalledNumbers((prev) => [...prev, number]);
 
-      // Emit numberCalled event to server
+      // Emit numberCalled to server
       socket.current.emit("numberCalled", { gameId, number });
 
       index++;
     }, CALL_INTERVAL);
   };
 
-  // Helper to shuffle array
+  // Shuffle helper
   const shuffleArray = (array) => {
-    let arr = [...array];
+    const arr = [...array];
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -166,29 +162,27 @@ function Call() {
     return arr;
   };
 
-  // Handle user win locally
+  // Handle a winning player locally
   const handleWin = () => {
     setWinner(true);
     setShowPopup(true);
 
-    // Update local balance for winner
     const initialBalance = parseFloat(localStorage.getItem("balance") ?? "0");
     const prize = stake * players * 0.8;
     const updatedBalance = initialBalance + prize;
     localStorage.setItem("balance", updatedBalance);
     setWinAmount(`Br${prize}`);
 
-    // Deduct stake from others - we simulate here, backend should do this securely
-    // You can implement socket emit for stake deduction to others or handle in backend
+    // TODO: Deduct stake from other players on backend
 
-    // Auto close winner modal after 5 seconds and navigate home
+    // Auto-close winner modal after WIN_MODAL_DURATION ms, then navigate home
     setTimeout(() => {
       setShowPopup(false);
       navigate("/");
     }, WIN_MODAL_DURATION);
   };
 
-  // Bingo win check logic
+  // Check for Bingo win condition
   useEffect(() => {
     if (!gameStarted || winner) return;
 
@@ -228,7 +222,6 @@ function Call() {
     if (!bingo) {
       bingo = [0, 1, 2, 3, 4].every((i) => isMarked(playerCard[i]?.[i], i, i));
     }
-
     if (!bingo) {
       bingo = [0, 1, 2, 3, 4].every(
         (i) => isMarked(playerCard[i]?.[4 - i], i, 4 - i)
@@ -236,28 +229,26 @@ function Call() {
     }
 
     if (bingo) {
-      // Emit bingo win event to server
       socket.current.emit("gameWon", { gameId, userId: username });
       handleWin();
     }
-  }, [calledNumbers, playerCard, stake, players, winner, gameStarted]);
+  }, [calledNumbers, playerCard, stake, players, winner, gameStarted, gameId, username]);
 
-  // Update win amount display on players or stake change
+  // Update win amount on stake or players change
   useEffect(() => {
     const totalWin = stake * players * 0.8;
     setWinAmount(`Br${totalWin}`);
   }, [players, stake]);
 
-  // Prepare marked card for modal
-  const getMarkedCartela = () => {
-    return playerCard.map((row, rowIndex) =>
+  // Prepare marked cartela for WinModal
+  const getMarkedCartela = () =>
+    playerCard.map((row, rowIndex) =>
       row.map((num, colIndex) => {
         const isCenter = rowIndex === 2 && colIndex === 2;
         const marked = isCenter || calledNumbers.includes(num);
         return { num, marked, isCenter };
       })
     );
-  };
 
   const lastThree = calledNumbers.slice(-3).reverse();
 
@@ -273,6 +264,7 @@ function Call() {
         <div>Win: {winAmount}</div>
         <div>Call: {calledNumbers.length}</div>
       </div>
+
       <div className="main-content">
         <div className="board">
           <div className="bingo-header-row">
@@ -282,7 +274,6 @@ function Call() {
               </div>
             ))}
           </div>
-
           <div className="board-grid">
             {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => (
               <div
