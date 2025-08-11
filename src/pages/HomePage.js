@@ -77,13 +77,6 @@ function HomePage() {
 
     // The server sends instructions to update balances after a game finishes
     socket.on("balanceChange", (payload) => {
-      // payload example (server-side): {
-      //   winner: userId,
-      //   prize: <number>,
-      //   losers: [userId1, userId2, ...],
-      //   perLoserDeduct: <number>,
-      //   totalCollected: <number>
-      // }
       try {
         const userId = localStorage.getItem("telegram_id") || telegramId;
         if (!userId) return;
@@ -102,7 +95,8 @@ function HomePage() {
           const prize = Number(payload.prize || 0);
           const current = parseFloat(localStorage.getItem("balance") ?? balance ?? 0);
           const newBal = Number((current + prize).toFixed(2));
-          setBalance(newBal);localStorage.setItem("balance", newBal);
+          setBalance(newBal);
+          localStorage.setItem("balance", newBal);
         } else if (payload && Array.isArray(payload.losers) && payload.losers.includes(userId)) {
           // Loser: deduct perLoserDeduct
           const deduct = Number(payload.perLoserDeduct || 0);
@@ -111,8 +105,7 @@ function HomePage() {
           setBalance(newBal);
           localStorage.setItem("balance", newBal);
         }
-
-        // Save marker so we don't reapply this same balanceChange
+// Save marker so we don't reapply this same balanceChange
         localStorage.setItem(markerKey, payloadId);
       } catch (err) {
         console.error("Failed to apply balanceChange:", err);
@@ -154,7 +147,6 @@ function HomePage() {
       socket.disconnect();
       socketRef.current = null;
     };
-    // We include these dependencies because we want to handle re-join on user or stake changes
   }, [telegramId, selectedStake, firstName, balance]);
 
   // Fetch and sync user data (balance etc.)
@@ -213,10 +205,29 @@ function HomePage() {
     }
 
     fetchUserData();
-  }, []);// Refresh user data every 15s
+  }, []);
+
+  // Refresh user data every 15s
   useEffect(() => {
     const interval = setInterval(fetchUserData, 15000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Listen for balance changes in localStorage (from other tabs/components)
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === "balance") {
+        const newBalance = parseFloat(event.newValue);
+        if (!isNaN(newBalance)) {
+          setBalance(newBalance);
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, []);
 
   // Join game when user selects stake
@@ -361,7 +372,8 @@ function HomePage() {
           padding: "5px 10px",
           fontWeight: "bold",
           fontSize: "13px",
-          color: "#00BFFF",}}
+          color: "#00BFFF",
+        }}
       >
         <div style={{ flex: 1, textAlign: "left" }}>Stake</div>
         <div style={{ flex: 1, textAlign: "center" }}>Users</div>
@@ -375,7 +387,7 @@ function HomePage() {
         const users = isSelected ? livePlayerCount : 0;
         const timer =
           isSelected && countdown !== null && users >= 2
-            ?` ${countdown}s`
+            ? `${countdown}s`
             : "...";
         const win =
           isSelected && users > 0
@@ -476,7 +488,8 @@ function HomePage() {
         onClick={() => setShowPromoModal(true)}
       >
         Have a promo code? Click here
-      </p>{showModal === "stakeWarning" && (
+      </p>
+      {showModal === "stakeWarning" && (
         <div style={overlayStyle}>
           <div
             style={{
@@ -523,7 +536,7 @@ function HomePage() {
       {showPromoModal && (
         <div style={overlayStyle}>
           <PromoCodeModal
-            onClose={() => setShowPromoModal(false)}
+               onClose={() => setShowPromoModal(false)}
             onSuccess={() => {
               setShowPromoModal(false);
               alert("Promo code verified!");
