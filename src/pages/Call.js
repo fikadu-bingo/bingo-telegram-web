@@ -5,9 +5,6 @@ import logo from "../assets/logo.png";
 import WinModal from "../components/WinModal";
 import "./Call.css";
 
-const COUNTDOWN_START = 50;
-const CALL_INTERVAL = 1000;
-
 function Call() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -18,8 +15,12 @@ function Call() {
     gameId,
     cartelaNumber,
     username: stateUsername,
+    userId: stateUserId,
   } = location.state ?? {};
 
+  // Use userId if available, otherwise fallback to username or localStorage
+  const userId =
+    stateUserId ?? stateUsername ?? localStorage.getItem("userId") ?? "User";
   const username =
     stateUsername ?? localStorage.getItem("firstName") ?? "User";
 
@@ -32,43 +33,30 @@ function Call() {
   const [showPopup, setShowPopup] = useState(false);
   const [players, setPlayers] = useState(1);
   const [winAmount, setWinAmount] = useState("Br0");
-  const [numbersToCall, setNumbersToCall] = useState([]);
-  const [isCallingNumbers, setIsCallingNumbers] = useState(false);
 
   const socket = useRef(null);
-  const callIntervalRef = useRef(null);
-  const countdownIntervalRef = useRef(null);
 
   useEffect(() => {
-    if (!gameId || !username) {
+    if (!gameId || !userId) {
       alert("Invalid game data. Returning to home...");
       navigate("/");
       return;
     }
 
-    // Connect to server
     socket.current = io("https://bingo-server-rw7p.onrender.com", {
       transports: ["websocket"],
     });
 
-    // Join game room with user info and stake
-    socket.current.emit("joinGame", { userId: username, username, stake });
+    socket.current.emit("joinGame", { userId, username, stake });
 
-    // Update players list
     socket.current.on("playerListUpdated", ({ players: playerList }) => {
       setPlayers(playerList.length);
-
-      // Auto start countdown if enough players and not started yet
-      if (playerList.length >= 2 && countdown === null && !gameStarted) {
-        startCountdown();
-      }
     });
 
-    // Update countdown timer from server
     socket.current.on("countdownUpdate", (time) => {
       setCountdown(time);
       if (time === 0) {
-        startCallingNumbers();
+        setGameStarted(true);
       }
     });
 
@@ -77,7 +65,6 @@ function Call() {
       setGameStarted(false);
     });
 
-    // Update when new number called
     socket.current.on("numberCalled", (number) => {
       setCurrentNumber(number);
       setCalledNumbers((prev) => {
@@ -86,35 +73,29 @@ function Call() {
       });
     });
 
-    // Update win amount (80% of total stake)
     socket.current.on("winAmountUpdate", (amount) => {
       setWinAmount(`Br${amount}`);
     });
 
-    // Mark game as started
     socket.current.on("gameStarted", () => {
       setGameStarted(true);
     });
 
-    // Handle game won event with winner info & balances for all players
-    socket.current.on("gameWon", ({ winnerId, prize, balances }) => {
+    socket.current.on("gameWon", ({ userId: winnerId, prize, balances }) => {
       setWinnerInfo({ userId: winnerId, prize });
       setShowPopup(true);
 
-      // Update local balance for this user if provided
-      if (balances && balances[username] !== undefined) {
-        localStorage.setItem("balance", balances[username]);
+      if (balances && balances[userId] !== undefined) {
+        localStorage.setItem("balance", balances[userId]);
       }
     });
 
-    // Listen for balanceChange event to update local balance dynamically
     socket.current.on("balanceChange", ({ balances }) => {
-      if (balances && balances[username] !== undefined) {
-        localStorage.setItem("balance", balances[username]);
+      if (balances && balances[userId] !== undefined) {
+        localStorage.setItem("balance", balances[userId]);
       }
     });
 
-    // Reset game state on server reset event
     socket.current.on("gameReset", () => {
       setCalledNumbers([]);
       setCurrentNumber(null);
@@ -123,76 +104,30 @@ function Call() {
       setWinnerInfo(null);
       setShowPopup(false);
     });
+
+    // Cleanup on unmount
     return () => {
       if (socket.current) {
-        socket.current.emit("leaveGame", { userId: username });
+        socket.current.emit("leaveGame", { userId });
+        // Remove all listeners to avoid duplicates
+        socket.current.off("playerListUpdated");
+        socket.current.off("countdownUpdate");
+        socket.current.off("countdownStopped");
+        socket.current.off("numberCalled");
+        socket.current.off("winAmountUpdate");
+        socket.current.off("gameStarted");
+        socket.current.off("gameWon");
+        socket.current.off("balanceChange");
+        socket.current.off("gameReset");
         socket.current.disconnect();
         socket.current = null;
       }
-      clearInterval(countdownIntervalRef.current);
-      clearInterval(callIntervalRef.current);
     };
-  }, [gameId, username, stake, countdown, gameStarted, navigate]);
-
-  // Start countdown locally (this is mainly UI effect; actual countdown sync from server)
-  const startCountdown = () => {
-    setCountdown(COUNTDOWN_START);
-    let timeLeft = COUNTDOWN_START;
-
-    countdownIntervalRef.current = setInterval(() => {
-      timeLeft--;
-      setCountdown(timeLeft);
-      if (timeLeft <= 0) {
-        clearInterval(countdownIntervalRef.current);
-        startCallingNumbers();
-      }
-    }, 1000);
-  };
-
-  // Start calling numbers automatically (client-side UI)
-  const startCallingNumbers = () => {
-    setGameStarted(true);
-    let nums = Array.from({ length: 100 }, (_, i) => i + 1);
-    nums = shuffleArray(nums);
-    setNumbersToCall(nums);
-    setCalledNumbers([]);
-    setCurrentNumber(null);
-    setIsCallingNumbers(true);
-
-    // Inform server that game started
-    socket.current.emit("gameStarted", { gameId });
-
-    let index = 0;
-    callIntervalRef.current = setInterval(() => {
-      if (index >= nums.length) {
-        clearInterval(callIntervalRef.current);
-        setIsCallingNumbers(false);
-        return;
-      }
-      const number = nums[index];
-      setCurrentNumber(number);
-      setCalledNumbers((prev) => [...prev, number]);
-
-      socket.current.emit("numberCalled", { gameId, number });
-
-      index++;
-    }, CALL_INTERVAL);
-  };
-
-  // Fisher-Yates shuffle
-  const shuffleArray = (array) => {
-    let arr = [...array];
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  };
+  }, [gameId, userId, username, stake, navigate]);
 
   // Check bingo pattern for current player card and called numbers
   useEffect(() => {
     if (!gameStarted || winnerInfo) return;
-
     const isMarked = (num, row, col) => {
       if (row === 2 && col === 2) return true; // center free space
       return calledNumbers.includes(num);
@@ -238,18 +173,9 @@ function Call() {
     }
 
     if (bingo) {
-      socket.current.emit("bingoWin", { gameId, userId: username });
-      // Wait for server to broadcast "gameWon" event
+      socket.current.emit("bingoWin", { gameId, userId });
     }
-  }, [calledNumbers, playerCard, gameStarted, winnerInfo, gameId, username]);
-
-  // Calculate and set win amount (80% of total stakes)
-  useEffect(() => {
-    if (players && stake) {
-      const totalWin = stake * players * 0.8;
-      setWinAmount(`Br${totalWin.toFixed(2)}`);
-    }
-  }, [players, stake]);
+  }, [calledNumbers, playerCard, gameStarted, winnerInfo, gameId, userId]);
 
   // Prepare marked cartela for WinModal
   const getMarkedCartela = () => {
