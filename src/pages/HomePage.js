@@ -56,10 +56,12 @@ function HomePage() {
       }
     });
 
+    // Live player count (for selected single-room)
     socket.on("playerCountUpdate", (count) => {
       setLivePlayerCount(count);
     });
 
+    // Countdown updates
     socket.on("countdownUpdate", (time) => {
       setCountdown(time);
     });
@@ -68,8 +70,79 @@ function HomePage() {
       setCountdown(null);
     });
 
+    // Win amount update
     socket.on("winAmountUpdate", (amount) => {
       setWinAmount(amount);
+    });
+
+    // The server sends instructions to update balances after a game finishes
+    socket.on("balanceChange", (payload) => {
+      // payload example (server-side): {
+      //   winner: userId,
+      //   prize: <number>,
+      //   losers: [userId1, userId2, ...],
+      //   perLoserDeduct: <number>,
+      //   totalCollected: <number>
+      // }
+      try {
+        const userId = localStorage.getItem("telegram_id") || telegramId;
+        if (!userId) return;
+
+        // Prevent applying the same payload multiple times:
+        const markerKey = "last_balance_change";
+        const payloadId = JSON.stringify(payload || {});
+        const already = localStorage.getItem(markerKey);
+        if (already === payloadId) {
+          return; // already applied
+        }
+
+        // Apply winner/loser updates (update local balance + localStorage)
+        if (payload && payload.winner === userId) {
+          // Winner: add prize
+          const prize = Number(payload.prize || 0);
+          const current = parseFloat(localStorage.getItem("balance") ?? balance ?? 0);
+          const newBal = Number((current + prize).toFixed(2));
+          setBalance(newBal);localStorage.setItem("balance", newBal);
+        } else if (payload && Array.isArray(payload.losers) && payload.losers.includes(userId)) {
+          // Loser: deduct perLoserDeduct
+          const deduct = Number(payload.perLoserDeduct || 0);
+          const current = parseFloat(localStorage.getItem("balance") ?? balance ?? 0);
+          const newBal = Number((current - deduct).toFixed(2));
+          setBalance(newBal);
+          localStorage.setItem("balance", newBal);
+        }
+
+        // Save marker so we don't reapply this same balanceChange
+        localStorage.setItem(markerKey, payloadId);
+      } catch (err) {
+        console.error("Failed to apply balanceChange:", err);
+      }
+    });
+
+    // Server may send a targeted deduct (e.g., when leaving)
+    socket.on("deductBalance", ({ amount, reason } = {}) => {
+      try {
+        const userId = localStorage.getItem("telegram_id") || telegramId;
+        if (!userId) return;
+        const current = parseFloat(localStorage.getItem("balance") ?? balance ?? 0);
+        const newBal = Number((current - Number(amount || 0)).toFixed(2));
+        setBalance(newBal);
+        localStorage.setItem("balance", newBal);
+      } catch (err) {
+        console.error("Failed to apply deductBalance:", err);
+      }
+    });
+
+    // Clear per-game markers on reset so next game can apply again
+    socket.on("gameReset", () => {
+      try {
+        localStorage.removeItem("last_balance_change");
+        setWinAmount(null);
+        setCountdown(null);
+        setLivePlayerCount(0);
+      } catch (err) {
+        console.warn("Error handling gameReset:", err);
+      }
     });
 
     // Cleanup on unmount
@@ -82,7 +155,7 @@ function HomePage() {
       socketRef.current = null;
     };
     // We include these dependencies because we want to handle re-join on user or stake changes
-  }, [telegramId, selectedStake, firstName]);
+  }, [telegramId, selectedStake, firstName, balance]);
 
   // Fetch and sync user data (balance etc.)
   const fetchUserData = async () => {
@@ -112,6 +185,7 @@ function HomePage() {
       console.error("Failed to fetch user data:", error);
     }
   };
+
   // Load user info on mount from URL or localStorage
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -139,9 +213,7 @@ function HomePage() {
     }
 
     fetchUserData();
-  }, []);
-
-  // Refresh user data every 15s
+  }, []);// Refresh user data every 15s
   useEffect(() => {
     const interval = setInterval(fetchUserData, 15000);
     return () => clearInterval(interval);
@@ -254,6 +326,7 @@ function HomePage() {
         alt="1Bingo Logo"
         style={{ width: "120px", height: "auto", marginBottom: "10px" }}
       />
+
       <div style={{ fontSize: "18px", marginBottom: "10px", color: "#00BFFF" }}>
         👋 Welcome, {firstName}
       </div>
@@ -288,8 +361,7 @@ function HomePage() {
           padding: "5px 10px",
           fontWeight: "bold",
           fontSize: "13px",
-          color: "#00BFFF",
-        }}
+          color: "#00BFFF",}}
       >
         <div style={{ flex: 1, textAlign: "left" }}>Stake</div>
         <div style={{ flex: 1, textAlign: "center" }}>Users</div>
@@ -303,7 +375,7 @@ function HomePage() {
         const users = isSelected ? livePlayerCount : 0;
         const timer =
           isSelected && countdown !== null && users >= 2
-            ? `${countdown}s`
+            ?` ${countdown}s`
             : "...";
         const win =
           isSelected && users > 0
@@ -369,6 +441,7 @@ function HomePage() {
           </div>
         );
       })}
+
       <div
         style={{
           display: "flex",
@@ -403,9 +476,7 @@ function HomePage() {
         onClick={() => setShowPromoModal(true)}
       >
         Have a promo code? Click here
-      </p>
-
-      {showModal === "stakeWarning" && (
+      </p>{showModal === "stakeWarning" && (
         <div style={overlayStyle}>
           <div
             style={{
