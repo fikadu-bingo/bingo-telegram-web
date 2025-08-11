@@ -18,7 +18,6 @@ function Call() {
     userId: stateUserId,
   } = location.state ?? {};
 
-  // Use userId if available, otherwise fallback to username or localStorage
   const userId =
     stateUserId ?? stateUsername ?? localStorage.getItem("userId") ?? "User";
   const username =
@@ -29,7 +28,7 @@ function Call() {
   const [playerCard, setPlayerCard] = useState(card ?? []);
   const [countdown, setCountdown] = useState(null);
   const [gameStarted, setGameStarted] = useState(false);
-  const [winnerInfo, setWinnerInfo] = useState(null); // { userId, prize, username, winningCard }
+  const [winnerInfo, setWinnerInfo] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [players, setPlayers] = useState(1);
   const [winAmount, setWinAmount] = useState("Br0");
@@ -81,10 +80,16 @@ function Call() {
       setGameStarted(true);
     });
 
+    // Updated gameWon handler to accept new data from server
     socket.current.on(
       "gameWon",
-      ({ userId: winnerId, prize, username, winningCard, balances }) => {
-        setWinnerInfo({ userId: winnerId, prize, username, winningCard });
+      ({ userId: winnerId, prize, username: winnerUsername, balances }) => {
+        setWinnerInfo({
+          userId: winnerId,
+          prize,
+          username: winnerUsername,
+          // Optionally add winningCard if server sends it in future
+        });
         setShowPopup(true);
 
         if (balances && balances[userId] !== undefined) {
@@ -108,11 +113,9 @@ function Call() {
       setShowPopup(false);
     });
 
-    // Cleanup on unmount
     return () => {
       if (socket.current) {
         socket.current.emit("leaveGame", { userId });
-        // Remove all listeners to avoid duplicates
         socket.current.off("playerListUpdated");
         socket.current.off("countdownUpdate");
         socket.current.off("countdownStopped");
@@ -127,62 +130,13 @@ function Call() {
       }
     };
   }, [gameId, userId, username, stake, navigate]);
+  // REMOVED this entire bingo pattern check & automatic bingo emit block
+  // Because the server now automatically detects the winner according to game rules.
+  // So user can't manually call bingo; no "bingoWin" event emission needed from client.
 
-  // Check bingo pattern for current player card and called numbers
-  useEffect(() => {
-    if (!gameStarted || winnerInfo) return;
-    const isMarked = (num, row, col) => {
-      if (row === 2 && col === 2) return true; // center free space
-      return calledNumbers.includes(num);
-    };
-
-    let bingo = false;
-
-    // Check rows
-    for (let i = 0; i < 5; i++) {
-      if (playerCard[i]?.every((num, j) => isMarked(num, i, j))) {
-        bingo = true;
-        break;
-      }
-    }
-
-    // Check columns
-    if (!bingo) {
-      for (let j = 0; j < 5; j++) {
-        let colWin = true;
-        for (let i = 0; i < 5; i++) {
-          if (!isMarked(playerCard[i]?.[j], i, j)) {
-            colWin = false;
-            break;
-          }
-        }
-        if (colWin) {
-          bingo = true;
-          break;
-        }
-      }
-    }
-
-    // Check main diagonal
-    if (!bingo) {
-      bingo = [0, 1, 2, 3, 4].every((i) => isMarked(playerCard[i]?.[i], i, i));
-    }
-
-    // Check anti diagonal
-    if (!bingo) {
-      bingo = [0, 1, 2, 3, 4].every(
-        (i) => isMarked(playerCard[i]?.[4 - i], i, 4 - i)
-      );
-    }
-
-    if (bingo) {
-      socket.current.emit("bingoWin", { gameId, userId });
-    }
-  }, [calledNumbers, playerCard, gameStarted, winnerInfo, gameId, userId]);
-
-  // Prepare marked cartela for WinModal - use winner's card if available, otherwise own
+  // Prepare marked cartela for WinModal
   const getMarkedCartela = () => {
-    const cardToMark = winnerInfo?.winningCard || playerCard;
+    const cardToMark = playerCard; // winner's card not sent yet, fallback to own
 
     return cardToMark.map((row, rowIndex) =>
       row.map((num, colIndex) => {
@@ -279,13 +233,7 @@ function Call() {
           </div>
 
           <div className="buttons">
-            <button
-              onClick={() => socket.current.emit("bingoWin", { gameId, userId })}
-              className="action-btn"
-              disabled={!gameStarted || winnerInfo !== null}
-            >
-              🎉 Bingo
-            </button>
+            {/* Removed the manual Bingo button to prevent client-side winner claims */}
             <button
               onClick={() => navigate("/")}
               className="action-btn"
