@@ -209,7 +209,7 @@ function BingoBoard() {
             marginBottom: "15px",
           }}
         >
-          <div>Wallet: Br{wallet.toFixed(2)}</div>
+          <div>Wallet: Br{wallet-stake.toFixed(2)}</div>
           <div>Game ID: {gameId}</div>
           <div>Stake: Br{stake}</div>
         </div>
@@ -379,3 +379,4 @@ function BingoBoard() {
 
 
 export default BingoBoard;
+
