@@ -138,9 +138,9 @@ function BingoBoard() {
       return;
     }
 
-    const newWallet = wallet - stake;
-    setWallet(newWallet);
-    localStorage.setItem("balance", newWallet);
+    const Wallet = balance- stake;
+    setWallet(Wallet);
+    localStorage.setItem("balance", Wallet);
     setGameStarted(true);
 
     navigate("/call", {
