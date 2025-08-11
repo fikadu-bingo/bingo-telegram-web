@@ -29,7 +29,7 @@ function Call() {
   const [playerCard, setPlayerCard] = useState(card ?? []);
   const [countdown, setCountdown] = useState(null);
   const [gameStarted, setGameStarted] = useState(false);
-  const [winnerInfo, setWinnerInfo] = useState(null); // { userId, prize }
+  const [winnerInfo, setWinnerInfo] = useState(null); // { userId, prize, username, winningCard }
   const [showPopup, setShowPopup] = useState(false);
   const [players, setPlayers] = useState(1);
   const [winAmount, setWinAmount] = useState("Br0");
@@ -81,14 +81,17 @@ function Call() {
       setGameStarted(true);
     });
 
-    socket.current.on("gameWon", ({ userId: winnerId, prize, balances }) => {
-      setWinnerInfo({ userId: winnerId, prize });
-      setShowPopup(true);
+    socket.current.on(
+      "gameWon",
+      ({ userId: winnerId, prize, username, winningCard, balances }) => {
+        setWinnerInfo({ userId: winnerId, prize, username, winningCard });
+        setShowPopup(true);
 
-      if (balances && balances[userId] !== undefined) {
-        localStorage.setItem("balance", balances[userId]);
+        if (balances && balances[userId] !== undefined) {
+          localStorage.setItem("balance", balances[userId]);
+        }
       }
-    });
+    );
 
     socket.current.on("balanceChange", ({ balances }) => {
       if (balances && balances[userId] !== undefined) {
@@ -177,9 +180,11 @@ function Call() {
     }
   }, [calledNumbers, playerCard, gameStarted, winnerInfo, gameId, userId]);
 
-  // Prepare marked cartela for WinModal
+  // Prepare marked cartela for WinModal - use winner's card if available, otherwise own
   const getMarkedCartela = () => {
-    return playerCard.map((row, rowIndex) =>
+    const cardToMark = winnerInfo?.winningCard || playerCard;
+
+    return cardToMark.map((row, rowIndex) =>
       row.map((num, colIndex) => {
         const isCenter = rowIndex === 2 && colIndex === 2;
         const marked = isCenter || calledNumbers.includes(num);
@@ -275,7 +280,7 @@ function Call() {
 
           <div className="buttons">
             <button
-              onClick={() => alert("Bingo button logic (coming soon)!")}
+              onClick={() => socket.current.emit("bingoWin", { gameId, userId })}
               className="action-btn"
               disabled={!gameStarted || winnerInfo !== null}
             >
@@ -294,7 +299,7 @@ function Call() {
 
       {showPopup && winnerInfo && (
         <WinModal
-          username={winnerInfo.userId}
+          username={winnerInfo.username}
           amount={`Br${winnerInfo.prize}`}
           cartela={getMarkedCartela()}
           cartelaNumber={cartelaNumber}
