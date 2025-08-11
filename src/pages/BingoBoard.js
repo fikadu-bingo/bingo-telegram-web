@@ -21,6 +21,7 @@ function BingoBoard() {
   const initialBalance = parseFloat(localStorage.getItem("balance") ?? "200");
   const [wallet, setWallet] = useState(initialBalance);
   const [gameId, setGameId] = useState("");
+  const [balance] = useState(initialBalance);
 
   // Selected ticket number & card
   const [selectedNumber, setSelectedNumber] = useState(null);
@@ -375,5 +376,6 @@ function BingoBoard() {
     </div>
   );
 }
+
 
 export default BingoBoard;
