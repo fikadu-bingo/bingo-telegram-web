@@ -19,7 +19,7 @@ function Call() {
   } = location.state ?? {};
 
   const userId =
-    stateUserId ?? stateUsername ?? localStorage.getItem("userId") ?? "User";
+    stateUserId ?? localStorage.getItem("userId") ?? "User";
   const username =
     stateUsername ?? localStorage.getItem("firstName") ?? "User";
 
@@ -46,7 +46,8 @@ function Call() {
       transports: ["websocket"],
     });
 
-    socket.current.emit("joinGame", { userId, username, stake });
+    // Send player's 5x5 card as ticket on joinGame
+    socket.current.emit("joinGame", { userId, username, stake, ticket: playerCard });
 
     socket.current.on("playerListUpdated", ({ players: playerList }) => {
       setPlayers(playerList.length);
@@ -80,21 +81,15 @@ function Call() {
       setGameStarted(true);
     });
 
-    // Updated gameWon handler to accept new data from server
     socket.current.on(
       "gameWon",
-      ({ userId: winnerId, prize, username: winnerUsername, balances }) => {
+      ({ userId: winnerId, username: winnerUsername }) => {
         setWinnerInfo({
           userId: winnerId,
-          prize,
           username: winnerUsername,
-          // Optionally add winningCard if server sends it in future
+          prize: winAmount, // Can show current winAmount; server sends no prize in payload
         });
         setShowPopup(true);
-
-        if (balances && balances[userId] !== undefined) {
-          localStorage.setItem("balance", balances[userId]);
-        }
       }
     );
 
@@ -129,16 +124,11 @@ function Call() {
         socket.current = null;
       }
     };
-  }, [gameId, userId, username, stake, navigate]);
-  // REMOVED this entire bingo pattern check & automatic bingo emit block
-  // Because the server now automatically detects the winner according to game rules.
-  // So user can't manually call bingo; no "bingoWin" event emission needed from client.
+  }, [gameId, userId, username, stake, navigate, playerCard]);
 
   // Prepare marked cartela for WinModal
   const getMarkedCartela = () => {
-    const cardToMark = playerCard; // winner's card not sent yet, fallback to own
-
-    return cardToMark.map((row, rowIndex) =>
+    return playerCard.map((row, rowIndex) =>
       row.map((num, colIndex) => {
         const isCenter = rowIndex === 2 && colIndex === 2;
         const marked = isCenter || calledNumbers.includes(num);
@@ -233,7 +223,6 @@ function Call() {
           </div>
 
           <div className="buttons">
-            {/* Removed the manual Bingo button to prevent client-side winner claims */}
             <button
               onClick={() => navigate("/")}
               className="action-btn"
@@ -248,7 +237,7 @@ function Call() {
       {showPopup && winnerInfo && (
         <WinModal
           username={winnerInfo.username}
-          amount={`Br${winnerInfo.prize}`}
+          amount={winnerInfo.prize}
           cartela={getMarkedCartela()}
           cartelaNumber={cartelaNumber}
           onPlayAgain={() => {
