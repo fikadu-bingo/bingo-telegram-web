@@ -18,10 +18,9 @@ function Call() {
     userId: stateUserId,
   } = location.state ?? {};
 
-  const userId =
-    stateUserId ?? localStorage.getItem("userId") ?? "User";
-  const username =
-    stateUsername ?? localStorage.getItem("firstName") ?? "User";
+  // Prefer passed userId/username, else from localStorage fallback
+  const userId = stateUserId ?? localStorage.getItem("telegram_id") ?? `guest_${Date.now()}`;
+  const username = stateUsername ?? localStorage.getItem("firstName") ?? "User";
 
   const [calledNumbers, setCalledNumbers] = useState([]);
   const [currentNumber, setCurrentNumber] = useState(null);
@@ -31,33 +30,34 @@ function Call() {
   const [winnerInfo, setWinnerInfo] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [players, setPlayers] = useState(1);
-  const [winAmount, setWinAmount] = useState("Br0");
+  const [winAmount, setWinAmount] = useState(0);
 
   const socket = useRef(null);
 
   useEffect(() => {
-    if (!gameId || !userId) {
+    if (!stake || !userId) {
       alert("Invalid game data. Returning to home...");
       navigate("/");
       return;
     }
 
+    // Connect socket
     socket.current = io("https://bingo-server-rw7p.onrender.com", {
       transports: ["websocket"],
     });
 
-    // Send player's 5x5 card as ticket on joinGame
+    // Join game with userId, username, stake, and ticket (player card)
     socket.current.emit("joinGame", { userId, username, stake, ticket: playerCard });
 
-    socket.current.on("playerListUpdated", ({ players: playerList }) => {
-      setPlayers(playerList.length);
+    // Listen for updated player list
+    socket.current.on("playerCountUpdate", (count) => {
+      setPlayers(count);
     });
 
+    // Countdown updates
     socket.current.on("countdownUpdate", (time) => {
       setCountdown(time);
-      if (time === 0) {
-        setGameStarted(true);
-      }
+      if (time === 0) setGameStarted(true);
     });
 
     socket.current.on("countdownStopped", () => {
@@ -65,40 +65,50 @@ function Call() {
       setGameStarted(false);
     });
 
+    // Called number event
     socket.current.on("numberCalled", (number) => {
       setCurrentNumber(number);
-      setCalledNumbers((prev) => {
-        if (!prev.includes(number)) return [...prev, number];
-        return prev;
-      });
+      setCalledNumbers((prev) => (prev.includes(number) ? prev : [...prev, number]));
     });
 
+    // Win amount update
     socket.current.on("winAmountUpdate", (amount) => {
-      setWinAmount(`Br${amount}`);
+      setWinAmount(amount);
     });
 
+    // Game started event
     socket.current.on("gameStarted", () => {
       setGameStarted(true);
     });
 
-    socket.current.on(
-      "gameWon",
-      ({ userId: winnerId, username: winnerUsername }) => {
-        setWinnerInfo({
-          userId: winnerId,
-          username: winnerUsername,
-          prize: winAmount, // Can show current winAmount; server sends no prize in payload
-        });
-        setShowPopup(true);
-      }
-    );
+    // Winner announcement
+    socket.current.on("gameWon", ({ userId: winnerId, username: winnerUsername, prize }) => {
+      // prize can come from server payload or fallback to current winAmount
+      setWinnerInfo({
+        userId: winnerId,
+        username: winnerUsername,
+        prize: prize ?? winAmount,
+      });
+      setShowPopup(true);
+    });
 
-    socket.current.on("balanceChange", ({ balances }) => {
-      if (balances && balances[userId] !== undefined) {
-        localStorage.setItem("balance", balances[userId]);
+    // Balance changes (after game or manual adjustments)
+    socket.current.on("balanceChange", (payload) => {
+      try {
+        if (!payload || !payload.userId || payload.userId !== userId) return;
+
+        // Update localStorage and state balance
+        const current = parseFloat(localStorage.getItem("balance") ?? 0);
+        const newBalance = parseFloat(payload.newBalance);
+        if (!isNaN(newBalance) && newBalance !== current) {
+          localStorage.setItem("balance", newBalance);
+        }
+      } catch (e) {
+        console.error("Failed to process balanceChange:", e);
       }
     });
 
+    // Reset game UI
     socket.current.on("gameReset", () => {
       setCalledNumbers([]);
       setCurrentNumber(null);
@@ -108,25 +118,16 @@ function Call() {
       setShowPopup(false);
     });
 
+    // Cleanup on unmount
     return () => {
       if (socket.current) {
         socket.current.emit("leaveGame", { userId });
-        socket.current.off("playerListUpdated");
-        socket.current.off("countdownUpdate");
-        socket.current.off("countdownStopped");
-        socket.current.off("numberCalled");
-        socket.current.off("winAmountUpdate");
-        socket.current.off("gameStarted");
-        socket.current.off("gameWon");
-        socket.current.off("balanceChange");
-        socket.current.off("gameReset");
         socket.current.disconnect();
         socket.current = null;
       }
     };
-  }, [gameId, userId, username, stake, navigate, playerCard]);
-
-  // Prepare marked cartela for WinModal
+  }, [stake, userId, username, playerCard, navigate]);
+  // Prepare marked cartela for WinModal display
   const getMarkedCartela = () => {
     return playerCard.map((row, rowIndex) =>
       row.map((num, colIndex) => {
@@ -147,7 +148,7 @@ function Call() {
       <div className="top-menu">
         <div>Players: {players}</div>
         <div>Bet: Br{stake}</div>
-        <div>Win: {winAmount}</div>
+        <div>Win: Br{winAmount}</div>
         <div>Call: {calledNumbers.length}</div>
       </div>
 
@@ -227,6 +228,7 @@ function Call() {
               onClick={() => navigate("/")}
               className="action-btn"
               disabled={gameStarted && winnerInfo === null}
+              title={gameStarted && winnerInfo === null ? "You can't leave during an active game" : ""}
             >
               🚪 Leave
             </button>
