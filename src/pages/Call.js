@@ -84,13 +84,11 @@ function Call() {
     // Winner announcement
    socket.current.on("gameWon", ({ userId: winnerId, username: winnerUsername, prize }) => {
   // Prize should be a number or string representing the winning amount
-  const formattedPrize = prize ? `Br${prize}` : winAmount || "Br0";
-
-  setWinnerInfo({
-    userId: winnerId,
-    username: winnerUsername,
-    prize: formattedPrize,
-  });
+setWinnerInfo({
+        userId: winnerId,
+        username: winnerUsername,
+        prize: prize ?? winAmount,
+      });
   setShowPopup(true);
 });
 
