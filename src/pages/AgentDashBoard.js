@@ -241,7 +241,7 @@ function AgentDashboard() {
                   <td>
                     {request.receipt_url ? (
                       <a
-                        href={`${backendUrl}/${request.receipt_url}`}
+                        href={request.receipt_url}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
