@@ -2,63 +2,75 @@ import React, { useState } from "react";
 import axios from "axios";
 import DepositSuccessModal from "./DepositSuccessModal";
 import "./DepositModal.css";
+
 const telegram_id = localStorage.getItem("telegram_id");
 
 function DepositModal({ onClose }) {
-  
   const [amount, setAmount] = useState("");
   const [phone, setPhone] = useState("");
   const [receipt, setReceipt] = useState(null);
   const [copied, setCopied] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  
 
   const telebirrNumber = "0934461362";
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  const depositAmount = parseFloat(amount);
-  if (depositAmount < 10 || depositAmount > 1000) {
-    alert("Amount must be between 10 and 1000 ETB.");
-    setLoading(false);
-    return;
-  }
+    const depositAmount = parseFloat(amount);
+    if (depositAmount < 10 || depositAmount > 1000) {
+      alert("Amount must be between 10 and 1000 ETB.");
+      setLoading(false);
+      return;
+    }
 
-  if (!receipt) {
-    alert("Please upload your receipt.");
-    setLoading(false);
-    return;
-  }
+    if (!receipt) {
+      alert("Please upload your receipt.");
+      setLoading(false);
+      return;
+    }
 
-  const formData = new FormData();
-  formData.append("amount", amount);
-  formData.append("phone", phone);
-  formData.append("receipt", receipt); // ✅ FIXED HERE
+    try {
+      // ------------------------------
+      // ✅ Step 1: Upload receipt to Cloudinary
+      // ------------------------------
+      const formData = new FormData();
+      formData.append("receipt", receipt);
+      formData.append("type", "deposit"); // determines Cloudinary folder
 
-  try {
-    
-    const response = await axios.post(
-      "https://bingo-server-rw7p.onrender.com/api/user/deposit",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-           "telegram_id":telegram_id, // ✅ Send to backend
-        },
-      }
-    );
-    console.log("Deposit success:", response.data);
-    setShowSuccess(true); // Show success modal
-  } catch (error) {
-    console.error("Deposit error:", error.response?.data || error.message);
-    alert("Deposit failed. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+      const uploadResponse = await axios.post(
+        "https://bingo-server-rw7p.onrender.com/api/user/upload-receipt",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      const receiptUrl = uploadResponse.data.url; // ✅ Cloudinary URL
+
+      // ------------------------------
+      // ✅ Step 2: Send deposit info to backend
+      // ------------------------------
+      const depositResponse = await axios.post(
+        "https://bingo-server-rw7p.onrender.com/api/user/deposit",
+        {
+          amount,
+          phone,
+          receiptUrl, // send the uploaded receipt URL instead of file
+          telegram_id,
+        }
+      );
+
+      console.log("Deposit success:", depositResponse.data);
+      setShowSuccess(true); // show success modal
+    } catch (error) {
+      console.error("Deposit error:", error.response?.data || error.message);
+      alert("Deposit failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCopy = () => {
     navigator.clipboard.writeText(telebirrNumber);
     setCopied(true);
@@ -77,44 +89,19 @@ const handleSubmit = async (e) => {
             />
           </div>
 
-          {/* Telebirr Number (copyable) */}
-          <div
-            style={{
-              marginBottom: "15px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
+          {/* Telebirr Number */}
+          <div style={{ marginBottom: "15px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <label><strong>Telebirr Number</strong></label>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <span style={{ color: "#007BFF", fontWeight: "bold" }}>{telebirrNumber}</span>
-              <button
-                type="button"
-                onClick={handleCopy}
-                style={{
-                  cursor: "pointer",
-                  background: "none",
-                  border: "none",
-                  fontSize: "18px",
-                }}
-              >
-                📄
-              </button>
+              <button type="button" onClick={handleCopy} style={{ cursor: "pointer", background: "none", border: "none", fontSize: "18px" }}>📄</button>
               {copied && <span style={{ fontSize: "12px", color: "green" }}>Copied</span>}
             </div>
           </div>
 
           <form onSubmit={handleSubmit}>
             {/* Amount Input */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "15px",
-              }}
-            >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
               <label>Amount (Min 10 ETB / Max 1000 ETB)</label>
               <input
                 type="number"
@@ -125,15 +112,8 @@ const handleSubmit = async (e) => {
                 style={{ width: "150px", padding: "6px" }}
               />
             </div>
-
             {/* Phone Number Input */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "15px",
-              }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
               <label>Your Telebirr Number</label>
               <input
                 type="tel"
@@ -146,14 +126,7 @@ const handleSubmit = async (e) => {
             </div>
 
             {/* Receipt Upload Input */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "20px",
-              }}
-            >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
               <label>Upload Your Receipt</label>
               <input
                 type="file"
@@ -165,16 +138,11 @@ const handleSubmit = async (e) => {
             </div>
 
             {/* Confirm Button */}
-            <button type="submit" disabled={loading} style={{
-              width: "100%",
-              padding: "10px",
-              backgroundColor: "#007BFF",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              fontWeight: "bold",
-              cursor: "pointer",
-            }}>
+            <button
+              type="submit"
+              disabled={loading}
+              style={{ width: "100%", padding: "10px", backgroundColor: "#007BFF", color: "white", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}
+            >
               {loading ? "Submitting..." : "Confirm Deposit"}
             </button>
           </form>
