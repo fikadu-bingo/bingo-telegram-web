@@ -76,23 +76,15 @@ function HomePage() {
     });
 
     // The server sends updated balances object keyed by userId
-    socket.on("balanceChange", (payload) => {
-      try {
-        const userId = localStorage.getItem("telegram_id") || telegramId;
-        if (!userId) return;
+  socket.on("balanceChange", ({ userId: changedUserId, newBalance }) => {
+  const userId = localStorage.getItem("telegram_id") ?? telegramId;
+  if (!userId) return;
 
-        if (payload && payload.balances && typeof payload.balances === "object") {
-          const newBalance = payload.balances[userId];
-          if (typeof newBalance === "number") {
-            setBalance(newBalance);
-            localStorage.setItem("balance", newBalance);
-          }
-        }
-      } catch (err) {
-        console.error("Failed to apply balanceChange:", err);
-      }
-    });
-
+  if (changedUserId === userId && typeof newBalance === "number") {
+    setBalance(newBalance);
+    localStorage.setItem("balance", newBalance);
+  }
+});
     // Server may send a targeted deduct (e.g., when leaving)
     socket.on("deductBalance", ({ amount, reason } = {}) => {
       try {
