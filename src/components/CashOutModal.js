@@ -5,48 +5,82 @@ import CashOutSuccessModal from "./CashOutSuccessModal";
 function CashOutModal({ onClose }) {
   const [amount, setAmount] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [receipt, setReceipt] = useState(null); // ✅ added receipt state
   const [showSuccess, setShowSuccess] = useState(false);
+  const [loading, setLoading] = useState(false); // ✅ added loading state
 
   const handleConfirm = async () => {
-  const parsedAmount = parseFloat(amount);
-  const isPhoneValid = /^09\d{8}$/.test(phoneNumber);
+    const parsedAmount = parseFloat(amount);
+    const isPhoneValid = /^09\d{8}$/.test(phoneNumber);
     const telegram_id = localStorage.getItem("telegram_id");
+
     if (!telegram_id) {
-  alert("User is not logged in properly. Please refresh the page.");
-  return;
-}
-
-  if (!parsedAmount || parsedAmount < 100 || parsedAmount > 2000) {
-    alert("Amount must be between 100 and 2000 ETB.");
-    return;
-  }
-
-  if (!isPhoneValid) {
-    alert("Please enter a valid 10-digit Ethiopian phone number starting with 09.");
-    return;
-  }
-
-  try {
-   const response = await axios.post("https://bingo-server-rw7p.onrender.com/api/user/cashout", {
-      telegram_id,
-      amount: parsedAmount,
-      phone_number: phoneNumber,
-    });
-
-    if (response.data.success) {
-      setShowSuccess(true);
-      setTimeout(() => {
-        setShowSuccess(false);
-        onClose();
-      }, 3000);
-    } else {
-      alert("Cashout failed: " + response.data.message);
+      alert("User is not logged in properly. Please refresh the page.");
+      return;
     }
-  } catch (error) {
-    console.error("Cashout error:", error);
-    alert("Cashout failed. Please try again later.");
-  }
-};
+
+    if (!parsedAmount || parsedAmount < 100 || parsedAmount > 2000) {
+      alert("Amount must be between 100 and 2000 ETB.");
+      return;
+    }
+
+    if (!isPhoneValid) {
+      alert("Please enter a valid 10-digit Ethiopian phone number starting with 09.");
+      return;
+    }
+
+    if (!receipt) {
+      alert("Please upload your receipt.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // ------------------------------
+      // ✅ Step 1: Upload receipt to Cloudinary
+      // ------------------------------
+      const formData = new FormData();
+      formData.append("receipt", receipt);
+      formData.append("type", "cashout"); // determines Cloudinary folder
+
+      const uploadResponse = await axios.post(
+        "https://bingo-server-rw7p.onrender.com/api/user/upload-receipt",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      const receiptUrl = uploadResponse.data.url; // ✅ get Cloudinary URL
+
+      // ------------------------------
+      // ✅ Step 2: Send cashout data to backend
+      // ------------------------------
+      const response = await axios.post(
+        "https://bingo-server-rw7p.onrender.com/api/user/cashout",
+        {
+          telegram_id,
+          amount: parsedAmount,
+          phone: phoneNumber,
+          receiptUrl, // send the uploaded receipt URL
+        }
+      );
+
+      if (response.data.success || response.data.message) {
+        setShowSuccess(true);
+        setTimeout(() => {
+          setShowSuccess(false);
+          onClose();
+        }, 3000);
+      } else {
+        alert("Cashout failed: " + response.data.message);
+      }
+    } catch (error) {
+      console.error("Cashout error:", error);
+      alert("Cashout failed. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -86,9 +120,21 @@ function CashOutModal({ onClose }) {
                 style={inputBoxStyle}
               />
             </div>
+            {/* ------------------------------
+                Receipt Upload Input
+            ------------------------------ */}
+            <div style={rowStyle}>
+              <label style={labelStyle}>Upload Receipt:</label>
+              <input
+                type="file"
+                accept=".jpg,.jpeg,.png,.pdf"
+                onChange={(e) => setReceipt(e.target.files[0])} // ✅ save file to state
+                style={{ width: "45%" }}
+              />
+            </div>
 
-            <button onClick={handleConfirm} style={submitButtonStyle}>
-              CONFIRM
+            <button onClick={handleConfirm} style={submitButtonStyle} disabled={loading}>
+              {loading ? "Submitting..." : "CONFIRM"}
             </button>
           </div>
         </div>
@@ -101,7 +147,7 @@ function CashOutModal({ onClose }) {
 
 export default CashOutModal;
 
-// Styles
+// Styles (unchanged)
 const overlayStyle = {
   position: "fixed",
   top: 0,
@@ -168,9 +214,4 @@ const submitButtonStyle = {
   fontSize: "16px",
   fontWeight: "bold",
   cursor: "pointer",
-
 };
-
-
-
-
