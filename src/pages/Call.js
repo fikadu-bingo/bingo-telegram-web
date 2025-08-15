@@ -84,51 +84,49 @@ function Call() {
     // Winner announcement
 
 // Winner announcement
-socket.current.on("gameWon", ({ userId: winnerId, username: winnerUsername, prize }) => {
-  const isMe = winnerId === userId;  // check if current client is the winner
+// Winner announcement
+socket.current.on("gameWon", ({ userId: winnerId, username: winnerUsername, prize, balances }) => {
   const numericPrize = Number(prize) || 0;
 
-  if (isMe) {
-    try {
-      // Update local balance
-      const currentBalance = parseFloat(localStorage.getItem("balance") ?? 0);
-      const newBalance = currentBalance + numericPrize;
-      localStorage.setItem("balance", newBalance);
-      // Update HomePage display if needed via custom event
-    } catch (err) {
-      console.error("Failed to update local balance on win:", err);
+  // Update local balance for this client based on balances object
+  try {
+    const myUserId = userId; // current client
+    if (balances && typeof balances === "object" && balances[myUserId] !== undefined) {
+      const updatedBalance = Number(balances[myUserId]);
+      if (!isNaN(updatedBalance)) {
+        localStorage.setItem("balance", updatedBalance);
+        setWinAmount(updatedBalance); // optional: keep UI consistent
+      }
     }
+  } catch (err) {
+    console.error("Failed to update local balance on gameWon:", err);
   }
 
-  // Always update WinModal display
+  // Always show WinModal with winner info
   setWinnerInfo({
     userId: winnerId,
     username: winnerUsername,
     prize: numericPrize,
   });
-  setWinAmount(numericPrize);
   setShowPopup(true);
 });
 
-// General balance updates from server (e.g., deposit, cashout)
+// General balance updates from server (e.g., for losers, deposit, cashout)
 socket.current.on("balanceChange", (payload) => {
   try {
     if (!payload || !payload.balances) return;
 
-    const newBalance = Number(payload.balances[userId]);
+    const myUserId = userId; // current client
+    const newBalance = Number(payload.balances[myUserId]);
     if (!isNaN(newBalance)) {
       localStorage.setItem("balance", newBalance);
-
-      // Only update winAmount if the game hasn't ended
-      if (!winnerInfo) {
-        setWinAmount(newBalance); // optional: keeps UI consistent
-      }
+      // Only update winAmount if no winner modal is currently shown
+      if (!winnerInfo) setWinAmount(newBalance);
     }
   } catch (e) {
     console.error("Failed to process balanceChange:", e);
   }
 });
-
     // Reset game UI
     socket.current.on("gameReset", () => {
       setCalledNumbers([]);
