@@ -5,9 +5,8 @@ import CashOutSuccessModal from "./CashOutSuccessModal";
 function CashOutModal({ onClose }) {
   const [amount, setAmount] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [receipt, setReceipt] = useState(null); // ✅ added receipt state
   const [showSuccess, setShowSuccess] = useState(false);
-  const [loading, setLoading] = useState(false); // ✅ added loading state
+  const [loading, setLoading] = useState(false);
 
   const handleConfirm = async () => {
     const parsedAmount = parseFloat(amount);
@@ -18,65 +17,38 @@ function CashOutModal({ onClose }) {
       alert("User is not logged in properly. Please refresh the page.");
       return;
     }
-
-    if (!parsedAmount || parsedAmount < 100 || parsedAmount > 2000) {
+    if (!(parsedAmount >= 100 && parsedAmount <= 2000)) {
       alert("Amount must be between 100 and 2000 ETB.");
       return;
     }
-
     if (!isPhoneValid) {
       alert("Please enter a valid 10-digit Ethiopian phone number starting with 09.");
       return;
     }
 
-    if (!receipt) {
-      alert("Please upload your receipt.");
-      return;
-    }
-
     try {
       setLoading(true);
-
-      // ------------------------------
-      // ✅ Step 1: Upload receipt to Cloudinary
-      // ------------------------------
-      const formData = new FormData();
-      formData.append("receipt", receipt);
-      formData.append("type", "cashout"); // determines Cloudinary folder
-
-      const uploadResponse = await axios.post(
-        "https://bingo-server-rw7p.onrender.com/api/user/upload-receipt",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-
-      const receiptUrl = uploadResponse.data.url; // ✅ get Cloudinary URL
-
-      // ------------------------------
-      // ✅ Step 2: Send cashout data to backend
-      // ------------------------------
       const response = await axios.post(
         "https://bingo-server-rw7p.onrender.com/api/user/cashout",
         {
           telegram_id,
           amount: parsedAmount,
-          phone: phoneNumber,
-          receiptUrl, // send the uploaded receipt URL
+          phone_number: phoneNumber,
         }
       );
 
-      if (response.data.success || response.data.message) {
+      if (response.data.success) {
         setShowSuccess(true);
         setTimeout(() => {
           setShowSuccess(false);
           onClose();
         }, 3000);
       } else {
-        alert("Cashout failed: " + response.data.message);
+        alert("Cashout failed: " + (response.data.message || "Unknown error"));
       }
     } catch (error) {
       console.error("Cashout error:", error);
-      alert("Cashout failed. Please try again later.");
+      alert(error.response?.data?.message || "Cashout failed. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -92,7 +64,7 @@ function CashOutModal({ onClose }) {
             <img
               src="/telebirr-logo.png"
               alt="Telebirr"
-              style={{ width: "80px", display: "block", margin: "20px auto" }}
+              style={{ width: 80, display: "block", margin: "20px auto" }}
             />
 
             <div style={rowStyle}>
@@ -106,7 +78,7 @@ function CashOutModal({ onClose }) {
               />
             </div>
 
-            <div style={{ fontSize: "12px", marginBottom: "10px", color: "#666", marginLeft: "95px" }}>
+            <div style={{ fontSize: 12, marginBottom: 10, color: "#666", marginLeft: 95 }}>
               (Min 100 ETB / Max 2000 ETB)
             </div>
 
@@ -118,18 +90,6 @@ function CashOutModal({ onClose }) {
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="09xxxxxxxx"
                 style={inputBoxStyle}
-              />
-            </div>
-            {/* ------------------------------
-                Receipt Upload Input
-            ------------------------------ */}
-            <div style={rowStyle}>
-              <label style={labelStyle}>Upload Receipt:</label>
-              <input
-                type="file"
-                accept=".jpg,.jpeg,.png,.pdf"
-                onChange={(e) => setReceipt(e.target.files[0])} // ✅ save file to state
-                style={{ width: "45%" }}
               />
             </div>
 
@@ -147,7 +107,7 @@ function CashOutModal({ onClose }) {
 
 export default CashOutModal;
 
-// Styles (unchanged)
+// Styles
 const overlayStyle = {
   position: "fixed",
   top: 0,
@@ -163,10 +123,10 @@ const overlayStyle = {
 
 const modalStyle = {
   background: "#fff",
-  padding: "30px",
-  borderRadius: "12px",
+  padding: 30,
+  borderRadius: 12,
   width: "90%",
-  maxWidth: "400px",
+  maxWidth: 400,
   color: "#333",
   position: "relative",
   boxShadow: "0 10px 30px rgba(0, 0, 0, 0.3)",
@@ -174,9 +134,9 @@ const modalStyle = {
 
 const closeBtnStyle = {
   position: "absolute",
-  right: "15px",
-  top: "10px",
-  fontSize: "22px",
+  right: 15,
+  top: 10,
+  fontSize: 22,
   fontWeight: "bold",
   cursor: "pointer",
   color: "#999",
@@ -186,32 +146,31 @@ const rowStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  marginBottom: "15px",
+  marginBottom: 15,
 };
 
 const labelStyle = {
   width: "50%",
   fontWeight: "bold",
-  fontSize: "14px",
+  fontSize: 14,
 };
-
 const inputBoxStyle = {
   width: "45%",
-  padding: "10px",
-  borderRadius: "6px",
+  padding: 10,
+  borderRadius: 6,
   border: "1px solid #ccc",
-  fontSize: "14px",
+  fontSize: 14,
 };
 
 const submitButtonStyle = {
-  marginTop: "20px",
+  marginTop: 20,
   width: "100%",
   background: "#4CAF50",
   color: "white",
   border: "none",
-  padding: "12px",
-  borderRadius: "6px",
-  fontSize: "16px",
+  padding: 12,
+  borderRadius: 6,
+  fontSize: 16,
   fontWeight: "bold",
   cursor: "pointer",
 };
