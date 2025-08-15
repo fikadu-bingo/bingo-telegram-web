@@ -17,55 +17,46 @@ function DepositModal({ onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    if (!telegram_id) {
+      alert("User not logged in. Please refresh.");
+      return;
+    }
 
     const depositAmount = parseFloat(amount);
-    if (depositAmount < 10 || depositAmount > 1000) {
+    if (!(depositAmount >= 10 && depositAmount <= 1000)) {
       alert("Amount must be between 10 and 1000 ETB.");
-      setLoading(false);
       return;
     }
-
     if (!receipt) {
       alert("Please upload your receipt.");
-      setLoading(false);
       return;
     }
 
+    setLoading(true);
     try {
-      // ------------------------------
-      // ✅ Step 1: Upload receipt to Cloudinary
-      // ------------------------------
+      // 1) Upload receipt to Cloudinary
       const formData = new FormData();
       formData.append("receipt", receipt);
-      formData.append("type", "deposit"); // determines Cloudinary folder
+      formData.append("type", "deposit");
 
-      const uploadResponse = await axios.post(
+      const uploadRes = await axios.post(
         "https://bingo-server-rw7p.onrender.com/api/user/upload-receipt",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
+      const receiptUrl = uploadRes.data.url;
 
-      const receiptUrl = uploadResponse.data.url; // ✅ Cloudinary URL
-
-      // ------------------------------
-      // ✅ Step 2: Send deposit info to backend
-      // ------------------------------
-      const depositResponse = await axios.post(
+      // 2) Send deposit request with Cloudinary URL
+      await axios.post(
         "https://bingo-server-rw7p.onrender.com/api/user/deposit",
-        {
-          amount,
-          phone,
-          receiptUrl, // send the uploaded receipt URL instead of file
-          telegram_id,
-        }
+        { amount: depositAmount, phone, receiptUrl },
+        { headers: { telegram_id } } // backend expects telegram_id in header
       );
 
-      console.log("Deposit success:", depositResponse.data);
-      setShowSuccess(true); // show success modal
-    } catch (error) {
-      console.error("Deposit error:", error.response?.data || error.message);
-      alert("Deposit failed. Please try again.");
+      setShowSuccess(true);
+    } catch (err) {
+      console.error("Deposit error:", err.response?.data || err.message);
+      alert(err.response?.data?.message || "Deposit failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -81,27 +72,29 @@ function DepositModal({ onClose }) {
     <>
       <div className="modal">
         <div className="modal-content">
-          <div style={{ textAlign: "center", marginBottom: "20px" }}>
+          <div style={{ textAlign: "center", marginBottom: 20 }}>
             <img
               src="/telebirr-logo.png"
               alt="Telebirr Logo"
-              style={{ width: "80px", height: "80px", borderRadius: "12px" }}
+              style={{ width: 80, height: 80, borderRadius: 12 }}
             />
           </div>
 
           {/* Telebirr Number */}
-          <div style={{ marginBottom: "15px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ marginBottom: 15, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <label><strong>Telebirr Number</strong></label>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ color: "#007BFF", fontWeight: "bold" }}>{telebirrNumber}</span>
-              <button type="button" onClick={handleCopy} style={{ cursor: "pointer", background: "none", border: "none", fontSize: "18px" }}>📄</button>
-              {copied && <span style={{ fontSize: "12px", color: "green" }}>Copied</span>}
+              <button type="button" onClick={handleCopy} style={{ cursor: "pointer", background: "none", border: "none", fontSize: 18 }}>
+                📄
+              </button>
+              {copied && <span style={{ fontSize: 12, color: "green" }}>Copied</span>}
             </div>
           </div>
 
           <form onSubmit={handleSubmit}>
-            {/* Amount Input */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+            {/* Amount */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 15 }}>
               <label>Amount (Min 10 ETB / Max 1000 ETB)</label>
               <input
                 type="number"
@@ -109,11 +102,12 @@ function DepositModal({ onClose }) {
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="e.g. 100"
                 required
-                style={{ width: "150px", padding: "6px" }}
+                style={{ width: 150, padding: 6 }}
               />
             </div>
-            {/* Phone Number Input */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+
+            {/* Phone */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 15 }}>
               <label>Your Telebirr Number</label>
               <input
                 type="tel"
@@ -121,33 +115,35 @@ function DepositModal({ onClose }) {
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="09xxxxxxxx"
                 required
-                style={{ width: "150px", padding: "6px" }}
+                style={{ width: 150, padding: 6 }}
               />
             </div>
 
-            {/* Receipt Upload Input */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+            {/* Receipt */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
               <label>Upload Your Receipt</label>
               <input
                 type="file"
                 accept=".jpg,.jpeg,.png,.pdf"
                 onChange={(e) => setReceipt(e.target.files[0])}
                 required
-                style={{ width: "150px" }}
+                style={{ width: 150 }}
               />
             </div>
 
-            {/* Confirm Button */}
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              style={{ width: "100%", padding: "10px", backgroundColor: "#007BFF", color: "white", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}
+              style={{
+                width: "100%", padding: 10, backgroundColor: "#007BFF", color: "white",
+                border: "none", borderRadius: 6, fontWeight: "bold", cursor: "pointer",
+              }}
             >
               {loading ? "Submitting..." : "Confirm Deposit"}
             </button>
           </form>
 
-          {/* Close Button */}
           <button onClick={onClose} className="close">✖️</button>
         </div>
       </div>
