@@ -82,26 +82,46 @@ function Call() {
     });
 
     // Winner announcement
-   socket.current.on("gameWon", ({ userId: winnerId, username: winnerUsername, prize }) => {
-  // Prize should be a number or string representing the winning amount
-setWinnerInfo({
-        userId: winnerId,
-        username: winnerUsername,
-        prize: prize ?? winAmount,
-      });
+
+// Winner announcement
+socket.current.on("gameWon", ({ userId: winnerId, username: winnerUsername, prize }) => {
+  const isMe = winnerId === userId;  // check if current client is the winner
+  const numericPrize = Number(prize) || 0;
+
+  if (isMe) {
+    try {
+      // Update local balance
+      const currentBalance = parseFloat(localStorage.getItem("balance") ?? 0);
+      const newBalance = currentBalance + numericPrize;
+      localStorage.setItem("balance", newBalance);
+      // Update HomePage display if needed via custom event
+    } catch (err) {
+      console.error("Failed to update local balance on win:", err);
+    }
+  }
+
+  // Always update WinModal display
+  setWinnerInfo({
+    userId: winnerId,
+    username: winnerUsername,
+    prize: numericPrize,
+  });
+  setWinAmount(numericPrize);
   setShowPopup(true);
 });
 
-    // Balance changes (after game or manual adjustments)
+// General balance updates from server (e.g., deposit, cashout)
 socket.current.on("balanceChange", (payload) => {
   try {
     if (!payload || !payload.balances) return;
 
-    const newBalance = payload.balances[userId];
-    if (newBalance !== undefined) {
-      const current = parseFloat(localStorage.getItem("balance") ?? 0);
-      if (parseFloat(newBalance) !== current) {
-        localStorage.setItem("balance", parseFloat(newBalance));
+    const newBalance = Number(payload.balances[userId]);
+    if (!isNaN(newBalance)) {
+      localStorage.setItem("balance", newBalance);
+
+      // Only update winAmount if the game hasn't ended
+      if (!winnerInfo) {
+        setWinAmount(newBalance); // optional: keeps UI consistent
       }
     }
   } catch (e) {
@@ -246,7 +266,10 @@ socket.current.on("balanceChange", (payload) => {
           onPlayAgain={() => {
             setWinnerInfo(null);
             setShowPopup(false);
-            navigate("/");
+               // TODO: refresh balance display after play again
+    const updatedBalance = parseFloat(localStorage.getItem("balance") ?? 0);
+    setWinAmount(updatedBalance); // optional: update state so HomePage reflects it
+    navigate("/");
           }}
         />
       )}
