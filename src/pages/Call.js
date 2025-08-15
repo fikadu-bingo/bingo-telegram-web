@@ -93,20 +93,21 @@ setWinnerInfo({
 });
 
     // Balance changes (after game or manual adjustments)
-    socket.current.on("balanceChange", (payload) => {
-      try {
-        if (!payload || !payload.userId || payload.userId !== userId) return;
+socket.current.on("balanceChange", (payload) => {
+  try {
+    if (!payload || !payload.balances) return;
 
-        // Update localStorage and state balance
-        const current = parseFloat(localStorage.getItem("balance") ?? 0);
-        const newBalance = parseFloat(payload.newBalance);
-        if (!isNaN(newBalance) && newBalance !== current) {
-          localStorage.setItem("balance", newBalance);
-        }
-      } catch (e) {
-        console.error("Failed to process balanceChange:", e);
+    const newBalance = payload.balances[userId];
+    if (newBalance !== undefined) {
+      const current = parseFloat(localStorage.getItem("balance") ?? 0);
+      if (parseFloat(newBalance) !== current) {
+        localStorage.setItem("balance", parseFloat(newBalance));
       }
-    });
+    }
+  } catch (e) {
+    console.error("Failed to process balanceChange:", e);
+  }
+});
 
     // Reset game UI
     socket.current.on("gameReset", () => {
