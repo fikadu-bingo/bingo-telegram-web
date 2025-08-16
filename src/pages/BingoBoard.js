@@ -139,7 +139,7 @@ function BingoBoard() {
       return;
     }
 
-    const Wallet = balance- stake;
+    const Wallet = balance - stake;
     setWallet(Wallet);
     localStorage.setItem("balance", Wallet);
     setGameStarted(true);
@@ -170,7 +170,7 @@ function BingoBoard() {
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #4B0082, #6A5ACD)",
+        background: "linear-gradient(135deg, #82007eff, #ba5acdff)",
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-start",
@@ -242,7 +242,7 @@ function BingoBoard() {
                 style={{
                   padding: "8px",
                   background: isCurrentUserSelected
-                    ? "#00C9FF"
+                    ? "#f7ad2eff"
                     : isSelected
                     ? "#FF5722"
                     : "#333",
@@ -377,6 +377,4 @@ function BingoBoard() {
   );
 }
 
-
 export default BingoBoard;
-
