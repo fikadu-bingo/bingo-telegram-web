@@ -35,7 +35,7 @@
   flex-direction: row;
   justify-content: center;
   gap: 10px;
-  flex-wrap: nowrap;
+  align-items: flex-start; /* ensures top alignment */
 }
 
 .board,
@@ -80,43 +80,53 @@
   box-shadow: 0 0 6px #b41ca9, 0 0 12px #b41ca9;
 }
 
-.circle {
-  width: 80px;
-  height: 80px;
+/* Current number circle */
+.current-number {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 15px;
   border-radius: 50%;
-  background: #FF5722;
+  background: radial-gradient(circle at 30% 30%, #FF7043, #D84315);
   color: white;
+  font-size: 32px;
+  font-weight: bold;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 10px auto;
-  font-weight: bold;
-  font-size: 22px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  position: relative;
   transition: transform 0.2s;
 }
 
-.circle.pop {
-  transform: scale(1.2);
+.current-number::after {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 15%;
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
 }
 
+/* Last three numbers circles */
 .last-three {
   display: flex;
   justify-content: center;
   gap: 6px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .last-three div {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #FF7043, #D84315);
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
   box-shadow: 0 2px 6px rgba(0,0,0,0.4);
   position: relative;
@@ -134,32 +144,11 @@
   background: rgba(255, 255, 255, 0.15);
 }
 
-.current-number {
-  width: 100px;
-  height: 100px;
-  margin: 0 auto 10px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #FF7043, #D84315);
-  color: white;
-  font-size: 28px;
-  font-weight: bold;
+/* Cartela aligned with board bottom */
+.cartela {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  position: relative;
-  transition: transform 0.2s;
-}
-
-.current-number::after {
-  content: '';
-  position: absolute;
-  top: 15%;
-  left: 15%;
-  width: 70%;
-  height: 70%;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
+  flex-direction: column;
+  justify-content: flex-end; /* moves cartela grid down */
 }
 
 .buttons {
