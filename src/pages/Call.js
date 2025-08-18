@@ -175,6 +175,10 @@ function Call() {
         {/* ---------------- Cartela Board with title ---------------- */}
         <div className="cartela-wrapper">
           <h4 className="cartela-title">Cartela: #{cartelaNumber}</h4>
+
+           {/* ---------------- Current Number Circle ---------------- */}
+        <div className="current-number">{currentNumber ?? "--"}</div>
+        
           <div className="cartela">
             <div className="bingo-header-row">
               {["B", "I", "N", "G", "O"].map((letter) => (
@@ -211,8 +215,7 @@ function Call() {
           </div>
         </div>
 
-        {/* ---------------- Current Number Circle ---------------- */}
-        <div className="current-number">{currentNumber ?? "--"}</div>
+       
 
         {/* ---------------- Countdown Circle ---------------- */}
         {countdown !== null && !gameStarted && (
