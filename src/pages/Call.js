@@ -163,80 +163,86 @@ function Call() {
       </div>
 
       <div className="main-content">
-        <div className="board">
-          <div className="bingo-header-row">
-            {["B", "I", "N", "G", "O"].map((letter) => (
-              <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
-                {letter}
-              </div>
-            ))}
-          </div>
-
-          <div className="board-grid">
-            {Array.from({ length: 75 }, (_, i) => i + 1).map((num) => (
-              <div
-                key={num}
-                className={`number-box ${calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"}`}
-              >
-                {num}
-              </div>
-            ))}
-          </div>
+  {/* ---------------- Leftside Board ---------------- */}
+  <div className="board">
+    <div className="bingo-header-row">
+      {["B", "I", "N", "G", "O"].map((letter) => (
+        <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
+          {letter}
         </div>
+      ))}
+    </div>
 
-         <h4 className="cartela-title">Cartela: #{cartelaNumber}</h4>
-
-        <div className="cartela">
-          {countdown !== null && !gameStarted && (
-            <div className="circle">
-              <div style={{ fontSize: "12px" }}>Wait</div>
-              <div>{countdown > 0 ? countdown : "0"}</div>
-            </div>
-          )}
-
-          <div className="last-three">
-            {lastThree.map((num, idx) => (
-              <div key={idx}>{num}</div>
-            ))}
-          </div>
-
-          <div className="current-number">{currentNumber ?? "--"}</div>
-         
-
-          <div className="bingo-header-row">
-            {["B", "I", "N", "G", "O"].map((letter) => (
-              <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
-                {letter}
-              </div>
-            ))}
-          </div>
-
-          <div className="cartela-grid">
-            {playerCard.flat().map((num, idx) => {
-              const row = Math.floor(idx / 5);
-              const col = idx % 5;
-              const isCenter = row === 2 && col === 2;
-              const marked = isCenter || calledNumbers.includes(formatBingoNumber(num));
-              return (
-                <div key={idx} className={`number-box ${marked ? "marked" : "unmarked"}`}>
-                  {isCenter ? "*" : num}
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="buttons">
-            <button
-              onClick={() => navigate("/")}
-              className="action-btn"
-              disabled={gameStarted && winnerInfo === null}
-              title={gameStarted && winnerInfo === null ? "You can't leave during an active game" : ""}
-            >
-              🚪 Leave
-            </button>
-          </div>
+    <div className="board-grid">
+      {Array.from({ length: 75 }, (_, i) => i + 1).map((num) => (
+        <div
+          key={num}
+          className={`number-box ${
+            calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
+          }`}
+        >
+          {num}
         </div>
+      ))}
+    </div>
+  </div>
+
+  {/* ---------------- Cartela Board with title ---------------- */}
+  <div className="cartela-wrapper"> {/* <-- Wrapper stacks title above cartela */}
+    {/* Cartela title placed above cartela board, outside its background */}
+    <h4 className="cartela-title">Cartela: #{cartelaNumber}</h4>
+
+    <div className="cartela">
+      {countdown !== null && !gameStarted && (
+        <div className="circle">
+          <div style={{ fontSize: "12px" }}>Wait</div>
+          <div>{countdown > 0 ? countdown : "0"}</div>
+        </div>
+      )}
+
+      <div className="last-three">
+        {lastThree.map((num, idx) => (
+          <div key={idx}>{num}</div>
+        ))}
       </div>
+
+      <div className="current-number">{currentNumber ?? "--"}</div>
+
+      <div className="bingo-header-row">
+        {["B", "I", "N", "G", "O"].map((letter) => (
+          <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
+            {letter}
+          </div>
+        ))}
+      </div>
+
+      <div className="cartela-grid">
+        {playerCard.flat().map((num, idx) => {
+          const row = Math.floor(idx / 5);
+          const col = idx % 5;
+          const isCenter = row === 2 && col === 2;
+          const marked = isCenter || calledNumbers.includes(formatBingoNumber(num));
+          return (
+            <div key={idx} className={`number-box ${marked ? "marked" : "unmarked"}`}>
+              {isCenter ? "*" : num}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="buttons">
+        <button
+          onClick={() => navigate("/")}
+          className="action-btn"
+          disabled={gameStarted && winnerInfo === null}
+          title={gameStarted && winnerInfo === null ? "You can't leave during an active game" : ""}
+        >
+          🚪 Leave
+        </button>
+      </div>
+    </div>
+  </div> {/* <-- end cartela-wrapper */}
+</div>
 
       {showPopup && winnerInfo && (
         <WinModal
