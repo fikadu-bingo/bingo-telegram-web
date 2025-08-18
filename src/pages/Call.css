@@ -92,6 +92,12 @@
   top: -10px;
 }
 
+.cartela-wrapper {
+  display: flex;
+  flex-direction: column; /* stack title above cartela board */
+  align-items: center;    /* center horizontally */
+}
+
 /* ---------------- Cartela Board ---------------- */
 .cartela {
   flex: 1;
