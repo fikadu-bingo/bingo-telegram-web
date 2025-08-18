@@ -21,13 +21,14 @@
 }
 
 /* ======================= Top Menu ======================= */
+
 .top-menu {
   display: flex;
   justify-content: space-around;
   background: linear-gradient(90deg, orange, green, cyan);
   border-radius: 10px;
   color: white;
-  padding: 8px 5px;
+  padding: 4px 5px;  /* reduce vertical padding to move title up */
   font-size: 13px;
   margin-bottom: 20px;
   flex-wrap: wrap;
