@@ -91,7 +91,7 @@
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
 
   position: relative;
-  top: -60px; /* move leftside board up closer to menu bar */
+  top: -30px; /* move leftside board up closer to menu bar */
 }
 /* ---------------- Cartela Board ---------------- */
 .cartela {
@@ -226,3 +226,4 @@
 .leave-button:hover {
   background-color: #c0392b;
 }
+
