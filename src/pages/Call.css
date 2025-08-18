@@ -48,7 +48,7 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 
   position: absolute;
-  top: 20px;
+  top: 60px; /* adjusted down to leave room for countdown */
   right: 0px;
   z-index: 10;
 }
@@ -64,12 +64,33 @@
   background: rgba(255, 255, 255, 0.15);
 }
 
+/* ======================= Countdown Circle ======================= */
+.circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #f9c74f;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+  position: absolute;
+  top: 0;
+  right: 80px; /* above current-number circle */
+  z-index: 11;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
 /* ======================= Main Boards Wrapper ======================= */
 .main-content {
   display: flex;
   justify-content: center;
   gap: 20px;
-  align-items: flex-end;
+  align-items: flex-start; /* align top for boards */
   position: relative;
   padding-top: 20px;
 }
@@ -87,15 +108,16 @@
   border-radius: 15px;
   border: 2px solid rgba(255,255,255,0.3);
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-
   position: relative;
   top: -10px;
 }
 
+/* ---------------- Cartela Wrapper ---------------- */
 .cartela-wrapper {
   display: flex;
-  flex-direction: column; /* stack title above cartela board */
-  align-items: center;    /* center horizontally */
+  flex-direction: column;
+  align-items: center;
+  gap: 5px; /* small spacing between title and cartela board */
 }
 
 /* ---------------- Cartela Board ---------------- */
@@ -111,15 +133,17 @@
   border-radius: 15px;
   border: 2px solid rgba(255,255,255,0.3);
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  position: relative;
 }
 
-/* ---------------- Cartela Title Bar ---------------- */
+/* ---------------- Cartela Title ---------------- */
 .cartela-title {
   text-align: center;
-  margin: 5px 0 8px 0; /* small gap above/below */
+  margin: 0;
   font-size: 14px;
   font-weight: bold;
-  color: #333; /* darker text on yellow bg */
+  color: #333;
+  background: none; /* stays on container background (yellow) */
 }
 
 /* ---------------- Bingo Header Row ---------------- */
@@ -147,7 +171,6 @@
 .bingo-n { background: #F44336; }
 .bingo-g { background: #2196F3; }
 .bingo-o { background: #9C27B0; }
-
 /* ---------------- Grids ---------------- */
 .board-grid,
 .cartela-grid {
@@ -169,7 +192,7 @@
 .cartela-grid .number-box {
   width: 30px;
   height: 30px;
-  border-radius: 6px; /* small rounded corners to look like squares */
+  border-radius: 6px;
 }
 
 .number-box {
@@ -235,7 +258,7 @@
 /* ======================= Leave Button ======================= */
 .leave-button {
   display: block;
-  margin: 20px auto 0 auto;
+  margin: 10px auto 0 auto; /* outside cartela background */
   padding: 12px 25px;
   background-color: #e74c3c;
   color: white;
