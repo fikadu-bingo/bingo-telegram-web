@@ -37,7 +37,7 @@
 .current-number {
   position: absolute;
   top: 20px;
-  right: 20px; /* give space from container edge */
+  right: 30px; /* enough space from container edge */
   width: 150px;
   height: 150px;
   border-radius: 50%;
@@ -66,8 +66,8 @@
 /* ======================= Countdown Circle ======================= */
 .countdown-circle {
   position: absolute;
-  top: 40px; 
-  right: 190px; /* slightly to the left of current-number */
+  top: 40px;
+  right: 200px; /* slightly left of current-number */
   width: 80px;
   height: 80px;
   border-radius: 50%;
@@ -85,19 +85,19 @@
 /* ======================= Main Boards Wrapper ======================= */
 .main-content {
   display: flex;
-  justify-content: center;   /* center both boards horizontally */
-  gap: 10px;                 /* small gap between left board and cartela */
-  align-items: flex-end;      /* bottom align cartela + left board */
+  justify-content: center;       /* center horizontally */
+  gap: 15px;                     /* small gap between boards */
+  align-items: flex-end;          /* bottom align boards */
   position: relative;
-  padding-top: 50px;          /* space for current-number and countdown */
-  padding-left: 20px;         /* push boards slightly inside left edge */
-  padding-right: 20px;        /* push boards slightly inside right edge */
-  box-sizing: border-box;     /* include padding in width */
+  padding-top: 50px;              /* space for current-number & countdown */
+  padding-left: 25px;             /* keep inside container */
+  padding-right: 25px;            /* keep inside container */
+  box-sizing: border-box;
 }
 
 /* ---------------- Leftside Board ---------------- */
 .board {
-  flex: 0 0 160px;            /* fixed width to prevent overflow */
+  flex: 0 0 160px;               /* fixed width */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -106,6 +106,7 @@
   border-radius: 15px;
   border: 2px solid rgba(255,255,255,0.3);
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  z-index: 1;
 }
 
 /* ---------------- Cartela Wrapper ---------------- */
@@ -113,9 +114,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end; /* bottom aligned with left board */
-  flex: 0 0 160px;           /* same width as left board to prevent overflow */
+  justify-content: flex-end;      /* bottom aligned with left board */
+  flex: 0 0 160px;                /* same width */
+  position: relative;
 }
+
 /* ---------------- Cartela Board ---------------- */
 .cartela {
   min-width: 140px;
@@ -138,7 +141,7 @@
   font-size: 14px;
   font-weight: bold;
   color: #333;
-  background: none; /* stays on container background (yellow) */
+  background: none;
 }
 
 /* ---------------- Bingo Header Row ---------------- */
@@ -160,12 +163,12 @@
   align-items: center;
   border-radius: 4px;
 }
-
 .bingo-b { background: #FFA500; }
 .bingo-i { background: #00C853; }
 .bingo-n { background: #F44336; }
 .bingo-g { background: #2196F3; }
 .bingo-o { background: #9C27B0; }
+
 /* ---------------- Grids ---------------- */
 .board-grid,
 .cartela-grid {
@@ -264,6 +267,7 @@
   box-shadow: 0 4px 6px rgba(0,0,0,0.3);
   transition: background 0.3s;
 }
+
 .leave-button:hover {
   background-color: #c0392b;
 }
