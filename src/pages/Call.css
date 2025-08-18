@@ -49,7 +49,7 @@
   
   position: absolute; /* float inside yellow container */
   top: 20px; /* vertical position */
-  right: 10px; /* right side of yellow container */
+  right: 5px; /* right side of yellow container */
   z-index: 10;
 }
 
