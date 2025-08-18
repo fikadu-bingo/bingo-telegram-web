@@ -1,12 +1,13 @@
 /* ======================= Container & Logo ======================= */
 .container {
-  padding: 10px;
-  background: #f8d764;
+  padding: 20px;
+  background: #f8d764; /* main yellow background */
   backdrop-filter: blur(12px) saturate(150%);
   -webkit-backdrop-filter: blur(12px) saturate(150%);
   border-radius: 15px;
   box-shadow: 0 8px 32px 0 rgba(30, 60, 120, 0.37);
   border: 1px solid rgba(255, 255, 255, 0.18);
+  position: relative; /* for absolute positioning of leave button */
 }
 
 .logo-container {
@@ -32,12 +33,12 @@
   flex-wrap: wrap;
 }
 
-/* ======================= Main Boards ======================= */
+/* ======================= Main Boards Wrapper ======================= */
 .main-content {
   display: flex;
   justify-content: center;
   gap: 20px;
-  align-items: flex-end; /* align boards by bottom */
+  align-items: flex-end; /* align both boards by bottom */
   position: relative; /* for leave button */
 }
 
@@ -49,11 +50,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: linear-gradient(135deg, #00C853, #2196F3); /* green-blue gradient */
+  background: linear-gradient(135deg, #00C853, #2196F3);
   padding: 15px;
   border-radius: 15px;
-  border: 2px solid rgba(255,255,255,0.3); /* subtle border */
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);  /* shadow to pop panel */
+  border: 2px solid rgba(255,255,255,0.3);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  z-index: 1;
 }
 
 /* ---------------- Cartela Board ---------------- */
@@ -64,12 +66,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: linear-gradient(135deg, #00BFA5, #00E5FF); /* different green-blue gradient */
+  background: linear-gradient(135deg, #00BFA5, #00E5FF);
   padding: 15px;
   border-radius: 15px;
-  justify-content: flex-end; /* align grid to bottom */
-  border: 2px solid rgba(255,255,255,0.3); /* subtle border */
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);  /* shadow to pop panel */
+  justify-content: flex-end;
+  border: 2px solid rgba(255,255,255,0.3);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  z-index: 1;
 }
 
 /* ---------------- Grids ---------------- */
@@ -108,10 +111,10 @@
 }
 
 /* ======================= Current Number & Last 3 Numbers ======================= */
+/* Now these float above the boards and are not inside cartela panel */
 .current-number {
   width: 150px;
   height: 150px;
-  margin: 0 auto 15px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #FF7043, #D84315);
   color: white;
@@ -121,8 +124,11 @@
   justify-content: center;
   align-items: center;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-  position: relative;
-  transition: transform 0.2s;
+  position: absolute; /* float above boards */
+  top: -80px; /* adjust vertical position */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
 }
 
 .current-number::after {
@@ -140,7 +146,11 @@
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 15px;
+  position: absolute; /* float above boards */
+  top: 80px; /* below current number */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
 }
 
 .last-three div {
@@ -169,6 +179,7 @@
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.15);
 }
+
 /* ======================= Leave Button ======================= */
 .leave-button {
   position: absolute;
@@ -185,57 +196,9 @@
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0,0,0,0.3);
   transition: background 0.3s;
+  z-index: 2;
 }
 
 .leave-button:hover {
   background-color: #c0392b;
 }
-
-/* ======================= Popup ======================= */
-.popup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.popup-content {
-  background: white;
-  padding: 30px;
-  border-radius: 10px;
-  text-align: center;
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
-
-/* ======================= Bingo Header Row ======================= */
-.bingo-header-row {
-  display: grid;
-  grid-template-columns: repeat(5, 30px);
-  justify-content: center;
-  gap: 3px;
-  margin: 0 auto 5px;
-}
-
-.bingo-letter {
-  width: 30px;
-  height: 30px;
-  color: white;
-  font-weight: bold;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 4px;
-}
-.bingo-b { background: #FFA500; }
-.bingo-i { background: #00C853; }
-.bingo-n { background: #F44336; }
-.bingo-g { background: #2196F3; }
-.bingo-o { background: #9C27B0; }
