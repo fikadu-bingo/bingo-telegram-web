@@ -1,18 +1,18 @@
 /* ======================= Container & Logo ======================= */
 .container {
-  padding: 20px;
+  padding: 30px;
   background: #f8d764; /* main yellow background */
   backdrop-filter: blur(12px) saturate(150%);
   -webkit-backdrop-filter: blur(12px) saturate(150%);
   border-radius: 15px;
   box-shadow: 0 8px 32px 0 rgba(30, 60, 120, 0.37);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  position: relative; /* for absolute positioning of leave button */
+  position: relative;
 }
 
 .logo-container {
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .logo {
@@ -29,7 +29,7 @@
   color: white;
   padding: 8px 5px;
   font-size: 13px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
 }
 
@@ -38,8 +38,9 @@
   display: flex;
   justify-content: center;
   gap: 20px;
-  align-items: flex-end; /* align both boards by bottom */
-  position: relative; /* for leave button */
+  align-items: flex-end;
+  position: relative;
+  padding: 0 10px; /* prevent boards from touching mobile edges */
 }
 
 /* ---------------- Leftside Board ---------------- */
@@ -69,11 +70,38 @@
   background: linear-gradient(135deg, #00BFA5, #00E5FF);
   padding: 15px;
   border-radius: 15px;
-  justify-content: flex-end;
   border: 2px solid rgba(255,255,255,0.3);
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  justify-content: flex-end;
+  position: relative;
   z-index: 1;
 }
+
+/* ---------------- Bingo Header Row ---------------- */
+.bingo-header-row {
+  display: grid;
+  grid-template-columns: repeat(5, 30px);
+  justify-content: center;
+  gap: 3px;
+  margin-bottom: 5px;
+}
+
+.bingo-letter {
+  width: 30px;
+  height: 30px;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+}
+
+.bingo-b { background: #FFA500; }
+.bingo-i { background: #00C853; }
+.bingo-n { background: #F44336; }
+.bingo-g { background: #2196F3; }
+.bingo-o { background: #9C27B0; }
 
 /* ---------------- Grids ---------------- */
 .board-grid,
@@ -111,7 +139,6 @@
 }
 
 /* ======================= Current Number & Last 3 Numbers ======================= */
-/* Now these float above the boards and are not inside cartela panel */
 .current-number {
   width: 150px;
   height: 150px;
@@ -124,9 +151,9 @@
   justify-content: center;
   align-items: center;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-  position: absolute; /* float above boards */
-  top: -80px; /* adjust vertical position */
-  left: 50%;
+  position: absolute; /* float above cartela board */
+  top: -80px; /* above cartela */
+  left: calc(50% + 110px); /* aligns center with cartela board */
   transform: translateX(-50%);
   z-index: 2;
 }
@@ -141,13 +168,12 @@
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.15);
 }
-
 .last-three {
   display: flex;
   justify-content: center;
   gap: 10px;
   position: absolute; /* float above boards */
-  top: 80px; /* below current number */
+  top: 100px; /* below current number */
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
