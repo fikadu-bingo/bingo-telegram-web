@@ -184,6 +184,8 @@ function Call() {
           </div>
         </div>
 
+         <h4 style={{ textAlign: "center" }}>Cartela: #{cartelaNumber}</h4>
+
         <div className="cartela">
           {countdown !== null && !gameStarted && (
             <div className="circle">
@@ -199,7 +201,7 @@ function Call() {
           </div>
 
           <div className="current-number">{currentNumber ?? "--"}</div>
-          <h4 style={{ textAlign: "center" }}>Cartela: #{cartelaNumber}</h4>
+         
 
           <div className="bingo-header-row">
             {["B", "I", "N", "G", "O"].map((letter) => (
