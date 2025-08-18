@@ -46,8 +46,8 @@
 /* ---------------- Leftside Board ---------------- */
 .board {
   flex: 1;
-  min-width: 180px;
-  max-width: 200px;
+  min-width: 140px; /* reduced width */
+  max-width: 180px; /* reduced width */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -56,25 +56,24 @@
   border-radius: 15px;
   border: 2px solid rgba(255,255,255,0.3);
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  z-index: 1;
 }
 
 /* ---------------- Cartela Board ---------------- */
 .cartela {
   flex: 1;
-  min-width: 180px;
-  max-width: 200px;
+  min-width: 140px; /* reduced width */
+  max-width: 180px; /* reduced width */
   display: flex;
   flex-direction: column;
   align-items: center;
   background: linear-gradient(135deg, #00BFA5, #00E5FF);
-  padding: 15px;
+  padding-top: 90px; /* space for current number circle */
+  padding-bottom: 15px;
   border-radius: 15px;
   border: 2px solid rgba(255,255,255,0.3);
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  justify-content: flex-end;
-  position: relative;
-  z-index: 1;
+  justify-content: flex-start;
+  position: relative; /* circle is absolute relative to cartela */
 }
 
 /* ---------------- Bingo Header Row ---------------- */
@@ -138,7 +137,7 @@
   box-shadow: 0 0 6px #b41ca9, 0 0 12px #b41ca9;
 }
 
-/* ======================= Current Number & Last 3 Numbers ======================= */
+/* ======================= Current Number Circle ======================= */
 .current-number {
   width: 150px;
   height: 150px;
@@ -151,13 +150,12 @@
   justify-content: center;
   align-items: center;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-  position: absolute; /* float above cartela board */
-  top: -80px; /* above cartela */
-  left: calc(50% + 110px); /* aligns center with cartela board */
+  position: absolute;
+  top: -75px; /* overlaps top of cartela */
+  left: 50%;
   transform: translateX(-50%);
   z-index: 2;
 }
-
 .current-number::after {
   content: '';
   position: absolute;
@@ -168,11 +166,13 @@
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.15);
 }
+
+/* ======================= Last Three Numbers ======================= */
 .last-three {
   display: flex;
   justify-content: center;
   gap: 10px;
-  position: absolute; /* float above boards */
+  position: absolute;
   top: 100px; /* below current number */
   left: 50%;
   transform: translateX(-50%);
@@ -208,10 +208,8 @@
 
 /* ======================= Leave Button ======================= */
 .leave-button {
-  position: absolute;
-  bottom: -70px;
-  left: 50%;
-  transform: translateX(-50%);
+  display: block;
+  margin: 20px auto 0 auto; /* below both boards, centered */
   padding: 12px 25px;
   background-color: #e74c3c;
   color: white;
@@ -222,7 +220,6 @@
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0,0,0,0.3);
   transition: background 0.3s;
-  z-index: 2;
 }
 
 .leave-button:hover {
