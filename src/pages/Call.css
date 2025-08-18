@@ -11,7 +11,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden; /* prevent boards/circle from overflowing */
+  overflow: hidden; /* prevent overflow */
   box-sizing: border-box;
 }
 
@@ -41,9 +41,10 @@
 /* ======================= Current Number Circle ======================= */
 .current-number {
   position: absolute;
-  top: 20px;
-  right: 20px; /* far enough from container edge */
-  width: 140px; /* slightly smaller */
+  top: 0; /* top of cartela board */
+  left: 50%; /* center horizontally */
+  transform: translateX(-50%) translateY(-50%); /* position above cartela board */
+  width: 140px;
   height: 140px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #FF7043, #D84315);
@@ -72,7 +73,8 @@
 .countdown-circle {
   position: absolute;
   top: 40px; 
-  right: 180px; /* slightly to the left of current-number */
+  left: 50%; /* center horizontally above cartela board */
+  transform: translateX(-50%);
   width: 80px;
   height: 80px;
   border-radius: 50%;
@@ -91,12 +93,12 @@
 .main-content {
   display: flex;
   justify-content: center;   /* center both boards horizontally */
-  gap: 10px;                 /* small gap between boards */
+  gap: 5px;                  /* very tiny gap between boards */
   align-items: flex-end;      /* bottom align cartela + left board */
   position: relative;
-  padding-top: 50px;          /* space for current-number */
-  padding-left: 20px;         /* inside yellow container */
-  padding-right: 20px;        /* inside yellow container */
+  padding-top: 100px;         /* space for current-number above cartela */
+  padding-left: 10px;         /* small padding inside container */
+  padding-right: 10px;        /* small padding inside container */
   box-sizing: border-box;
   max-width: 100%;            /* prevent overflow */
 }
@@ -225,7 +227,7 @@
   justify-content: center;
   gap: 10px;
   position: absolute;
-  top: 170px;
+  top: 180px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
