@@ -162,7 +162,7 @@ function Call() {
         <div>Call: {calledNumbers.length}</div>
       </div>
 
-      <div className="main-content">
+<div className="main-content">
   {/* ---------------- Leftside Board ---------------- */}
   <div className="board">
     <div className="bingo-header-row">
@@ -189,25 +189,29 @@ function Call() {
 
   {/* ---------------- Cartela Board with title ---------------- */}
   <div className="cartela-wrapper"> {/* <-- Wrapper stacks title above cartela */}
-    {/* Cartela title placed above cartela board, outside its background */}
+    {/* Cartela title placed above cartela board, outside its background (yellow container) */}
     <h4 className="cartela-title">Cartela: #{cartelaNumber}</h4>
 
     <div className="cartela">
+      {/* ---------------- Wait Countdown on top of current number ---------------- */}
       {countdown !== null && !gameStarted && (
-        <div className="circle">
+        <div className="circle" style={{ position: "absolute", top: "-30px", left: "50%", transform: "translateX(-50%)" }}>
           <div style={{ fontSize: "12px" }}>Wait</div>
           <div>{countdown > 0 ? countdown : "0"}</div>
         </div>
       )}
 
+      {/* ---------------- Last Three Numbers ---------------- */}
       <div className="last-three">
         {lastThree.map((num, idx) => (
           <div key={idx}>{num}</div>
         ))}
       </div>
 
+      {/* ---------------- Current Number Circle ---------------- */}
       <div className="current-number">{currentNumber ?? "--"}</div>
 
+      {/* ---------------- Bingo Header Row ---------------- */}
       <div className="bingo-header-row">
         {["B", "I", "N", "G", "O"].map((letter) => (
           <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
@@ -216,6 +220,7 @@ function Call() {
         ))}
       </div>
 
+      {/* ---------------- Cartela Grid ---------------- */}
       <div className="cartela-grid">
         {playerCard.flat().map((num, idx) => {
           const row = Math.floor(idx / 5);
@@ -229,17 +234,18 @@ function Call() {
           );
         })}
       </div>
+    </div>
 
-      <div className="buttons">
-        <button
-          onClick={() => navigate("/")}
-          className="action-btn"
-          disabled={gameStarted && winnerInfo === null}
-          title={gameStarted && winnerInfo === null ? "You can't leave during an active game" : ""}
-        >
-          🚪 Leave
-        </button>
-      </div>
+    {/* ---------------- Leave Button outside cartela background ---------------- */}
+    <div className="buttons" style={{ marginTop: "10px", textAlign: "center" }}>
+      <button
+        onClick={() => navigate("/")}
+        className="action-btn"
+        disabled={gameStarted && winnerInfo === null}
+        title={gameStarted && winnerInfo === null ? "You can't leave during an active game" : ""}
+      >
+        🚪 Leave
+      </button>
     </div>
   </div> {/* <-- end cartela-wrapper */}
 </div>
