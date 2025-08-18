@@ -109,14 +109,14 @@
 
 /* ---------------- Cartela Title Bar ---------------- */
 .cartela-title {
-  background: indigo;
-  color: white;
+  background:none;
+  color:#222;
   width: 100%;
   text-align: center;
   font-weight: bold;
-  padding: 6px 0;
+  padding: 0;
   border-radius: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   font-size: 14px;
 }
 
