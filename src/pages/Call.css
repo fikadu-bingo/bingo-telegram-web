@@ -21,7 +21,6 @@
 }
 
 /* ======================= Top Menu ======================= */
-
 .top-menu {
   display: flex;
   justify-content: space-around;
@@ -33,6 +32,7 @@
   margin-bottom: 10px;    /* reduced from 20px to create small gap below menu */
   flex-wrap: wrap;
 }
+
 /* ======================= Current Number Circle ======================= */
 .current-number {
   width: 150px;
@@ -74,7 +74,6 @@
   padding-top: 20px;      /* reduce top padding to move boards closer to menu */
 }
 
-
 /* ---------------- Leftside Board ---------------- */
 .board {
   flex: 1;
@@ -111,7 +110,7 @@
 .bingo-header-row {
   display: grid;
   grid-template-columns: repeat(5, 30px);
-  justify-content: center;
+justify-items: center;
   gap: 3px;
   margin-bottom: 5px;
 }
@@ -139,8 +138,8 @@
   display: grid;
   grid-template-columns: repeat(5, 30px);
   gap: 3px;
-  justify-content: center;
-  margin: 0 ; /* aligns numbers under header */
+ justify-items: center; 
+  margin: 0; /* aligns numbers under header */
 }
 
 .number-box {
@@ -225,6 +224,3 @@
 .leave-button:hover {
   background-color: #c0392b;
 }
-
-
-
