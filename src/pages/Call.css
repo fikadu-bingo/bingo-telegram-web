@@ -35,14 +35,15 @@
   flex-direction: row;
   justify-content: center;
   gap: 10px;
-  align-items: flex-start; /* ensures top alignment */
+  align-items: flex-end; /* <-- align both boards by bottom */
 }
-
 .board,
 .cartela {
   flex: 1;
   min-width: 180px;
   max-width: 200px;
+  display: flex;
+  flex-direction: column;
 }
 
 .board-grid,
@@ -144,11 +145,9 @@
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* Cartela aligned with board bottom */
+
 .cartela {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end; /* moves cartela grid down */
+  justify-content: flex-end; /* moves the cartela grid downward */
 }
 
 .buttons {
