@@ -1,6 +1,5 @@
 .container {
   padding: 10px;
-  /* 3D transparent blue frosted glass effect */
   background: #f8d764;
   backdrop-filter: blur(12px) saturate(150%);
   -webkit-backdrop-filter: blur(12px) saturate(150%);
@@ -58,27 +57,34 @@
 .number-box {
   width: 30px;
   height: 30px;
-  color: rgb(3, 3, 3);
+  color: #000;
   font-size: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 4px;
-}
-
-.marked {
-  background: #b41ca9;
-}
-
-.unmarked {
+  border-radius: 50%;
+  transition: all 0.2s;
   background: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* B-I-N-G-O column colors for board/cartela */
+.number-box.b { background: #FFA500; color: #fff; }
+.number-box.i { background: #00C853; color: #fff; }
+.number-box.n { background: #F44336; color: #fff; }
+.number-box.g { background: #2196F3; color: #fff; }
+.number-box.o { background: #9C27B0; color: #fff; }
+
+.number-box.marked {
+  transform: scale(1.1);
+  box-shadow: 0 0 6px #b41ca9, 0 0 12px #b41ca9;
 }
 
 .circle {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: #4CAF50;
+  background: #FF5722;
   color: white;
   display: flex;
   flex-direction: column;
@@ -86,7 +92,12 @@
   align-items: center;
   margin: 10px auto;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 22px;
+  transition: transform 0.2s;
+}
+
+.circle.pop {
+  transform: scale(1.2);
 }
 
 .last-three {
@@ -100,13 +111,27 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #FF5722;
+  background: radial-gradient(circle at 30% 30%, #FF7043, #D84315);
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 16px;
   font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  position: relative;
+  transition: transform 0.2s;
+}
+
+.last-three div::after {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 15%;
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .current-number {
@@ -114,13 +139,27 @@
   height: 100px;
   margin: 0 auto 10px;
   border-radius: 50%;
-  background: #FF5722;
+  background: radial-gradient(circle at 30% 30%, #FF7043, #D84315);
   color: white;
   font-size: 28px;
   font-weight: bold;
   display: flex;
   justify-content: center;
   align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  position: relative;
+  transition: transform 0.2s;
+}
+
+.current-number::after {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 15%;
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .buttons {
@@ -172,7 +211,6 @@
   gap: 3px;
   margin: 0 auto 5px;
 }
-
 .bingo-letter {
   width: 30px;
   height: 30px;
