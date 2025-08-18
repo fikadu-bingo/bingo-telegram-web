@@ -22,14 +22,8 @@ function formatBingoNumber(number) {
 function Call() {
   const location = useLocation();
   const navigate = useNavigate();
-  const {
-    card,
-    stake,
-    gameId,
-    cartelaNumber,
-    username: stateUsername,
-    userId: stateUserId,
-  } = location.state ?? {};
+  const { card, stake, gameId, cartelaNumber, username: stateUsername, userId: stateUserId } =
+    location.state ?? {};
 
   const userId = stateUserId ?? localStorage.getItem("telegram_id") ?? `guest_${Date.now()}`;
   const username = stateUsername ?? localStorage.getItem("firstName") ?? "User";
@@ -78,35 +72,26 @@ function Call() {
     });
 
     socket.current.on("winAmountUpdate", (amount) => setWinAmount(amount));
-
     socket.current.on("gameStarted", () => setGameStarted(true));
 
-    socket.current.on(
-      "gameWon",
-      ({ userId: winnerId, username: winnerUsername, prize, balances }) => {
-        const numericPrize = Number(prize) || 0;
-
-        try {
-          const myUserId = userId;
-          if (balances && typeof balances === "object" && balances[myUserId] !== undefined) {
-            const updatedBalance = Number(balances[myUserId]);
-            if (!isNaN(updatedBalance)) {
-              localStorage.setItem("balance", updatedBalance);
-              setWinAmount(updatedBalance);
-            }
+    socket.current.on("gameWon", ({ userId: winnerId, username: winnerUsername, prize, balances }) => {
+      const numericPrize = Number(prize) || 0;
+      try {
+        const myUserId = userId;
+        if (balances && balances[myUserId] !== undefined) {
+          const updatedBalance = Number(balances[myUserId]);
+          if (!isNaN(updatedBalance)) {
+            localStorage.setItem("balance", updatedBalance);
+            setWinAmount(updatedBalance);
           }
-        } catch (err) {
-          console.error("Failed to update local balance on gameWon:", err);
         }
-
-        setWinnerInfo({
-          userId: winnerId,
-          username: winnerUsername,
-          prize: numericPrize,
-        });
-        setShowPopup(true);
+      } catch (err) {
+        console.error("Failed to update local balance on gameWon:", err);
       }
-    );
+
+      setWinnerInfo({ userId: winnerId, username: winnerUsername, prize: numericPrize });
+      setShowPopup(true);
+    });
 
     socket.current.on("balanceChange", (payload) => {
       try {
@@ -120,6 +105,7 @@ function Call() {
         console.error("Failed to process balanceChange:", e);
       }
     });
+
     socket.current.on("gameReset", () => {
       setCalledNumbers([]);
       setCurrentNumber(null);
@@ -128,7 +114,6 @@ function Call() {
       setWinnerInfo(null);
       setShowPopup(false);
     });
-
     return () => {
       if (socket.current) {
         socket.current.emit("leaveGame", { userId });
@@ -162,94 +147,88 @@ function Call() {
         <div>Call: {calledNumbers.length}</div>
       </div>
 
-<div className="main-content">
-  {/* ---------------- Leftside Board ---------------- */}
-  <div className="board">
-    <div className="bingo-header-row">
-      {["B", "I", "N", "G", "O"].map((letter) => (
-        <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
-          {letter}
-        </div>
-      ))}
-    </div>
-
-    <div className="board-grid">
-      {Array.from({ length: 75 }, (_, i) => i + 1).map((num) => (
-        <div
-          key={num}
-          className={`number-box ${
-            calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
-          }`}
-        >
-          {num}
-        </div>
-      ))}
-    </div>
-  </div>
-
-  {/* ---------------- Cartela Board with title ---------------- */}
-  <div className="cartela-wrapper"> {/* <-- Wrapper stacks title above cartela */}
-    {/* Cartela title placed above cartela board, outside its background (yellow container) */}
-    <h4 className="cartela-title">Cartela: #{cartelaNumber}</h4>
-
-    <div className="cartela">
-      {/* ---------------- Wait Countdown on top of current number ---------------- */}
-      {countdown !== null && !gameStarted && (
-        <div className="circle" style={{ position: "absolute", top: "-30px", left: "50%", transform: "translateX(-50%)" }}>
-          <div style={{ fontSize: "12px" }}>Wait</div>
-          <div>{countdown > 0 ? countdown : "0"}</div>
-        </div>
-      )}
-
-      {/* ---------------- Last Three Numbers ---------------- */}
-      <div className="last-three">
-        {lastThree.map((num, idx) => (
-          <div key={idx}>{num}</div>
-        ))}
-      </div>
-
-      {/* ---------------- Current Number Circle ---------------- */}
-      <div className="current-number">{currentNumber ?? "--"}</div>
-
-      {/* ---------------- Bingo Header Row ---------------- */}
-      <div className="bingo-header-row">
-        {["B", "I", "N", "G", "O"].map((letter) => (
-          <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
-            {letter}
+      <div className="main-content">
+        {/* ---------------- Leftside Board ---------------- */}
+        <div className="board">
+          <div className="bingo-header-row">
+            {["B", "I", "N", "G", "O"].map((letter) => (
+              <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
+                {letter}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {/* ---------------- Cartela Grid ---------------- */}
-      <div className="cartela-grid">
-        {playerCard.flat().map((num, idx) => {
-          const row = Math.floor(idx / 5);
-          const col = idx % 5;
-          const isCenter = row === 2 && col === 2;
-          const marked = isCenter || calledNumbers.includes(formatBingoNumber(num));
-          return (
-            <div key={idx} className={`number-box ${marked ? "marked" : "unmarked"}`}>
-              {isCenter ? "*" : num}
+          <div className="board-grid">
+            {Array.from({ length: 75 }, (_, i) => i + 1).map((num) => (
+              <div
+                key={num}
+                className={`number-box ${
+                  calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
+                }`}
+              >
+                {num}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ---------------- Cartela Board with title ---------------- */}
+        <div className="cartela-wrapper">
+          <h4 className="cartela-title">Cartela: #{cartelaNumber}</h4>
+          <div className="cartela">
+            <div className="bingo-header-row">
+              {["B", "I", "N", "G", "O"].map((letter) => (
+                <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
+                  {letter}
+                </div>
+              ))}
             </div>
-          );
-        })}
+            <div className="cartela-grid">
+              {playerCard.flat().map((num, idx) => {
+                const row = Math.floor(idx / 5);
+                const col = idx % 5;
+                const isCenter = row === 2 && col === 2;
+                const marked = isCenter || calledNumbers.includes(formatBingoNumber(num));
+                return (
+                  <div key={idx} className={`number-box ${marked ? "marked" : "unmarked"}`}>
+                    {isCenter ? "*" : num}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ---------------- Leave Button outside cartela background ---------------- */}
+          <div className="buttons">
+            <button
+              onClick={() => navigate("/")}
+              className="action-btn leave-button"
+              disabled={gameStarted && winnerInfo === null}
+              title={gameStarted && winnerInfo === null ? "You can't leave during an active game" : ""}
+            >
+              🚪 Leave
+            </button>
+          </div>
+        </div>
+
+        {/* ---------------- Current Number Circle ---------------- */}
+        <div className="current-number">{currentNumber ?? "--"}</div>
+
+        {/* ---------------- Countdown Circle ---------------- */}
+        {countdown !== null && !gameStarted && (
+          <div className="countdown-circle">
+            <div style={{ fontSize: "12px" }}>Wait</div>
+            <div>{countdown > 0 ? countdown : "0"}</div>
+          </div>
+        )}
+
+        {/* ---------------- Last Three Numbers ---------------- */}
+        <div className="last-three">
+          {lastThree.map((num, idx) => (
+            <div key={idx}>{num}</div>
+          ))}
+        </div>
       </div>
-    </div>
-
-    {/* ---------------- Leave Button outside cartela background ---------------- */}
-    <div className="buttons" style={{ marginTop: "10px", textAlign: "center" }}>
-      <button
-        onClick={() => navigate("/")}
-        className="action-btn"
-        disabled={gameStarted && winnerInfo === null}
-        title={gameStarted && winnerInfo === null ? "You can't leave during an active game" : ""}
-      >
-        🚪 Leave
-      </button>
-    </div>
-  </div> {/* <-- end cartela-wrapper */}
-</div>
-
       {showPopup && winnerInfo && (
         <WinModal
           username={winnerInfo.username}
