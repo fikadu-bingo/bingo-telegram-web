@@ -140,7 +140,7 @@
   grid-template-columns: repeat(5, 30px);
   gap: 3px;
   justify-content: center;
-  margin: 0 auto; /* aligns numbers under header */
+  margin: 0 ; /* aligns numbers under header */
 }
 
 .number-box {
@@ -225,5 +225,6 @@
 .leave-button:hover {
   background-color: #c0392b;
 }
+
 
 
