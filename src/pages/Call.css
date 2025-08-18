@@ -89,6 +89,9 @@
   align-items: flex-end; /* bottom align cartela + left board */
   position: relative;
   padding-top: 50px; /* space for current-number and countdown */
+  padding-left: 10px;  /* add a little padding so boards don't touch edges */
+  padding-right: 10px; /* add a little padding so boards don't touch edges */
+  box-sizing: border-box; /* make padding counted in width */
 }
 /* ---------------- Leftside Board ---------------- */
 .board {
