@@ -48,7 +48,7 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 
   position: absolute;
-  top: 60px; /* adjusted down to leave room for countdown */
+  top: 20px; /* adjusted down to leave room for countdown */
   right: 0px;
   z-index: 10;
 }
@@ -118,7 +118,7 @@
   flex-direction: column;
   align-items: center;
   gap: 5px;
-  margin-top: 80px; /* <-- push cartela below the big circle */
+  margin-top: 160px; /* <-- push cartela below the big circle */
 }
 /* ---------------- Cartela Board ---------------- */
 .cartela {
