@@ -8,11 +8,6 @@
   box-shadow: 0 8px 32px 0 rgba(30, 60, 120, 0.37);
   border: 1px solid rgba(255, 255, 255, 0.18);
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: hidden; /* prevent overflow */
-  box-sizing: border-box;
 }
 
 .logo-container {
@@ -38,12 +33,50 @@
   flex-wrap: wrap;
 }
 
-/* ======================= Current Number Circle ======================= */
+/* ======================= Main Boards Wrapper ======================= */
+.main-content {
+  display: flex;
+  justify-content: center;   /* center boards horizontally */
+  gap: 10px;                 /* tiny gap between boards */
+  align-items: flex-end;
+  position: relative;
+  padding-top: 50px;         /* space for top menu */
+  padding-left: 20px;
+  padding-right: 20px;
+  box-sizing: border-box;
+}
+
+/* ---------------- Leftside Board ---------------- */
+.board {
+  flex: 0 0 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, #00C853, #2196F3);
+  padding: 15px;
+  border-radius: 15px;
+  border: 2px solid rgba(255,255,255,0.3);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  /* Move left board up close to top menu */
+  margin-top: 0px; /* very small gap */
+}
+
+/* ---------------- Cartela Wrapper ---------------- */
+.cartela-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 160px;
+  position: relative; /* big circle positioned relative to this */
+}
+
+/* ---------------- Big Current Number Circle ---------------- */
 .current-number {
   position: absolute;
-  top: 0; /* top of cartela board */
-  left: 50%; /* center horizontally */
-  transform: translateX(-50%) translateY(-50%); /* position above cartela board */
+  top: -75px;           /* place above cartela board */
+  left: 50%;            /* center horizontally above cartela board */
+  transform: translateX(-50%);
   width: 140px;
   height: 140px;
   border-radius: 50%;
@@ -69,64 +102,6 @@
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* ======================= Countdown Circle ======================= */
-.countdown-circle {
-  position: absolute;
-  top: 40px; 
-  left: 50%; /* center horizontally above cartela board */
-  transform: translateX(-50%);
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: #FFC107;
-  color: #000;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  z-index: 12;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-}
-
-/* ======================= Main Boards Wrapper ======================= */
-.main-content {
-  display: flex;
-  justify-content: center;   /* center both boards horizontally */
-  gap: 5px;                  /* very tiny gap between boards */
-  align-items: flex-end;      /* bottom align cartela + left board */
-  position: relative;
-  padding-top: 100px;         /* space for current-number above cartela */
-  padding-left: 10px;         /* small padding inside container */
-  padding-right: 10px;        /* small padding inside container */
-  box-sizing: border-box;
-  max-width: 100%;            /* prevent overflow */
-}
-
-/* ---------------- Leftside Board ---------------- */
-.board {
-  flex: 0 0 150px;            /* fixed width */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: linear-gradient(135deg, #00C853, #2196F3);
-  padding: 15px;
-  border-radius: 15px;
-  border: 2px solid rgba(255,255,255,0.3);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  z-index: 1;
-}
-
-/* ---------------- Cartela Wrapper ---------------- */
-.cartela-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;   /* bottom aligned with left board */
-  flex: 0 0 150px;             /* same width */
-  position: relative;
-}
-
 /* ---------------- Cartela Board ---------------- */
 .cartela {
   min-width: 140px;
@@ -149,8 +124,9 @@
   font-size: 14px;
   font-weight: bold;
   color: #333;
-  background: none; /* stays on container background (yellow) */
+  background: none;
 }
+
 /* ---------------- Bingo Header Row ---------------- */
 .bingo-header-row {
   display: grid;
@@ -192,7 +168,6 @@
   height: 30px;
   border-radius: 50%;
 }
-
 .cartela-grid .number-box {
   width: 30px;
   height: 30px;
@@ -221,13 +196,13 @@
   box-shadow: 0 0 6px #b41ca9, 0 0 12px #b41ca9;
 }
 
-/* ======================= Last Three Numbers ======================= */
+/* ---------------- Last Three Numbers ---------------- */
 .last-three {
   display: flex;
   justify-content: center;
   gap: 10px;
   position: absolute;
-  top: 180px;
+  top: 170px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
@@ -260,7 +235,7 @@
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* ======================= Leave Button ======================= */
+/* ---------------- Leave Button ---------------- */
 .leave-button {
   display: block;
   margin-top: 10px;
@@ -275,7 +250,6 @@
   box-shadow: 0 4px 6px rgba(0,0,0,0.3);
   transition: background 0.3s;
 }
-
 .leave-button:hover {
   background-color: #c0392b;
 }
