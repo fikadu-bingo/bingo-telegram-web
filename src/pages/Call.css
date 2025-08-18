@@ -63,19 +63,18 @@
 
 /* ---------------- Cartela Wrapper ---------------- */
 .cartela-wrapper {
+  position: relative; /* needed for current-number to position relative to cartela */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  flex: 0 0 160px;
-  position: relative; /* big circle positioned relative to this */
 }
 
 /* ---------------- Big Current Number Circle ---------------- */
 .current-number {
   position: absolute;
   top: -75px;           /* place above cartela board */
-  left: 50%;            /* center horizontally above cartela board */
+  left: 50%;            /* center horizontally over cartela */
   transform: translateX(-50%);
   width: 140px;
   height: 140px;
@@ -90,7 +89,6 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
   z-index: 10;
 }
-
 .current-number::after {
   content: '';
   position: absolute;
