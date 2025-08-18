@@ -48,8 +48,8 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 
   position: absolute; /* float inside yellow container */
-  top: 20px;       /* vertical position */
-  right: 0px;      /* move to right side */
+  top: 20px;
+  right: 0px;
   z-index: 10;
 }
 
@@ -69,9 +69,9 @@
   display: flex;
   justify-content: center;
   gap: 20px;
-  align-items: flex-start;
+  align-items: flex-end; /* bottom alignment of both boards */
   position: relative;
-  padding: 180px 10px 0 10px; /* space for circle */
+  padding-top: 40px; /* small gap from menu bar */
 }
 
 /* ---------------- Leftside Board ---------------- */
@@ -87,9 +87,6 @@
   border-radius: 15px;
   border: 2px solid rgba(255,255,255,0.3);
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-
-  position: relative;
-  top: -150px; /* move up */
 }
 
 /* ---------------- Cartela Board ---------------- */
@@ -140,7 +137,7 @@
   grid-template-columns: repeat(5, 30px);
   gap: 3px;
   justify-content: center;
-  margin: 5px auto;
+  margin: 0 auto; /* aligns numbers under header */
 }
 
 .number-box {
@@ -173,7 +170,7 @@
   justify-content: center;
   gap: 10px;
   position: absolute;
-  top: 170px; /* below current number circle */
+  top: 170px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
