@@ -53,18 +53,14 @@ function Call() {
       return;
     }
 
-    // Connect socket
     socket.current = io("https://bingo-server-rw7p.onrender.com", {
       transports: ["websocket"],
     });
 
-    // Join game
     socket.current.emit("joinGame", { userId, username, stake, ticket: playerCard });
 
-    // Player count updates
     socket.current.on("playerCountUpdate", (count) => setPlayers(count));
 
-    // Countdown
     socket.current.on("countdownUpdate", (time) => {
       setCountdown(time);
       if (time === 0) setGameStarted(true);
@@ -74,26 +70,22 @@ function Call() {
       setGameStarted(false);
     });
 
-    // Called number event
     socket.current.on("numberCalled", (number) => {
-      const formatted = formatBingoNumber(number);
-      setCurrentNumber(formatted);
-      setCalledNumbers((prev) => (prev.includes(formatted) ? prev : [...prev, formatted]));
+      setCurrentNumber(formatBingoNumber(number));
+      setCalledNumbers((prev) =>
+        prev.includes(formatBingoNumber(number)) ? prev : [...prev, formatBingoNumber(number)]
+      );
     });
 
-    // Win amount update
     socket.current.on("winAmountUpdate", (amount) => setWinAmount(amount));
 
-    // Game started
     socket.current.on("gameStarted", () => setGameStarted(true));
 
-    // Winner announcement
     socket.current.on(
       "gameWon",
       ({ userId: winnerId, username: winnerUsername, prize, balances }) => {
         const numericPrize = Number(prize) || 0;
 
-        // Update local balance for this client
         try {
           const myUserId = userId;
           if (balances && typeof balances === "object" && balances[myUserId] !== undefined) {
@@ -116,9 +108,9 @@ function Call() {
       }
     );
 
-    // General balance updates
     socket.current.on("balanceChange", (payload) => {
-      try {if (!payload || !payload.balances) return;
+      try {
+        if (!payload || !payload.balances) return;
         const newBalance = Number(payload.balances[userId]);
         if (!isNaN(newBalance)) {
           localStorage.setItem("balance", newBalance);
@@ -128,8 +120,6 @@ function Call() {
         console.error("Failed to process balanceChange:", e);
       }
     });
-
-    // Reset game
     socket.current.on("gameReset", () => {
       setCalledNumbers([]);
       setCurrentNumber(null);
@@ -139,7 +129,6 @@ function Call() {
       setShowPopup(false);
     });
 
-    // Cleanup
     return () => {
       if (socket.current) {
         socket.current.emit("leaveGame", { userId });
@@ -149,7 +138,6 @@ function Call() {
     };
   }, [stake, userId, username, playerCard, navigate]);
 
-  // Prepare marked cartela for WinModal
   const getMarkedCartela = () =>
     playerCard.map((row, rowIndex) =>
       row.map((num, colIndex) => {
@@ -188,11 +176,9 @@ function Call() {
             {Array.from({ length: 75 }, (_, i) => i + 1).map((num) => (
               <div
                 key={num}
-                className={`number-box ${
-                  calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
-                }`}
+                className={`number-box ${calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"}`}
               >
-                {formatBingoNumber(num)}
+                {num}
               </div>
             ))}
           </div>
@@ -231,11 +217,13 @@ function Call() {
               const marked = isCenter || calledNumbers.includes(formatBingoNumber(num));
               return (
                 <div key={idx} className={`number-box ${marked ? "marked" : "unmarked"}`}>
-                  {isCenter ? "*" : formatBingoNumber(num)}
+                  {isCenter ? "*" : num}
                 </div>
               );
             })}
-          </div><div className="buttons">
+          </div>
+
+          <div className="buttons">
             <button
               onClick={() => navigate("/")}
               className="action-btn"
