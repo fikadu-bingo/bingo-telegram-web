@@ -37,7 +37,7 @@
 .current-number {
   position: absolute;
   top: 20px;
-  right: 0px;
+  right: 20px; /* give space from container edge */
   width: 150px;
   height: 150px;
   border-radius: 50%;
@@ -51,6 +51,7 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
   z-index: 10;
 }
+
 .current-number::after {
   content: '';
   position: absolute;
@@ -65,8 +66,8 @@
 /* ======================= Countdown Circle ======================= */
 .countdown-circle {
   position: absolute;
-  top: 10px;
-  right: 170px; /* to left of current-number */
+  top: 40px; 
+  right: 190px; /* slightly to the left of current-number */
   width: 80px;
   height: 80px;
   border-radius: 50%;
@@ -86,13 +87,14 @@
   display: flex;
   justify-content: center;
   gap: 20px;
-  align-items: flex-end; /* bottom align cartela + left board */
+  align-items: flex-end; /* align bottoms of both boards */
   position: relative;
   padding-top: 50px; /* space for current-number and countdown */
-  padding-left: 10px;  /* add a little padding so boards don't touch edges */
-  padding-right: 10px; /* add a little padding so boards don't touch edges */
-  box-sizing: border-box; /* make padding counted in width */
+  padding-left: 15px;
+  padding-right: 15px;
+  box-sizing: border-box;
 }
+
 /* ---------------- Leftside Board ---------------- */
 .board {
   flex: 1;
@@ -106,8 +108,6 @@
   border-radius: 15px;
   border: 2px solid rgba(255,255,255,0.3);
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  position: relative;
-  top: -10px;
 }
 
 /* ---------------- Cartela Wrapper ---------------- */
@@ -115,10 +115,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end; /* bottom align with left board */
 }
+
 /* ---------------- Cartela Board ---------------- */
 .cartela {
-  flex: 1;
   min-width: 140px;
   max-width: 180px;
   display: flex;
@@ -135,7 +136,7 @@
 /* ---------------- Cartela Title ---------------- */
 .cartela-title {
   text-align: center;
-  margin: 0;
+  margin: 0 0 8px 0;
   font-size: 14px;
   font-weight: bold;
   color: #333;
@@ -177,14 +178,12 @@
   margin: 0;
 }
 
-/* ---- Leftside numbers (round) ---- */
 .board-grid .number-box {
   width: 30px;
   height: 30px;
   border-radius: 50%;
 }
 
-/* ---- Cartela numbers (square) ---- */
 .cartela-grid .number-box {
   width: 30px;
   height: 30px;
@@ -201,6 +200,7 @@
   background: #f9f9f9;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
+
 .number-box.b { background: #FFA500; color: #fff; }
 .number-box.i { background: #00C853; color: #fff; }
 .number-box.n { background: #F44336; color: #fff; }
@@ -252,7 +252,6 @@
 }
 
 /* ======================= Leave Button ======================= */
-/* ---------------- Leave Button ---------------- */
 .leave-button {
   display: block;
   margin-top: 10px;
@@ -267,8 +266,6 @@
   box-shadow: 0 4px 6px rgba(0,0,0,0.3);
   transition: background 0.3s;
 }
-.leave-button:hover { background-color: #c0392b; }
-
 .leave-button:hover {
   background-color: #c0392b;
 }
