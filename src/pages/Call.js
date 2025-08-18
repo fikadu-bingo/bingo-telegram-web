@@ -184,7 +184,7 @@ function Call() {
           </div>
         </div>
 
-         <h4 style={{ textAlign: "center" }}>Cartela: #{cartelaNumber}</h4>
+         <h4 className="cartela-title">Cartela: #{cartelaNumber}</h4>
 
         <div className="cartela">
           {countdown !== null && !gameStarted && (
