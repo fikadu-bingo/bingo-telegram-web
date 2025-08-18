@@ -85,21 +85,19 @@
 /* ======================= Main Boards Wrapper ======================= */
 .main-content {
   display: flex;
-  justify-content: center;
-  gap: 20px;
-  align-items: flex-end; /* align bottoms of both boards */
+  justify-content: center;   /* center both boards horizontally */
+  gap: 10px;                 /* small gap between left board and cartela */
+  align-items: flex-end;      /* bottom align cartela + left board */
   position: relative;
-  padding-top: 50px; /* space for current-number and countdown */
-  padding-left: 15px;
-  padding-right: 15px;
-  box-sizing: border-box;
+  padding-top: 50px;          /* space for current-number and countdown */
+  padding-left: 20px;         /* push boards slightly inside left edge */
+  padding-right: 20px;        /* push boards slightly inside right edge */
+  box-sizing: border-box;     /* include padding in width */
 }
 
 /* ---------------- Leftside Board ---------------- */
 .board {
-  flex: 1;
-  min-width: 140px;
-  max-width: 180px;
+  flex: 0 0 160px;            /* fixed width to prevent overflow */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -115,9 +113,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end; /* bottom align with left board */
+  justify-content: flex-end; /* bottom aligned with left board */
+  flex: 0 0 160px;           /* same width as left board to prevent overflow */
 }
-
 /* ---------------- Cartela Board ---------------- */
 .cartela {
   min-width: 140px;
