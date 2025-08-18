@@ -8,6 +8,11 @@
   box-shadow: 0 8px 32px 0 rgba(30, 60, 120, 0.37);
   border: 1px solid rgba(255, 255, 255, 0.18);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden; /* prevent boards/circle from overflowing */
+  box-sizing: border-box;
 }
 
 .logo-container {
@@ -37,13 +42,13 @@
 .current-number {
   position: absolute;
   top: 20px;
-  right: 30px; /* enough space from container edge */
-  width: 150px;
-  height: 150px;
+  right: 20px; /* far enough from container edge */
+  width: 140px; /* slightly smaller */
+  height: 140px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #FF7043, #D84315);
   color: white;
-  font-size: 40px;
+  font-size: 36px;
   font-weight: bold;
   display: flex;
   justify-content: center;
@@ -66,8 +71,8 @@
 /* ======================= Countdown Circle ======================= */
 .countdown-circle {
   position: absolute;
-  top: 40px;
-  right: 200px; /* slightly left of current-number */
+  top: 40px; 
+  right: 180px; /* slightly to the left of current-number */
   width: 80px;
   height: 80px;
   border-radius: 50%;
@@ -85,19 +90,20 @@
 /* ======================= Main Boards Wrapper ======================= */
 .main-content {
   display: flex;
-  justify-content: center;       /* center horizontally */
-  gap: 15px;                     /* small gap between boards */
-  align-items: flex-end;          /* bottom align boards */
+  justify-content: center;   /* center both boards horizontally */
+  gap: 10px;                 /* small gap between boards */
+  align-items: flex-end;      /* bottom align cartela + left board */
   position: relative;
-  padding-top: 50px;              /* space for current-number & countdown */
-  padding-left: 25px;             /* keep inside container */
-  padding-right: 25px;            /* keep inside container */
+  padding-top: 50px;          /* space for current-number */
+  padding-left: 20px;         /* inside yellow container */
+  padding-right: 20px;        /* inside yellow container */
   box-sizing: border-box;
+  max-width: 100%;            /* prevent overflow */
 }
 
 /* ---------------- Leftside Board ---------------- */
 .board {
-  flex: 0 0 160px;               /* fixed width */
+  flex: 0 0 150px;            /* fixed width */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -114,8 +120,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;      /* bottom aligned with left board */
-  flex: 0 0 160px;                /* same width */
+  justify-content: flex-end;   /* bottom aligned with left board */
+  flex: 0 0 150px;             /* same width */
   position: relative;
 }
 
@@ -141,9 +147,8 @@
   font-size: 14px;
   font-weight: bold;
   color: #333;
-  background: none;
+  background: none; /* stays on container background (yellow) */
 }
-
 /* ---------------- Bingo Header Row ---------------- */
 .bingo-header-row {
   display: grid;
@@ -163,6 +168,7 @@
   align-items: center;
   border-radius: 4px;
 }
+
 .bingo-b { background: #FFA500; }
 .bingo-i { background: #00C853; }
 .bingo-n { background: #F44336; }
