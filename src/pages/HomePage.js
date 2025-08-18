@@ -7,9 +7,7 @@ import CashOutModal from "../components/CashOutModal";
 import CashOutSuccessModal from "../components/CashOutSuccessModal";
 import TransferModal from "../components/TransferModal";
 import PromoCodeModal from "../components/PromoCodeModal";
-import TransactionHistoryModal from "../components/TransactionHistoryModal"; // ✅ added
 import logo from "../assets/logo.png";
-import axios from "axios";
 
 function HomePage() {
   const navigate = useNavigate();
@@ -26,10 +24,12 @@ function HomePage() {
   // --- socket & realtime game info
   const socketRef = useRef(null);
 
+  // We only allow ONE selected stake at a time (single-game mode)
   const [selectedStake, setSelectedStake] = useState(null);
 
+  // Live game info from server:
   const [livePlayerCount, setLivePlayerCount] = useState(0);
-  const [countdown, setCountdown] = useState(null);
+  const [countdown, setCountdown] = useState(null); // seconds or null
   const [winAmount, setWinAmount] = useState(null);
 
   // --- UI modal states
@@ -37,19 +37,18 @@ function HomePage() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCashOutSuccess, setShowCashOutSuccess] = useState(false);
   const [showPromoModal, setShowPromoModal] = useState(false);
-  const [showTransactionModal, setShowTransactionModal] = useState(false); // ✅ new
-
-  const [transactions, setTransactions] = useState([]); // ✅ transactions
 
   const stakes = [10, 20, 50, 100, 200];
 
-  // --- socket initialization & listeners
+  // Initialize socket connection & listeners - only ONCE
   useEffect(() => {
     const socket = io("https://bingo-server-rw7p.onrender.com");
+
     socketRef.current = socket;
 
     socket.on("connect", () => {
       console.log("Socket connected:", socket.id);
+      // Rejoin game if stake selected and userId exists
       const userId = localStorage.getItem("telegram_id") || telegramId;
       if (selectedStake && userId) {
         const username = firstName || "User";
@@ -57,23 +56,39 @@ function HomePage() {
       }
     });
 
-    socket.on("playerCountUpdate", (count) => setLivePlayerCount(count));
-    socket.on("countdownUpdate", (time) => setCountdown(time));
-    socket.on("countdownStopped", () => setCountdown(null));
-    socket.on("winAmountUpdate", (amount) => setWinAmount(amount));
-
-    socket.on("balanceChange", ({ userId: changedUserId, newBalance }) => {
-      const userId = localStorage.getItem("telegram_id") ?? telegramId;
-      if (!userId) return;
-      if (changedUserId === userId && typeof newBalance === "number") {
-        setBalance(newBalance);
-        localStorage.setItem("balance", newBalance);
-      }
+    // Live player count (for selected single-room)
+    socket.on("playerCountUpdate", (count) => {
+      setLivePlayerCount(count);
     });
 
-    socket.on("deductBalance", ({ amount } = {}) => {
+    // Countdown updates
+    socket.on("countdownUpdate", (time) => {
+      setCountdown(time);
+    });
+
+    socket.on("countdownStopped", () => {
+      setCountdown(null);
+    });
+
+    // Win amount update
+    socket.on("winAmountUpdate", (amount) => {
+      setWinAmount(amount);
+    });
+
+    // The server sends updated balances object keyed by userId
+  socket.on("balanceChange", ({ userId: changedUserId, newBalance }) => {
+  const userId = localStorage.getItem("telegram_id") ?? telegramId;
+  if (!userId) return;
+
+  if (changedUserId === userId && typeof newBalance === "number") {
+    setBalance(newBalance);
+    localStorage.setItem("balance", newBalance);
+  }
+});
+    // Server may send a targeted deduct (e.g., when leaving)
+    socket.on("deductBalance", ({ amount, reason } = {}) => {
       try {
-        const userId = localStorage.getItem("telegram_id") || telegramId;
+        const userId = localStorage.getItem("telegram_id")||  telegramId;
         if (!userId) return;
         const current = parseFloat(localStorage.getItem("balance") ?? balance ?? 0);
         const newBal = Number((current - Number(amount || 0)).toFixed(2));
@@ -83,33 +98,40 @@ function HomePage() {
         console.error("Failed to apply deductBalance:", err);
       }
     });
-
+    // Clear per-game markers on reset so next game can apply again
     socket.on("gameReset", () => {
-      localStorage.removeItem("last_balance_change");
-      setWinAmount(null);
-      setCountdown(null);
-      setLivePlayerCount(0);
+      try {
+        localStorage.removeItem("last_balance_change");
+        setWinAmount(null);
+        setCountdown(null);
+        setLivePlayerCount(0);
+      } catch (err) {
+        console.warn("Error handling gameReset:", err);
+      }
     });
-
+    // Cleanup on unmount
     return () => {
-      const userId = localStorage.getItem("telegram_id") || telegramId;
-      if (socket && userId) socket.emit("leaveGame", { userId });
+      const userId = localStorage.getItem("telegram_id")||  telegramId;
+      if (socket && userId) {
+        socket.emit("leaveGame", { userId });
+      }
       socket.disconnect();
       socketRef.current = null;
     };
   }, [telegramId, selectedStake, firstName, balance]);
 
-  // --- fetch user data
+  // Fetch and sync user data (balance etc.)
   const fetchUserData = async () => {
     try {
       const telegram_id = localStorage.getItem("telegram_id");
       if (!telegram_id) return;
+
       const res = await fetch(`
-        https://bingo-server-rw7p.onrender.com/api/user/me?telegram_id=${telegram_id}
-      `);
+        https://bingo-server-rw7p.onrender.com/api/user/me?telegram_id=${telegram_id}`
+      );
       const data = await res.json();
 
-      if (data?.user) {
+      if (data && data.user) {
         const newBalance = data.user.balance;
         setBalance(newBalance);
         localStorage.setItem("balance", newBalance);
@@ -119,19 +141,20 @@ function HomePage() {
           localStorage.setItem("firstName", data.user.first_name);
           localStorage.setItem("telegramUser", JSON.stringify(data.user));
         }
+      } else {
+        console.warn("User data not found");
       }
-    } catch (err) {
-      console.error("Failed to fetch user data:", err);
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
     }
   };
 
-  // --- load user info on mount
+  // Load user info on mount from URL or localStorage
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const telegram_id = params.get("telegram_id");
     const first_name = params.get("first_name");
     const username = params.get("username");
-
     if (telegram_id && first_name) {
       const telegramUser = { id: telegram_id, first_name, username };
       localStorage.setItem("telegramUser", JSON.stringify(telegramUser));
@@ -140,7 +163,12 @@ function HomePage() {
       setTelegramId(telegram_id);
     } else {
       const storedUser = JSON.parse(localStorage.getItem("telegramUser"));
-      if (storedUser?.first_name) setFirstName(storedUser.first_name);
+      if (storedUser?.first_name) {
+        setFirstName(storedUser.first_name);
+      } else {
+        const fallback = localStorage.getItem("firstName");
+        if (fallback) setFirstName(fallback);
+      }
       if (storedUser?.id) {
         setTelegramId(storedUser.id);
         localStorage.setItem("telegram_id", storedUser.id);
@@ -156,34 +184,24 @@ function HomePage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Listen for balance changes in localStorage
+  // Listen for balance changes in localStorage (from other tabs/components)
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === "balance") {
         const newBalance = parseFloat(event.newValue);
-        if (!isNaN(newBalance)) setBalance(newBalance);
+        if (!isNaN(newBalance)) {
+          setBalance(newBalance);
+        }
       }
     };
+
     window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, []);
 
-  // --- Transaction History
-  const fetchTransactions = async () => {
-    try {
-      const res = await axios.get("/api/user/transactions");
-      setTransactions(res.data);
-    } catch (err) {
-      console.error("Error fetching transactions:", err);
-    }
-  };
-
-  const handleTransactionClick = () => {
-    fetchTransactions();
-    setShowTransactionModal(true);
-  };
-
-  // --- game handlers
+  // Join game when user selects stake
   const handleStakeSelect = (amount) => {
     if (balance < amount) {
       alert("Not enough balance!");
@@ -202,9 +220,8 @@ function HomePage() {
       localStorage.setItem("telegram_id", userId);
       setTelegramId(userId);
     }
-
     const username = firstName || "User";
-
+// Leave previous stake if different
     if (selectedStake !== null && selectedStake !== amount) {
       socket.emit("leaveGame", { userId });
       setLivePlayerCount(0);
@@ -213,19 +230,24 @@ function HomePage() {
     }
 
     socket.emit("joinGame", { userId, username, stake: amount });
+
     setSelectedStake(amount);
   };
 
+  // Leave game manually (optional)
   const leaveCurrentStake = () => {
     const socket = socketRef.current;
     const userId = localStorage.getItem("telegram_id") || telegramId;
-    if (socket && userId) socket.emit("leaveGame", { userId });
+    if (socket && userId) {
+      socket.emit("leaveGame", { userId });
+    }
     setSelectedStake(null);
     setLivePlayerCount(0);
     setCountdown(null);
     setWinAmount(null);
   };
 
+  // Play now button navigates to bingo with all needed info
   const handlePlayNow = () => {
     if (!selectedStake) {
       setShowModal("stakeWarning");
@@ -236,6 +258,7 @@ function HomePage() {
       alert("Not enough balance!");
       return;
     }
+
     const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
     const username = telegramUser?.first_name || firstName || "User";
     const userId = localStorage.getItem("telegram_id") || telegramId;
@@ -246,7 +269,7 @@ function HomePage() {
         stake: selectedStake,
         userJoined: true,
         username,
-        userId,
+        userId, // important for Call.js to join socket
       },
     });
   };
@@ -339,8 +362,8 @@ function HomePage() {
           isSelected && users > 0
             ? `${winAmount ?? Math.floor(amount * users * 0.8)} Br`
             : `${Math.floor(amount * 0.8)} Br`;
+            // Disable join button if countdown running (timeLeft > 0)
         const countdownActive = isSelected && countdown > 0;
-
         return (
           <div
             key={amount}
@@ -379,11 +402,7 @@ function HomePage() {
                 <button
                   onClick={() => handleStakeSelect(amount)}
                   disabled={countdownActive}
-                  title={
-                    countdownActive
-                      ? "Game already started for this stake"
-                      : ""
-                  }
+                  title={countdownActive ? "Game already started for this stake" : ""}
                   style={{
                     background: countdownActive ? "#555" : "#00BFFF",
                     color: "white",
@@ -417,12 +436,6 @@ function HomePage() {
         <button style={actionBtnStyle} onClick={() => setShowModal("cashout")}>
           💵 Cash out
         </button>
-        <button
-          style={actionBtnStyle}
-          onClick={handleTransactionClick} // ✅ transaction history
-        >
-          📝 Transaction History
-        </button>
         <button style={actionBtnStyle} onClick={fetchUserData}>
           🔄 Refresh
         </button>
@@ -443,7 +456,6 @@ function HomePage() {
       >
         Have a promo code? Click here
       </p>
-
       {showModal === "stakeWarning" && (
         <div style={overlayStyle}>
           <div
@@ -475,21 +487,14 @@ function HomePage() {
           </div>
         </div>
       )}
-
       {showModal === "deposit" && (
         <div style={overlayStyle}>
-          <DepositModal
-            onClose={() => setShowModal(null)}
-            onDeposit={handleDeposit}
-          />
+          <DepositModal onClose={() => setShowModal(null)} onDeposit={handleDeposit} />
         </div>
       )}
       {showModal === "cashout" && (
         <div style={overlayStyle}>
-          <CashOutModal
-            onClose={() => setShowModal(null)}
-            onConfirm={handleCashOut}
-          />
+          <CashOutModal onClose={() => setShowModal(null)} onConfirm={handleCashOut} />
         </div>
       )}
 
@@ -504,43 +509,33 @@ function HomePage() {
           />
         </div>
       )}
-      {showSuccessModal && (
-        <DepositSuccessModal onClose={() => setShowSuccessModal(false)} />
-      )}
-      {showCashOutSuccess && (
-        <CashOutSuccessModal onClose={() => setShowCashOutSuccess(false)} />
-      )}
-{showTransactionModal && (
-        <TransactionHistoryModal
-          transactions={transactions}
-          onClose={() => setShowTransactionModal(false)}
-        />
-      )}
+
+      {showSuccessModal && <DepositSuccessModal onClose={() => setShowSuccessModal(false)} />}
+      {showCashOutSuccess && <CashOutSuccessModal onClose={() => setShowCashOutSuccess(false)} />}
     </div>
   );
 }
 
-// --- button and overlay styles
 const actionBtnStyle = {
-  background: "#00BFFF",
+  flex: "1 1 45%",
+  padding: "12px",
+  background: "#4CAF50",
   color: "white",
   border: "none",
-  padding: "10px 15px",
   borderRadius: "10px",
   fontWeight: "bold",
   cursor: "pointer",
-  minWidth: "110px",
+  fontSize: "14px",
 };
 
 const overlayStyle = {
   position: "fixed",
   top: 0,
   left: 0,
-  width: "100%",
-  height: "100%",
-  background: "rgba(0,0,0,0.6)",
+  width: "100vw",
+  height: "100vh",
+  backgroundColor: "rgba(0, 0, 0, 0.7)",
   display: "flex",
-  alignItems: "center",
   justifyContent: "center",
   zIndex: 1000,
 };
