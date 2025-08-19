@@ -73,7 +73,7 @@
 /* ---------------- Big Current Number Circle ---------------- */
 .current-number {
   position: absolute;
-  top: -600px;           /* place above cartela board */
+  top: -300px;           /* place above cartela board */
   left: 50%;            /* center horizontally over cartela */
   transform: translateX(-50%);
   width: 140px;
@@ -252,5 +252,6 @@
   background-color: #c0392b;
 
 }
+
 
 
