@@ -71,33 +71,33 @@
 
 /* ---------------- Current Number Ball ---------------- */
 .current-ball {
-  position: absolute;
-  top: -250px;          
-  left: 50%;            
+ position: absolute;
+  top: -250px;
+  left: 50%;
   transform: translateX(-50%);
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #FF7043, #D84315);
-  color: white;
-  font-size: 36px;
+  background: #fff; /* white center */
+  border: 12px solid #d32f2f; /* thick red border */
+  color: #d32f2f; /* number color matches border */
+  font-size: 40px;
   font-weight: bold;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 4px 10px rgba(255,255,255,0.3);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3), inset 0 4px 6px rgba(255,255,255,0.4);
   z-index: 10;
-  transition: transform 0.2s;
 }
 .current-ball::after {
-  content: '';
+  content: "";
   position: absolute;
-  top: 10%;
-  left: 10%;
-  width: 35%;
-  height: 35%;
+  top: 15%;
+  left: 15%;
+  width: 30%;
+  height: 30%;
   border-radius: 50%;
-  background: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.5);
 }
 
 /* Hover pulse for current ball */
@@ -111,32 +111,32 @@
   top: 170px;
   left: 50%;
   transform: translateX(-50%);
-  background: #D32F2F;
+  background: #b71c1c; /* deep red rectangle */
   padding: 10px 15px;
-  border-radius: 15px;
+  border-radius: 12px;
   display: flex;
   gap: 10px;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
   z-index: 9;
-  overflow: hidden;
 }
 
+/* Small balls inside the red rectangle */
 .small-ball {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #FF7043, #D84315);
-  color: white;
-  font-size: 22px;
-  font-weight: bold;
+  background: #fff; /* white center */
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4), inset 0 3px 6px rgba(255,255,255,0.3);
-  position: relative;
-  animation: slideIn 0.5s ease forwards;
+  font-weight: bold;
+  font-size: 20px;
+  color: #000;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3), inset 0 3px 6px rgba(255,255,255,0.5);
+  border: 6px solid #00C853; /* default border, overridden by Bingo letter */
+  transition: all 0.3s;
 }
 .small-ball::after {
   content: '';
@@ -273,3 +273,9 @@
 .leave-button:hover {
   background-color: #c0392b;
 }
+/* Border colors by Bingo letter */
+.small-ball.B { border-color: #FFA500; color: #FFA500; }
+.small-ball.I { border-color: #FFC107; color: #FFC107; }
+.small-ball.N { border-color: #F44336; color: #F44336; }
+.small-ball.G { border-color: #2196F3; color: #2196F3; }
+.small-ball.O { border-color: #4CAF50; color: #4CAF50; }
