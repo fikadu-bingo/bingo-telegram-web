@@ -158,28 +158,89 @@ function Call() {
 
       <div className="main-content">
         {/* ---------------- Leftside Board ---------------- */}
-        <div className="board">
-          <div className="bingo-header-row">
-            {["B", "I", "N", "G", "O"].map((letter) => (
-              <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
-                {letter}
-              </div>
-            ))}
-          </div>
+     <div className="board">
+  {/* Bingo Header */}
+  <div className="bingo-header-row">
+    {["B", "I", "N", "G", "O"].map((letter) => (
+      <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
+        {letter}
+      </div>
+    ))}
+  </div>
 
-          <div className="board-grid">
-            {Array.from({ length: 75 }, (_, i) => i + 1).map((num) => (
-              <div
-                key={num}
-                className={`number-box ${
-                  calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
-                }`}
-              >
-                {num}
-              </div>
-            ))}
-          </div>
+  {/* Board Grid */}
+  <div className="board-grid">
+    {/* B Column (1–15) */}
+    <div className="board-column">
+      {Array.from({ length: 15 }, (_, i) => i + 1).map((num) => (
+        <div
+          key={num}
+          className={`number-box ${
+            calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
+          }`}
+        >
+          {num}
         </div>
+      ))}
+    </div>
+
+    {/* I Column (16–30) */}
+    <div className="board-column">
+      {Array.from({ length: 15 }, (_, i) => i + 16).map((num) => (
+        <div
+          key={num}
+          className={`number-box ${
+            calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
+          }`}
+        >
+          {num}
+        </div>
+      ))}
+    </div>
+
+    {/* N Column (31–45) */}
+    <div className="board-column">
+      {Array.from({ length: 15 }, (_, i) => i + 31).map((num) => (
+        <div
+          key={num}
+          className={`number-box ${
+            calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
+          }`}
+        >
+          {num}
+        </div>
+      ))}
+    </div>
+
+    {/* G Column (46–60) */}
+    <div className="board-column">
+      {Array.from({ length: 15 }, (_, i) => i + 46).map((num) => (
+        <div
+          key={num}
+          className={`number-box ${
+            calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
+          }`}
+        >
+          {num}
+        </div>
+      ))}
+    </div>
+
+    {/* O Column (61–75) */}
+    <div className="board-column">
+      {Array.from({ length: 15 }, (_, i) => i + 61).map((num) => (
+        <div
+          key={num}
+          className={`number-box ${
+            calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
+          }`}
+        >
+          {num}
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
 
         {/* ---------------- Cartela Board with Rolling Rectangle ---------------- */}
         <div className="cartela-wrapper">
