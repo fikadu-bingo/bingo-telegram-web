@@ -169,7 +169,7 @@ function Call() {
       <div className="timer-circle">
         <span className="timer-value">{countdown}</span>
       </div>
-      <div className="menu-label">⏲️ Countdown</div>
+      <div className="menu-label">⏲️</div>
     </div>
   )}
 </div>
@@ -256,20 +256,42 @@ function Call() {
             </div>
           </div>
 
-          {/* Leave Button */}
-          <div className="buttons">
-            <button
-              onClick={() => navigate("/")}
-              className="action-btn leave-button"
-              disabled={gameStarted && winnerInfo === null}
-              title={gameStarted && winnerInfo === null ? "You can't leave during an active game" : ""}
-            >
-              🚪 Leave
-            </button>
-          </div>
+       
         </div>
       </div>
+{/* Buttons Below Boards */}
+<div className="action-buttons-wrapper">
+  {/* Wide Bingo Button */}
+  <button
+    className="bingo-button"
+    onClick={() => {
+      /* handle Bingo click */
+      console.log("Bingo clicked");
+    }}
+    disabled={!gameStarted}
+  >
+    🎉 Bingo
+  </button>
 
+  {/* Refresh and Leave buttons */}
+  <div className="bottom-buttons">
+    <button
+      className="action-btn refresh-button"
+      onClick={() => window.location.reload()}
+      title="Refresh Game"
+    >
+      🔄 Refresh
+    </button>
+    <button
+      className="action-btn leave-button"
+      onClick={() => navigate("/")}
+      disabled={gameStarted && winnerInfo === null}
+      title={gameStarted && winnerInfo === null ? "You can't leave during an active game" : ""}
+    >
+      🚪 Leave
+    </button>
+  </div>
+</div>
       {showPopup && winnerInfo && (
         <WinModal
           username={winnerInfo.username}
