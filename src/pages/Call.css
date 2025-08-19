@@ -109,7 +109,7 @@ body, html {
 
 /* Red rectangle -> change to darker blue for contrast */
 .waiting-rectangle {
-  background-color: #0077b6; /* dark blue for contrast */
+  background-color: #0077b6; /* dark blue */
   color: white;
   font-weight: bold;
   padding: 10px 0;
@@ -121,19 +121,49 @@ body, html {
   overflow: hidden;
   text-align: center;
   font-size: 16px;
-}
-/* ---------------- Last Four Balls ---------------- */
-.last-four-wrapper {
+  min-height: 50px; /* fix height so rectangle doesn't shrink */
   display: flex;
-  position: absolute;
-  top: 50%;
-  left: 0;
-  height: 100%;
   align-items: center;
-  gap: 8px;
-  animation: floatBalls 6s linear infinite;
+  justify-content: center;
 }
 
+/* ---------------- Rolling Numbers inside rectangle ---------------- */
+.rolling-numbers {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Individual rolling number */
+.rolling-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #caf0f8; /* light blue for contrast */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  flex-shrink: 0;
+  animation: slideLeft 8s linear infinite;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  position: relative;
+}
+/* Light effect inside the small ball */
+.rolling-number::after {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+}
 
 /* Small balls inside the red rectangle */
 /* Floating balls */
@@ -161,8 +191,8 @@ body, html {
   background: rgba(255,255,255,0.4);
 }
 
-/* Slide-in animation for last balls */
-@keyframes floatBalls {
+/* Slide animation for rolling numbers */
+@keyframes slideLeft {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
