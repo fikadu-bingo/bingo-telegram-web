@@ -36,11 +36,11 @@
 /* ======================= Main Boards Wrapper ======================= */
 .main-content {
   display: flex;
-  justify-content: center;   /* center boards horizontally */
-  gap: 10px;                 /* tiny gap between boards */
+  justify-content: center;   
+  gap: 10px;                 
   align-items: flex-end;
   position: relative;
-  padding-top: 50px;         /* space for top menu */
+  padding-top: 50px;         
   padding-left: 20px;
   padding-right: 20px;
   box-sizing: border-box;
@@ -57,13 +57,12 @@
   border-radius: 15px;
   border: 2px solid rgba(255,255,255,0.3);
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  /* Move left board up close to top menu */
-  margin-top: -50px; /* very small gap */
+  margin-top: -50px; 
 }
 
 /* ---------------- Cartela Wrapper ---------------- */
 .cartela-wrapper {
-  position: relative; /* needed for current-number to position relative to cartela */
+  position: relative; 
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -73,8 +72,8 @@
 /* ---------------- Big Current Number Circle ---------------- */
 .current-number {
   position: absolute;
-  top: -250px;           /* place above cartela board */
-  left: 50%;            /* center horizontally over cartela */
+  top: -250px;          
+  left: 50%;            
   transform: translateX(-50%);
   width: 140px;
   height: 140px;
@@ -182,7 +181,6 @@
   background: #f9f9f9;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
-
 .number-box.b { background: #FFA500; color: #fff; }
 .number-box.i { background: #00C853; color: #fff; }
 .number-box.n { background: #F44336; color: #fff; }
@@ -194,35 +192,41 @@
   box-shadow: 0 0 6px #b41ca9, 0 0 12px #b41ca9;
 }
 
-/* ---------------- Last Three Numbers ---------------- */
-.last-three {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
+/* ---------------- Latest 4 Numbers ---------------- */
+.last-four-wrapper {
   position: absolute;
   top: 170px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10;
+  background: #D32F2F; /* red rectangle */
+  padding: 10px 15px;
+  border-radius: 15px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  z-index: 9;
+  overflow: hidden;
 }
 
-.last-three div {
-  width: 60px;
-  height: 60px;
+.last-four {
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #FF7043, #D84315);
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: bold;
   box-shadow: 0 2px 6px rgba(0,0,0,0.4);
   position: relative;
-  transition: transform 0.2s;
+  animation: slideIn 0.5s ease forwards;
 }
 
-.last-three div::after {
+.last-four::after {
   content: '';
   position: absolute;
   top: 15%;
@@ -231,6 +235,13 @@
   height: 70%;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.15);
+}
+
+/* Animation: slide from right to left + pop */
+@keyframes slideIn {
+  0% { transform: translateX(50px) scale(0.5); opacity: 0; }
+  60% { transform: translateX(-5px) scale(1.2); opacity: 1; }
+  100% { transform: translateX(0) scale(1); }
 }
 
 /* ---------------- Leave Button ---------------- */
@@ -250,10 +261,4 @@
 }
 .leave-button:hover {
   background-color: #c0392b;
-
 }
-
-
-
-
-
