@@ -110,8 +110,8 @@ body, html {
   top: -135px;
   left: 50%;
   transform: translateX(-50%);
-  width: 105px;
-  height: 105px;
+  width: 95px;
+  height: 95px;
   border-radius: 50%;
   background: #fff;
   border: 12px solid #d32f2f;
@@ -338,6 +338,7 @@ body, html {
 .rolling-number:hover {
   transform: scale(1.2);
 }
+
 
 
 
