@@ -2,12 +2,13 @@
 body, html {
   margin: 0;
   padding: 0;
-  background-color: #a3d8f4; /* same light blue as container */
+  background-color: #a3d8f4;
   height: 100%;
 }
+
 .container {
   padding: 30px;
-  background: #a3d8f4; /* full light blue 💙 */
+  background: #a3d8f4;
   border-radius: 15px;
   box-sizing: border-box;
 }
@@ -23,26 +24,41 @@ body, html {
 }
 
 /* ======================= Top Menu ======================= */
-/* ======================= Top Menu ======================= */
 .top-menu {
   display: flex;
   justify-content: space-around;
-  align-items: center;
+  align-items: flex-end;
   background: linear-gradient(to right, #3a7bd5, #3a6073);
-  border-radius: 12px;
-  padding: 8px 10px; /* smaller padding */
-  gap: 8px;
+  border-radius: 16px;
+  padding: 10px 12px;
+  gap: 10px;
 }
 
 .menu-item-box {
   background: rgba(255, 255, 255, 0.15);
-  padding: 6px 10px; /* smaller padding */
-  border-radius: 8px;
-  font-size: 14px; /* smaller text */
-  color: white;
-  min-width: 70px; /* keeps shape but not too wide */
+  border-radius: 12px;
+  width: 90px;
+  min-width: 80px;
+  padding: 8px 5px;
   text-align: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 14px;
 }
+
+.menu-item-box span.label {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-bottom: 4px;
+}
+
+.menu-item-box span.value {
+  font-size: 16px;
+  font-weight: bold;
+}
+
 /* ======================= Main Boards Wrapper ======================= */
 .main-content {
   display: flex;
@@ -63,17 +79,16 @@ body, html {
   flex-direction: column;
   align-items: center;
   background: linear-gradient(135deg, #00C853, #2196F3);
-  padding: 10px;
+  padding: 12px;
   border-radius: 15px;
   border: 2px solid rgba(255,255,255,0.3);
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
   margin-top: -60px; 
-  margin-left: 30px;
+  margin-left: 20px;
 }
 .board-grid {
   display: flex;
 }
-
 .board-column {
   display: flex;
   flex-direction: column;
@@ -91,17 +106,17 @@ body, html {
 
 /* ---------------- Current Number Ball ---------------- */
 .current-ball {
- position: absolute;
+  position: absolute;
   top: -135px;
   left: 50%;
   transform: translateX(-50%);
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  background: #fff; /* white center */
-  border: 12px solid #d32f2f; /* thick red border */
-  color: #d32f2f; /* number color matches border */
-  font-size: 40px;
+  background: #fff;
+  border: 12px solid #d32f2f;
+  color: #d32f2f;
+  font-size: 44px;
   font-weight: bold;
   display: flex;
   justify-content: center;
@@ -119,106 +134,73 @@ body, html {
   border-radius: 50%;
   background: rgba(255,255,255,0.5);
 }
-
-/* Hover pulse for current ball */
 .current-ball.pulse {
   animation: pulse 1s infinite alternate;
 }
 
-/* Red rectangle -> change to darker blue for contrast */
+/* ---------------- Rolling Numbers Rectangle ---------------- */
 .waiting-rectangle {
-  background-color: #0077b6; /* dark blue */
+  background-color: #0077b6;
   color: white;
   font-weight: bold;
-  padding: 10px 0;
-  margin: 10px 0;
-  border-radius: 8px;
-  width: 100%;
+  padding: 12px 8px;
+  margin: 12px 0;
+  border-radius: 12px;
+  width: 320px;
   box-sizing: border-box;
-  position: relative;
-  overflow: hidden;
-  text-align: center;
-  font-size: 16px;
-  min-height: 50px; /* fix height so rectangle doesn't shrink */
+  overflow-x: auto;
   display: flex;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: center;
 }
 
-/* ---------------- Rolling Numbers inside rectangle ---------------- */
+/* Smooth scrollbar */
+.waiting-rectangle::-webkit-scrollbar {
+  height: 6px;
+}
+.waiting-rectangle::-webkit-scrollbar-thumb {
+  background-color: rgba(255,255,255,0.3);
+  border-radius: 3px;
+}
+
+/* Rolling numbers inside rectangle */
 .rolling-numbers {
   display: flex;
   gap: 10px;
-  justify-content: flex-start;
   align-items: center;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
+  flex-wrap: nowrap;
 }
 
-/* Individual rolling number */
+/* Individual rolling number balls */
 .rolling-number {
-  width: 32px;
-  height: 32px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 50%;
-  background-color: #caf0f8; /* light blue for contrast */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  flex-shrink: 0;
-  animation: slideLeft 8s linear infinite;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  position: relative;
-}
-/* Light effect inside the small ball */
-.rolling-number::after {
-  content: '';
-  position: absolute;
-  top: 10%;
-  left: 10%;
-  width: 30%;
-  height: 30%;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.4);
-}
-
-/* Small balls inside the red rectangle */
-/* Floating balls */
-/* ---------------- Rolling Small Balls ---------------- */
-.small-ball {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #ffffff, #caf0f8); /* soft gradient for 3D effect */
-  color: #0077b6; /* dark blue number */
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: bold;
   font-size: 14px;
-  position: relative;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.5); /* 3D look */
-  flex-shrink: 0;
-  margin: 0 4px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.4);
   transition: transform 0.3s;
+  position: relative;
 }
-/* Inner highlight to mimic spherical shape like current ball */
-.small-ball::after {
+.rolling-number::after {
   content: '';
   position: absolute;
-  top: 15%;
-  left: 15%;
+  top: 12%;
+  left: 12%;
   width: 30%;
   height: 30%;
   border-radius: 50%;
-  background: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.5);
 }
-/* Slide animation for rolling numbers */
-@keyframes slideLeft {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
-}
+.rolling-number.B { background: #FFA500; color: #fff; }
+.rolling-number.I { background: #00C853; color: #fff; }
+.rolling-number.N { background: #F44336; color: #fff; }
+.rolling-number.G { background: #2196F3; color: #fff; }
+.rolling-number.O { background: #9C27B0; color: #fff; }
+.rolling-number:hover { transform: scale(1.25); }
 
 /* ---------------- Cartela Board ---------------- */
 .cartela {
@@ -242,7 +224,6 @@ body, html {
   font-size: 14px;
   font-weight: bold;
   color: #333;
-  background: none;
 }
 
 /* ---------------- Bingo Header Row ---------------- */
@@ -329,9 +310,8 @@ body, html {
   box-shadow: 0 4px 6px rgba(0,0,0,0.3);
   transition: background 0.3s;
 }
-.leave-button:hover {
-  background-color: #c0392b;
-}
+.leave-button:hover { background-color: #c0392b; }
+
 /* Border colors by Bingo letter */
 .small-ball.B { border-color: #FFA500; color: #FFA500; }
 .small-ball.I { border-color: #FFC107; color: #FFC107; }
