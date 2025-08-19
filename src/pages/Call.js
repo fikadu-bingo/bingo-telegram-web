@@ -22,7 +22,7 @@ function formatBingoNumber(number) {
 function Call() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { card, stake, gameId, cartelaNumber, username: stateUsername, userId: stateUserId } =
+  const { card, stake, cartelaNumber, username: stateUsername, userId: stateUserId } =
     location.state ?? {};
 
   const userId = stateUserId ?? localStorage.getItem("telegram_id") ?? `guest_${Date.now()}`;
@@ -37,7 +37,7 @@ function Call() {
   const [showPopup, setShowPopup] = useState(false);
   const [players, setPlayers] = useState(1);
   const [winAmount, setWinAmount] = useState(0);
-  const [rollingNumbers, setRollingNumbers] = useState([]); // <-- rolling numbers for rectangle
+  const [rollingNumbers, setRollingNumbers] = useState([]); // rolling numbers inside rectangle
 
   const socket = useRef(null);
 
@@ -60,13 +60,14 @@ function Call() {
       setCountdown(time);
       if (time === 0) setGameStarted(true);
     });
+
     socket.current.on("countdownStopped", () => {
       setCountdown(null);
       setGameStarted(false);
     });
 
     socket.current.on("numberCalled", (number) => {
-      if (number < 1 || number > 75) return; // only valid numbers
+      if (number < 1 || number > 75) return; // only 1-75
       const formatted = formatBingoNumber(number);
 
       setCurrentNumber(formatted);
@@ -86,13 +87,9 @@ function Call() {
     socket.current.on("gameWon", ({ userId: winnerId, username: winnerUsername, prize, balances }) => {
       const numericPrize = Number(prize) || 0;
       try {
-        const myUserId = userId;
-        if (balances && balances[myUserId] !== undefined) {
-          const updatedBalance = Number(balances[myUserId]);
-          if (!isNaN(updatedBalance)) {
-            localStorage.setItem("balance", updatedBalance);
-            setWinAmount(updatedBalance);
-          }
+        if (balances && balances[userId] !== undefined) {
+          const updatedBalance = Number(balances[userId]);
+          if (!isNaN(updatedBalance)) setWinAmount(updatedBalance);
         }
       } catch (err) {
         console.error("Failed to update local balance on gameWon:", err);
@@ -114,7 +111,6 @@ function Call() {
         console.error("Failed to process balanceChange:", e);
       }
     });
-
     socket.current.on("gameReset", () => {
       setCalledNumbers([]);
       setCurrentNumber(null);
@@ -145,104 +141,66 @@ function Call() {
 
   return (
     <div className="container">
+      {/* Logo */}
       <div className="logo-container">
         <img src={logo} alt="Logo" className="logo" />
       </div>
 
-     <div className="top-menu">
-  <div className="menu-item-box">Players: {players.length}</div>
-  <div className="menu-item-box">Bet: {stake}</div>
-  <div className="menu-item-box">Win: {winAmount}</div>
-  <div className="menu-item-box">Call: {calledNumbers.length}</div>
-</div>
+      {/* Top Menu */}
+      <div className="top-menu">
+        <div className="menu-item-box">
+          <div className="menu-label">Players</div>
+          <div className="menu-value">{players}</div>
+        </div>
+        <div className="menu-item-box">
+          <div className="menu-label">Bet</div>
+          <div className="menu-value">{stake}</div>
+        </div>
+        <div className="menu-item-box">
+          <div className="menu-label">Win</div>
+          <div className="menu-value">{winAmount}</div>
+        </div>
+        <div className="menu-item-box">
+          <div className="menu-label">Call</div>
+          <div className="menu-value">{calledNumbers.length}</div>
+          {!gameStarted && countdown !== null && (
+            <div className="countdown-text">{countdown}</div>
+          )}
+        </div>
+      </div>
 
       <div className="main-content">
-        {/* ---------------- Leftside Board ---------------- */}
-     <div className="board">
-  {/* Bingo Header */}
-  <div className="bingo-header-row">
-    {["B", "I", "N", "G", "O"].map((letter) => (
-      <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
-        {letter}
-      </div>
-    ))}
-  </div>
-
-  {/* Board Grid */}
-  <div className="board-grid">
-    {/* B Column (1–15) */}
-    <div className="board-column">
-      {Array.from({ length: 15 }, (_, i) => i + 1).map((num) => (
-        <div
-          key={num}
-          className={`number-box ${
-            calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
-          }`}
-        >
-          {num}
+        {/* Leftside Board */}
+        <div className="board">
+          <div className="bingo-header-row">
+            {["B", "I", "N", "G", "O"].map((letter) => (
+              <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
+                {letter}
+              </div>
+            ))}
+          </div>
+          <div className="board-grid">
+            {["B","I","N","G","O"].map((col, idx) => {
+              const start = idx * 15 + 1;
+              return (
+                <div key={col} className="board-column">
+                  {Array.from({ length: 15 }, (_, i) => start + i).map((num) => (
+                    <div
+                      key={num}
+                      className={`number-box ${
+                        calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
+                      }`}
+                    >
+                      {num}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
         </div>
-      ))}
-    </div>
 
-    {/* I Column (16–30) */}
-    <div className="board-column">
-      {Array.from({ length: 15 }, (_, i) => i + 16).map((num) => (
-        <div
-          key={num}
-          className={`number-box ${
-            calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
-          }`}
-        >
-          {num}
-        </div>
-      ))}
-    </div>
-
-    {/* N Column (31–45) */}
-    <div className="board-column">
-      {Array.from({ length: 15 }, (_, i) => i + 31).map((num) => (
-        <div
-          key={num}
-          className={`number-box ${
-            calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
-          }`}
-        >
-          {num}
-        </div>
-      ))}
-    </div>
-
-    {/* G Column (46–60) */}
-    <div className="board-column">
-      {Array.from({ length: 15 }, (_, i) => i + 46).map((num) => (
-        <div
-          key={num}
-          className={`number-box ${
-            calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
-          }`}
-        >
-          {num}
-        </div>
-      ))}
-    </div>
-
-    {/* O Column (61–75) */}
-    <div className="board-column">
-      {Array.from({ length: 15 }, (_, i) => i + 61).map((num) => (
-        <div
-          key={num}
-          className={`number-box ${
-            calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
-          }`}
-        >
-          {num}
-        </div>
-      ))}
-    </div>
-  </div>
-</div>
-
-        {/* ---------------- Cartela Board with Rolling Rectangle ---------------- */}
+        {/* Cartela Wrapper */}
         <div className="cartela-wrapper">
           {/* Current Ball */}
           <div
@@ -270,7 +228,6 @@ function Call() {
 
           {/* Cartela Title */}
           <h4 className="cartela-title">Cartela: #{cartelaNumber}</h4>
-
           {/* Cartela Grid */}
           <div className="cartela">
             <div className="bingo-header-row">
@@ -307,14 +264,6 @@ function Call() {
             </button>
           </div>
         </div>
-
-        {/* Countdown Circle */}
-        {countdown !== null && !gameStarted && (
-          <div className="countdown-circle">
-            <div style={{ fontSize: "12px" }}>Wait</div>
-            <div>{countdown > 0 ? countdown : "0"}</div>
-          </div>
-        )}
       </div>
 
       {showPopup && winnerInfo && (
