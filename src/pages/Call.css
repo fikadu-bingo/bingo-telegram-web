@@ -61,7 +61,7 @@ body, html {
   flex-direction: column;
   align-items: center;
   background: linear-gradient(135deg, #00C853, #2196F3);
-  padding: 30px;
+  padding: 5px;
   border-radius: 15px;
   border: 2px solid rgba(255,255,255,0.3);
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
@@ -89,7 +89,7 @@ body, html {
 /* ---------------- Current Number Ball ---------------- */
 .current-ball {
  position: absolute;
-  top: -150px;
+  top: -155px;
   left: 50%;
   transform: translateX(-50%);
   width: 110px;
@@ -336,6 +336,7 @@ body, html {
 .small-ball.G { border-color: #2196F3; color: #2196F3; }
 
 .small-ball.O { border-color: #4CAF50; color: #4CAF50; }
+
 
 
 
