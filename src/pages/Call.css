@@ -36,11 +36,11 @@
 /* ======================= Main Boards Wrapper ======================= */
 .main-content {
   display: flex;
-  justify-content: center;   /* center boards horizontally */
-  gap: 10px;                 /* tiny gap between boards */
+  justify-content: center;   
+  gap: 10px;                 
   align-items: flex-end;
   position: relative;
-  padding-top: 50px;         /* space for top menu */
+  padding-top: 50px;         
   padding-left: 20px;
   padding-right: 20px;
   box-sizing: border-box;
@@ -57,24 +57,23 @@
   border-radius: 15px;
   border: 2px solid rgba(255,255,255,0.3);
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  /* Move left board up close to top menu */
-  margin-top: -50px; /* very small gap */
+  margin-top: -50px; 
 }
 
 /* ---------------- Cartela Wrapper ---------------- */
 .cartela-wrapper {
-  position: relative; /* needed for current-number to position relative to cartela */
+  position: relative; 
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
 }
 
-/* ---------------- Big Current Number Circle ---------------- */
-.current-number {
+/* ---------------- Current Number Ball ---------------- */
+.current-ball {
   position: absolute;
-  top: -250px;           /* place above cartela board */
-  left: 50%;            /* center horizontally over cartela */
+  top: -250px;          
+  left: 50%;            
   transform: translateX(-50%);
   width: 140px;
   height: 140px;
@@ -86,20 +85,82 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 4px 10px rgba(255,255,255,0.3);
   z-index: 10;
+  transition: transform 0.2s;
 }
-.current-number::after {
+.current-ball::after {
   content: '';
   position: absolute;
-  top: 15%;
-  left: 15%;
-  width: 70%;
-  height: 70%;
+  top: 10%;
+  left: 10%;
+  width: 35%;
+  height: 35%;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255,255,255,0.4);
 }
 
+/* Hover pulse for current ball */
+.current-ball.pulse {
+  animation: pulse 1s infinite alternate;
+}
+
+/* ---------------- Last Four Balls ---------------- */
+.last-four-wrapper {
+  position: absolute;
+  top: 170px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #D32F2F;
+  padding: 10px 15px;
+  border-radius: 15px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  z-index: 9;
+  overflow: hidden;
+}
+
+.small-ball {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #FF7043, #D84315);
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4), inset 0 3px 6px rgba(255,255,255,0.3);
+  position: relative;
+  animation: slideIn 0.5s ease forwards;
+}
+.small-ball::after {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+}
+
+/* Slide-in animation for last balls */
+@keyframes slideIn {
+  0% { transform: translateX(50px) scale(0.5); opacity: 0; }
+  60% { transform: translateX(-5px) scale(1.2); opacity: 1; }
+  100% { transform: translateX(0) scale(1); }
+}
+
+/* Pulse animation for current ball */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
 /* ---------------- Cartela Board ---------------- */
 .cartela {
   min-width: 140px;
@@ -160,6 +221,7 @@
   justify-items: center; 
   margin: 0;
 }
+
 .board-grid .number-box {
   width: 30px;
   height: 30px;
@@ -191,45 +253,6 @@
 .number-box.marked {
   transform: scale(1.1);
   box-shadow: 0 0 6px #b41ca9, 0 0 12px #b41ca9;
-}
-
-/* ---------------- Last Three Numbers ---------------- */
-.last-three {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  position: absolute;
-  top: 170px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-}
-
-.last-three div {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #FF7043, #D84315);
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 22px;
-  font-weight: bold;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-  position: relative;
-  transition: transform 0.2s;
-}
-
-.last-three div::after {
-  content: '';
-  position: absolute;
-  top: 15%;
-  left: 15%;
-  width: 70%;
-  height: 70%;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
 }
 
 /* ---------------- Leave Button ---------------- */
