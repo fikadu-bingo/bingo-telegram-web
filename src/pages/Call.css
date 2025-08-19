@@ -344,21 +344,7 @@ body, html {
 }
 
 /* ---------------- Leave Button ---------------- */
-.leave-button {
-  display: block;
-  margin-top: 10px;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  border-radius: 8px;
-  border: none;
-  background-color: #e74c3c;
-  color: white;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-  transition: background 0.3s;
-}
-.leave-button:hover { background-color: #c0392b; }
+
 
 /* Border colors by Bingo letter */
 .small-ball.B { border-color: #FFA500; color: #FFA500; }
@@ -369,5 +355,72 @@ body, html {
 /* Hover scale effect */
 .rolling-number:hover {
   transform: scale(1.2);
+}
+
+/* Wrapper for all action buttons below boards */
+.action-buttons-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  gap: 12px;
+}
+
+/* Wide Bingo button */
+.bingo-button {
+  width: 100%; /* full width of container */
+  max-width: 500px; /* match approximate width of both boards */
+  padding: 15px 0;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #ff6b6b, #ff4757);
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+  transition: transform 0.2s, background 0.3s;
+}
+.bingo-button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #ff4757, #ff6b6b);
+}
+
+/* Bottom two buttons */
+.bottom-buttons {
+  width: 100%;
+  max-width: 500px; /* match Bingo button width */
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.refresh-button, .leave-button {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  transition: transform 0.2s, background 0.3s;
+}
+
+.refresh-button {
+  background: #1e90ff;
+}
+.refresh-button:hover {
+  background: #1c86ee;
+  transform: scale(1.05);
+}
+
+.leave-button {
+  background: #e74c3c;
+}
+.leave-button:hover {
+  background: #c0392b;
+  transform: scale(1.05);
 }
 
