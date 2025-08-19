@@ -24,17 +24,21 @@ body, html {
 
 /* ======================= Top Menu ======================= */
 /* ======================= Top Menu ======================= */
+/* ======================= Top Menu ======================= */
 .top-menu {
   display: flex;
   justify-content: space-around;
+  align-items: center;
   background: linear-gradient(90deg, #5dade2, #0077b6); /* light to dark blue fade */
-  border-radius: 10px;
+  border-radius: 12px;
   color: white;
-  padding: 8px 5px;
-  font-size: 13px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
+  padding: 12px 20px; /* taller for individual rectangles */
+  font-size: 14px;
+  margin-bottom: 15px;
+  width: 100%; /* stretch full width of container */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* subtle shadow */
+  box-sizing: border-box;
+  gap: 15px; /* spacing between menu items */
 }
 /* ======================= Main Boards Wrapper ======================= */
 .main-content {
@@ -322,5 +326,6 @@ body, html {
 .small-ball.G { border-color: #2196F3; color: #2196F3; }
 
 .small-ball.O { border-color: #4CAF50; color: #4CAF50; }
+
 
 
