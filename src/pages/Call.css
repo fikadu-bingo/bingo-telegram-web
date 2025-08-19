@@ -26,21 +26,21 @@ body, html {
 /* ======================= Top Menu ======================= */
 .top-menu {
   display: flex;
-  justify-content: space-around;
-  align-items: flex-end;
+  justify-content: flex-start;
+  align-items: center;
   background: linear-gradient(to right, #3a7bd5, #3a6073);
-  border-radius: 16px;
-  padding: 12px 16px; /* slightly bigger padding */
- gap: 4px;
+  border-radius: 12px;
+  padding: 5px 10px; /* slightly bigger padding */
+  gap: 4px;
   width: 420px; /* stretch wider to fit all menu items */
- margin-left: -15px; /* center horizontally and add space below for logo */
+  margin-left: -15px; /* center horizontally and add space below for logo */
 }
 
 /* Individual menu boxes */
 .menu-item-box {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 8px;
-  width: 50px; /* fixed width */
+  min-width: 50px; /* fixed width */
   padding: 4px 6px;
   text-align: center;
   color: white;
@@ -328,7 +328,3 @@ body, html {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
-
-
-
-
