@@ -72,7 +72,7 @@
 /* ---------------- Current Number Ball ---------------- */
 .current-ball {
  position: absolute;
-  top: -250px;
+  top: -200px;
   left: 50%;
   transform: translateX(-50%);
   width: 140px;
@@ -285,4 +285,5 @@
 .small-ball.I { border-color: #FFC107; color: #FFC107; }
 .small-ball.N { border-color: #F44336; color: #F44336; }
 .small-ball.G { border-color: #2196F3; color: #2196F3; }
+
 .small-ball.O { border-color: #4CAF50; color: #4CAF50; }
