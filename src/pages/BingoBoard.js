@@ -82,24 +82,27 @@ function BingoBoard() {
   }, [stake, selectedNumber]);
 
   // Generate 5x5 bingo card with selected number in center
-  const generateCard = (selected) => {
-    let numbers = Array.from({ length: 100 }, (_, i) => i + 1);
-    numbers = numbers.filter((num) => num !== selected);
+const generateCard = (selected) => {
+  // Numbers 1 to 75
+  let numbers = Array.from({ length: 75 }, (_, i) => i + 1);
+  numbers = numbers.filter((num) => num !== selected);
 
-    for (let i = numbers.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
-    }
+  // Shuffle
+  for (let i = numbers.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+  }
 
-    const cardNumbers = numbers.slice(0, 24);
-    cardNumbers.splice(12, 0, selected); // center of 25 numbers
+  const cardNumbers = numbers.slice(0, 24);
+  cardNumbers.splice(12, 0, selected); // center
 
-    const card = [];
-    for (let i = 0; i < 5; i++) {
-      card.push(cardNumbers.slice(i * 5, i * 5 + 5));
-    }
-    setBingoCard(card);
-  };
+  const card = [];
+  for (let i = 0; i < 5; i++) {
+    card.push(cardNumbers.slice(i * 5, i * 5 + 5));
+  }
+
+  setBingoCard(card);
+};
 
   // When user clicks a number to select ticket
   const handleNumberClick = (number) => {
