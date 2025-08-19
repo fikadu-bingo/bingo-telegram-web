@@ -145,28 +145,34 @@ function Call() {
      
 
       {/* Top Menu */}
-      <div className="top-menu">
-        <div className="menu-item-box">
-          <div className="menu-label">Players</div>
-          <div className="menu-value">{players}</div>
-        </div>
-        <div className="menu-item-box">
-          <div className="menu-label">Bet</div>
-          <div className="menu-value">{stake}</div>
-        </div>
-        <div className="menu-item-box">
-          <div className="menu-label">Win</div>
-          <div className="menu-value">{winAmount}</div>
-        </div>
-        <div className="menu-item-box">
-          <div className="menu-label">Call</div>
-          <div className="menu-value">{calledNumbers.length}</div>
-          {!gameStarted && countdown !== null && (
-            <div className="countdown-text">{countdown}</div>
-          )}
-        </div>
-      </div>
+    <div className="top-menu">
+  <div className="menu-item-box">
+    <div className="menu-label">Players</div>
+    <div className="menu-value">{players}</div>
+  </div>
+  <div className="menu-item-box">
+    <div className="menu-label">Bet</div>
+    <div className="menu-value">{stake}</div>
+  </div>
+  <div className="menu-item-box">
+    <div className="menu-label">Win</div>
+    <div className="menu-value">{winAmount}</div>
+  </div>
+  <div className="menu-item-box">
+    <div className="menu-label">Call</div>
+    <div className="menu-value">{calledNumbers.length}</div>
+  </div>
 
+  {/* Digital Countdown Timer next to Call */}
+  {!gameStarted && countdown !== null && (
+    <div className="menu-item-box timer-box">
+      <div className="timer-circle">
+        <span className="timer-value">{countdown}</span>
+      </div>
+      <div className="menu-label">⏲️ Countdown</div>
+    </div>
+  )}
+</div>
       <div className="main-content">
         {/* Leftside Board */}
         <div className="board">
@@ -282,6 +288,5 @@ function Call() {
     </div>
   );
 }
-
 
 export default Call;
