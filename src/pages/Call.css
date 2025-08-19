@@ -32,7 +32,7 @@ body, html {
   border-radius: 12px;
   padding: 5px 10px; /* slightly bigger padding */
   gap: 8px;
-  width: 370px; /* stretch wider to fit all menu items */
+  width: 360px; /* stretch wider to fit all menu items */
   margin-left: -15px; /* center horizontally and add space below for logo */
 }
 
@@ -328,6 +328,7 @@ body, html {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
+
 
 
 
