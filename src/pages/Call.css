@@ -23,18 +23,19 @@ body, html {
 }
 
 /* ======================= Top Menu ======================= */
+/* ======================= Top Menu ======================= */
 .top-menu {
   display: flex;
   justify-content: space-around;
-  background: linear-gradient(90deg, orange, green, cyan);
+  background: linear-gradient(90deg, #5dade2, #0077b6); /* light to dark blue fade */
   border-radius: 10px;
   color: white;
   padding: 8px 5px;
   font-size: 13px;
   margin-bottom: 10px;
   flex-wrap: wrap;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* subtle shadow */
 }
-
 /* ======================= Main Boards Wrapper ======================= */
 .main-content {
   display: flex;
@@ -321,4 +322,5 @@ body, html {
 .small-ball.G { border-color: #2196F3; color: #2196F3; }
 
 .small-ball.O { border-color: #4CAF50; color: #4CAF50; }
+
 
