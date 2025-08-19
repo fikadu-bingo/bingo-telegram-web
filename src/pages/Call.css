@@ -40,6 +40,7 @@ body, html {
   box-sizing: border-box;
   gap: 15px; /* spacing between menu items */
 }
+
 /* ======================= Main Boards Wrapper ======================= */
 .main-content {
   display: flex;
@@ -172,41 +173,41 @@ body, html {
 
 /* Small balls inside the red rectangle */
 /* Floating balls */
+/* ---------------- Rolling Small Balls ---------------- */
 .small-ball {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background-color: #caf0f8; /* light blue/white for contrast */
-  color: #023e8a; /* dark blue numbers */
+  background: linear-gradient(145deg, #ffffff, #caf0f8); /* soft gradient for 3D effect */
+  color: #0077b6; /* dark blue number */
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: bold;
+  font-size: 14px;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.5); /* 3D look */
   flex-shrink: 0;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3); /* subtle shadow for pop */
+  margin: 0 4px;
+  transition: transform 0.3s;
 }
+/* Inner highlight to mimic spherical shape like current ball */
 .small-ball::after {
   content: '';
   position: absolute;
-  top: 10%;
-  left: 10%;
+  top: 15%;
+  left: 15%;
   width: 30%;
   height: 30%;
   border-radius: 50%;
-  background: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.6);
 }
-
 /* Slide animation for rolling numbers */
 @keyframes slideLeft {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
 
-/* Pulse animation for current ball */
-@keyframes pulse {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.1); }
-}
 /* ---------------- Cartela Board ---------------- */
 .cartela {
   min-width: 140px;
@@ -324,8 +325,4 @@ body, html {
 .small-ball.I { border-color: #FFC107; color: #FFC107; }
 .small-ball.N { border-color: #F44336; color: #F44336; }
 .small-ball.G { border-color: #2196F3; color: #2196F3; }
-
 .small-ball.O { border-color: #4CAF50; color: #4CAF50; }
-
-
-
