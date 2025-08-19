@@ -1,11 +1,9 @@
 /* ======================= Container & Logo ======================= */
 .container {
   padding: 30px;
-  background: #a3d8f4; /* light blue color */
-  backdrop-filter: blur(12px) saturate(150%);
-  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  background: #a3d8f4; /* full light blue 💙 */
   border-radius: 15px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
 }
 
 .logo-container {
