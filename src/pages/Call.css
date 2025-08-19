@@ -74,7 +74,7 @@ body, html {
 /* ---------------- Current Number Ball ---------------- */
 .current-ball {
  position: absolute;
-  top: -170px;
+  top: -183px;
   left: 50%;
   transform: translateX(-50%);
   width: 140px;
@@ -321,3 +321,4 @@ body, html {
 .small-ball.G { border-color: #2196F3; color: #2196F3; }
 
 .small-ball.O { border-color: #4CAF50; color: #4CAF50; }
+
