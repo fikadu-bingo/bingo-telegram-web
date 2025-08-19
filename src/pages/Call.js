@@ -76,7 +76,7 @@ function Call() {
       // Update rolling numbers
       setRollingNumbers((prev) => {
         const updated = [...prev, formatted];
-        if (updated.length > 5) updated.shift(); // keep max 5 numbers visible
+        if (updated.length > 3) updated.shift(); // keep max 5 numbers visible
         return updated;
       });
     });
@@ -282,5 +282,6 @@ function Call() {
     </div>
   );
 }
+
 
 export default Call;
