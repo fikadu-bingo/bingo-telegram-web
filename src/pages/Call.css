@@ -29,18 +29,24 @@ body, html {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background: linear-gradient(90deg, #5dade2, #0077b6); /* light to dark blue fade */
+  width: 100%;
+  background: linear-gradient(90deg, #4facfe, #00f2fe); /* blue fade */
+  padding: 12px 0;
   border-radius: 12px;
-  color: white;
-  padding: 12px 20px; /* taller for individual rectangles */
-  font-size: 14px;
-  margin-bottom: 15px;
-  width: 100%; /* stretch full width of container */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* subtle shadow */
-  box-sizing: border-box;
-  gap: 15px; /* spacing between menu items */
+  margin-bottom: 20px;
 }
 
+.menu-item-box {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  min-width: 120px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
 /* ======================= Main Boards Wrapper ======================= */
 .main-content {
   display: flex;
@@ -66,7 +72,7 @@ body, html {
   border: 2px solid rgba(255,255,255,0.3);
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
   margin-top: -60px; 
-   margin-left: 30px;
+  margin-left: 30px;
 }
 .board-grid {
   display: flex;
@@ -335,15 +341,4 @@ body, html {
 .small-ball.I { border-color: #FFC107; color: #FFC107; }
 .small-ball.N { border-color: #F44336; color: #F44336; }
 .small-ball.G { border-color: #2196F3; color: #2196F3; }
-
 .small-ball.O { border-color: #4CAF50; color: #4CAF50; }
-
-
-
-
-
-
-
-
-
-
