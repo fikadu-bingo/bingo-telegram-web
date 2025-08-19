@@ -149,12 +149,12 @@ function Call() {
         <img src={logo} alt="Logo" className="logo" />
       </div>
 
-      <div className="top-menu">
-        <div>Players: {players}</div>
-        <div>Bet: Br{stake}</div>
-        <div>Win: Br{winAmount}</div>
-        <div>Call: {calledNumbers.length}</div>
-      </div>
+     <div className="top-menu">
+  <div className="menu-item-box">Players: {playersCount}</div>
+  <div className="menu-item-box">Bet: {currentBet}</div>
+  <div className="menu-item-box">Win: {winAmount}</div>
+  <div className="menu-item-box">Call: {numbersCalled.length}</div>
+</div>
 
       <div className="main-content">
         {/* ---------------- Leftside Board ---------------- */}
