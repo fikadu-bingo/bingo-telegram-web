@@ -142,9 +142,7 @@ function Call() {
   return (
     <div className="container">
       {/* Logo */}
-      <div className="logo-container">
-        <img src={logo} alt="Logo" className="logo" />
-      </div>
+     
 
       {/* Top Menu */}
       <div className="top-menu">
