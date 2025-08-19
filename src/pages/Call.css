@@ -39,9 +39,9 @@ body, html {
 /* Individual menu boxes */
 .menu-item-box {
   background: rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  width: 80px; /* fixed width */
-  padding: 8px 5px;
+  border-radius: 8px;
+  width: 50px; /* fixed width */
+  padding: 4px 6px;
   text-align: center;
   color: white;
   display: flex;
@@ -328,5 +328,6 @@ body, html {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
+
 
 
