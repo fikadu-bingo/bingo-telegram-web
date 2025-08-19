@@ -1,13 +1,11 @@
 /* ======================= Container & Logo ======================= */
 .container {
   padding: 30px;
-  background: #f8d764; /* yellow background */
+  background: #a3d8f4; /* light blue color */
   backdrop-filter: blur(12px) saturate(150%);
   -webkit-backdrop-filter: blur(12px) saturate(150%);
   border-radius: 15px;
-  box-shadow: 0 8px 32px 0 rgba(30, 60, 120, 0.37);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  position: relative;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
 }
 
 .logo-container {
@@ -105,8 +103,9 @@
   animation: pulse 1s infinite alternate;
 }
 
+/* Red rectangle -> change to darker blue for contrast */
 .waiting-rectangle {
-  background-color: red;
+  background-color: #0077b6; /* dark blue for contrast */
   color: white;
   font-weight: bold;
   padding: 10px 0;
@@ -119,7 +118,6 @@
   text-align: center;
   font-size: 16px;
 }
-
 /* ---------------- Last Four Balls ---------------- */
 .last-four-wrapper {
   display: flex;
@@ -134,17 +132,19 @@
 
 
 /* Small balls inside the red rectangle */
+/* Floating balls */
 .small-ball {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: white;
-  color: black;
+  background-color: #caf0f8; /* light blue/white for contrast */
+  color: #023e8a; /* dark blue numbers */
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: bold;
-  flex-shrink: 0; /* prevent shrinking */
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3); /* subtle shadow for pop */
 }
 .small-ball::after {
   content: '';
@@ -285,5 +285,4 @@
 .small-ball.I { border-color: #FFC107; color: #FFC107; }
 .small-ball.N { border-color: #F44336; color: #F44336; }
 .small-ball.G { border-color: #2196F3; color: #2196F3; }
-
 .small-ball.O { border-color: #4CAF50; color: #4CAF50; }
