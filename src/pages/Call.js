@@ -150,10 +150,10 @@ function Call() {
       </div>
 
      <div className="top-menu">
-  <div className="menu-item-box">Players: {playersCount}</div>
-  <div className="menu-item-box">Bet: {currentBet}</div>
+  <div className="menu-item-box">Players: {players.length}</div>
+  <div className="menu-item-box">Bet: {stake}</div>
   <div className="menu-item-box">Win: {winAmount}</div>
-  <div className="menu-item-box">Call: {numbersCalled.length}</div>
+  <div className="menu-item-box">Call: {calledNumbers.length}</div>
 </div>
 
       <div className="main-content">
