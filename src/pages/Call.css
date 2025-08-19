@@ -36,6 +36,38 @@ body, html {
   margin-left: -15px; /* center horizontally and add space below for logo */
   margin-top: -40;
 }
+/* ---------------- Timer Circle ---------------- */
+.timer-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  padding: 4px 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+}
+
+.timer-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ff6b6b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 4px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+  font-weight: bold;
+  font-size: 16px;
+  color: white;
+}
+
+.timer-value {
+  display: inline-block;
+}
 
 /* Individual menu boxes */
 .menu-item-box {
@@ -338,8 +370,4 @@ body, html {
 .rolling-number:hover {
   transform: scale(1.2);
 }
-
-
-
-
 
