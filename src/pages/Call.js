@@ -37,6 +37,7 @@ function Call() {
   const [showPopup, setShowPopup] = useState(false);
   const [players, setPlayers] = useState(1);
   const [winAmount, setWinAmount] = useState(0);
+  const [rollingNumbers, setRollingNumbers] = useState([]); // <-- rolling numbers for rectangle
 
   const socket = useRef(null);
 
@@ -65,9 +66,18 @@ function Call() {
     });
 
     socket.current.on("numberCalled", (number) => {
+      if (number < 1 || number > 75) return; // only valid numbers
       const formatted = formatBingoNumber(number);
+
       setCurrentNumber(formatted);
       setCalledNumbers((prev) => (prev.includes(formatted) ? prev : [...prev, formatted]));
+
+      // Update rolling numbers
+      setRollingNumbers((prev) => {
+        const updated = [...prev, formatted];
+        if (updated.length > 5) updated.shift(); // keep max 5 numbers visible
+        return updated;
+      });
     });
 
     socket.current.on("winAmountUpdate", (amount) => setWinAmount(amount));
@@ -112,7 +122,9 @@ function Call() {
       setGameStarted(false);
       setWinnerInfo(null);
       setShowPopup(false);
+      setRollingNumbers([]);
     });
+
     return () => {
       if (socket.current) {
         socket.current.emit("leaveGame", { userId });
@@ -120,7 +132,7 @@ function Call() {
         socket.current = null;
       }
     };
-  }, [stake, userId, username, playerCard, navigate]);
+  }, [stake, userId, username, playerCard, navigate, winnerInfo]);
 
   const getMarkedCartela = () =>
     playerCard.map((row, rowIndex) =>
@@ -130,9 +142,6 @@ function Call() {
         return { num, marked, isCenter };
       })
     );
-
-  // Last 4 balls for red rectangle
-  const lastFour = calledNumbers.slice(-4).reverse();
 
   return (
     <div className="container">
@@ -171,73 +180,74 @@ function Call() {
             ))}
           </div>
         </div>
-<div className="cartela-wrapper">
-  {/* ---------------- Current Number Ball ---------------- */}
-  <div
-    className={`current-ball ${
-      currentNumber ? getBingoLetter(parseInt(currentNumber.slice(1))) : ""
-    }`}
-  >
-    {currentNumber ?? "--"}
-  </div>
 
-  {/* ---------------- Red Rectangle ---------------- */}
-  <div className="waiting-rectangle">
-    {!gameStarted ? "Waiting for first ball" : (
-      <div className="last-four-wrapper">
-        {lastFour.map((num, idx) => (
+        {/* ---------------- Cartela Board with Rolling Rectangle ---------------- */}
+        <div className="cartela-wrapper">
+          {/* Current Ball */}
           <div
-            key={idx}
-            className={`small-ball ${getBingoLetter(parseInt(num.slice(1)))}`}
-            style={{ animationDelay: `${idx * 0.2}s` }}
+            className={`current-ball ${
+              currentNumber ? getBingoLetter(parseInt(currentNumber.slice(1))) : ""
+            }`}
           >
-            {num}
+            {currentNumber ?? "--"}
           </div>
-        ))}
-      </div>
-    )}
-  </div>
 
-  {/* ---------------- Cartela Title ---------------- */}
-  <h4 className="cartela-title">Cartela: #{cartelaNumber}</h4>
+          {/* Rolling Rectangle */}
+          <div className="waiting-rectangle">
+            {!gameStarted ? (
+              "Waiting for first ball"
+            ) : (
+              <div className="rolling-numbers">
+                {rollingNumbers.map((num, idx) => (
+                  <div key={idx} className={`rolling-number ${getBingoLetter(parseInt(num.slice(1)))}`}>
+                    {num}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-  {/* ---------------- Cartela Board ---------------- */}
-  <div className="cartela">
-    <div className="bingo-header-row">
-      {["B", "I", "N", "G", "O"].map((letter) => (
-        <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
-          {letter}
+          {/* Cartela Title */}
+          <h4 className="cartela-title">Cartela: #{cartelaNumber}</h4>
+
+          {/* Cartela Grid */}
+          <div className="cartela">
+            <div className="bingo-header-row">
+              {["B", "I", "N", "G", "O"].map((letter) => (
+                <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
+                  {letter}
+                </div>
+              ))}
+            </div>
+            <div className="cartela-grid">
+              {playerCard.flat().map((num, idx) => {
+                const row = Math.floor(idx / 5);
+                const col = idx % 5;
+                const isCenter = row === 2 && col === 2;
+                const marked = isCenter || calledNumbers.includes(formatBingoNumber(num));
+                return (
+                  <div key={idx} className={`number-box ${marked ? "marked" : "unmarked"}`}>
+                    {isCenter ? "*" : num}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Leave Button */}
+          <div className="buttons">
+            <button
+              onClick={() => navigate("/")}
+              className="action-btn leave-button"
+              disabled={gameStarted && winnerInfo === null}
+              title={gameStarted && winnerInfo === null ? "You can't leave during an active game" : ""}
+            >
+              🚪 Leave
+            </button>
+          </div>
         </div>
-      ))}
-    </div>
-    <div className="cartela-grid">
-      {playerCard.flat().map((num, idx) => {
-        const row = Math.floor(idx / 5);
-        const col = idx % 5;
-        const isCenter = row === 2 && col === 2;
-        const marked = isCenter || calledNumbers.includes(formatBingoNumber(num));
-        return (
-          <div key={idx} className={`number-box ${marked ? "marked" : "unmarked"}`}>
-            {isCenter ? "*" : num}
-          </div>
-        );
-      })}
-    </div>
-  </div>
 
-  {/* ---------------- Leave Button ---------------- */}
-  <div className="buttons">
-    <button
-      onClick={() => navigate("/")}
-      className="action-btn leave-button"
-      disabled={gameStarted && winnerInfo === null}
-      title={gameStarted && winnerInfo === null ? "You can't leave during an active game" : ""}
-    >
-      🚪 Leave
-    </button>
-  </div>
-</div>
-        {/* ---------------- Countdown Circle ---------------- */}
+        {/* Countdown Circle */}
         {countdown !== null && !gameStarted && (
           <div className="countdown-circle">
             <div style={{ fontSize: "12px" }}>Wait</div>
