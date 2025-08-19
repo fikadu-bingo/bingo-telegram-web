@@ -15,7 +15,7 @@ body, html {
 
 .logo-container {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 
 .logo {
@@ -329,6 +329,7 @@ body, html {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
+
 
 
 
