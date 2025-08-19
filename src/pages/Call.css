@@ -1,4 +1,10 @@
 /* ======================= Container & Logo ======================= */
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: #a3d8f4; /* same light blue as container */
+  height: 100%;
+}
 .container {
   padding: 30px;
   background: #a3d8f4; /* full light blue 💙 */
