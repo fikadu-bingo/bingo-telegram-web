@@ -6,10 +6,9 @@ import "../components/CartelaModal.css";
 
 const SOCKET_SERVER_URL = "https://bingo-server-rw7p.onrender.com";
 
-// Helper to generate Game IDs like A001, A002...
 const generateGameId = () => {
   const prefix = "A";
-  const num = Math.floor(Math.random() * 900) + 100; // 100 - 999
+  const num = Math.floor(Math.random() * 900) + 100;
   return prefix + num;
 };
 
@@ -21,116 +20,50 @@ function BingoBoard() {
   const initialBalance = parseFloat(localStorage.getItem("balance") ?? "200");
   const [wallet, setWallet] = useState(initialBalance);
   const [gameId, setGameId] = useState("");
-  const [balance] = useState(initialBalance);
 
-  // Selected ticket number & card
+  // Selected ticket number & server ticket
   const [selectedNumber, setSelectedNumber] = useState(null);
   const [bingoCard, setBingoCard] = useState([]);
   const [cartelaId, setCartelaId] = useState("");
 
-  // All users’ ticket selections
-  const [allTicketSelections, setAllTicketSelections] = useState({});
-
-  // Game status
+  // Game state & modals
   const [gameStarted, setGameStarted] = useState(false);
-
-  // Modals
   const [showModal, setShowModal] = useState(false);
   const [showCartelaModal, setShowCartelaModal] = useState(false);
 
-  // Socket & user id refs
   const socketRef = useRef();
   const userIdRef = useRef(null);
 
   useEffect(() => {
-    // Generate random gameId on mount
     const id = generateGameId();
     setGameId(id);
 
-    // Connect socket
     socketRef.current = io(SOCKET_SERVER_URL, { transports: ["websocket"] });
 
     const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
     const userId = telegramUser?.id ?? "anonymous";
     userIdRef.current = userId;
 
-    // Join socket room/game
-    socketRef.current.emit("joinGame", { gameId: id, userId });
+    // Join game and request server ticket
+    socketRef.current.emit("joinGame", { userId, stake });
 
-    // Listen for ticket updates from server
-    socketRef.current.on("ticketNumbersUpdated", (tickets) => {
-      setAllTicketSelections(tickets);
-
-      // If our selected number got removed, reset selection locally
-      if (selectedNumber !== null) {
-        const userTickets = tickets[userIdRef.current] ?? [];
-        if (!userTickets.includes(selectedNumber)) {
-          setSelectedNumber(null);
-          setBingoCard([]);
-          setCartelaId("");
-        }
-      }
+    // Listen for server-assigned ticket
+    socketRef.current.on("ticketAssigned", (ticket, selected) => {
+      setBingoCard(ticket);
+      setSelectedNumber(selected || null);
+      setCartelaId(selected || null);
+      setShowCartelaModal(true);
     });
 
-    // Cleanup on unmount
+    // Cleanup
     return () => {
       if (socketRef.current) {
-        socketRef.current.emit("leaveGame", { gameId: id, userId });
+        socketRef.current.emit("leaveGame", { userId, stake });
         socketRef.current.disconnect();
       }
     };
-  }, [stake, selectedNumber]);
+  }, [stake]);
 
-  // Generate 5x5 bingo card with selected number in center
-const generateCard = (selected) => {
-  // Numbers 1 to 75
-  let numbers = Array.from({ length: 75 }, (_, i) => i + 1);
-  numbers = numbers.filter((num) => num !== selected);
-
-  // Shuffle
-  for (let i = numbers.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
-  }
-
-  const cardNumbers = numbers.slice(0, 24);
-  cardNumbers.splice(12, 0, selected); // center
-
-  const card = [];
-  for (let i = 0; i < 5; i++) {
-    card.push(cardNumbers.slice(i * 5, i * 5 + 5));
-  }
-
-  setBingoCard(card);
-};
-
-  // When user clicks a number to select ticket
-  const handleNumberClick = (number) => {
-    if (gameStarted) return;
-
-    const userId = userIdRef.current;
-
-    // If user had selected a different ticket before, deselect that first on server
-    if (selectedNumber !== null && selectedNumber !== number) {
-      socketRef.current.emit("deselectTicketNumber", {
-        gameId,
-        userId,
-        oldNumber: selectedNumber,
-      });
-    }
-
-    setSelectedNumber(number);
-    setCartelaId(number);
-    generateCard(number);
-    setShowCartelaModal(true);
-
-    // Notify server of new selection
-    socketRef.current.emit("selectTicketNumber", {
-      gameId,
-      userId,
-      number,
-    });
-  };// Start the game: deduct stake, update balance, and navigate to Call page
   const handleStartGame = () => {
     if (!selectedNumber) {
       setShowModal(true);
@@ -142,9 +75,9 @@ const generateCard = (selected) => {
       return;
     }
 
-    const Wallet = balance - stake;
-    setWallet(Wallet);
-    localStorage.setItem("balance", Wallet);
+    const newWallet = wallet - stake;
+    setWallet(newWallet);
+    localStorage.setItem("balance", newWallet);
     setGameStarted(true);
 
     navigate("/call", {
@@ -158,17 +91,6 @@ const generateCard = (selected) => {
     });
   };
 
-  // Check if number is selected by any user
-  const isNumberSelected = (num) => {
-    const selectedBy = [];
-    for (const [userId, numbers] of Object.entries(allTicketSelections)) {
-      if (numbers.includes(num)) {
-        selectedBy.push(userId);
-      }
-    }
-    return { isSelected: selectedBy.length > 0, selectedBy };
-  };
-
   return (
     <div
       style={{
@@ -176,7 +98,6 @@ const generateCard = (selected) => {
         background: "linear-gradient(135deg, #82007eff, #ba5acdff)",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "flex-start",
         alignItems: "center",
         padding: "20px",
       }}
@@ -189,15 +110,9 @@ const generateCard = (selected) => {
           boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
           padding: "20px",
           textAlign: "center",
-          fontFamily: "Arial, sans-serif",
-          width: "100%",
         }}
       >
-        <img
-          src={logo}
-          alt="Logo"
-          style={{ width: "120px", marginBottom: "10px" }}
-        />
+        <img src={logo} alt="Logo" style={{ width: "120px", marginBottom: "10px" }} />
 
         <div
           style={{
@@ -212,66 +127,27 @@ const generateCard = (selected) => {
             marginBottom: "15px",
           }}
         >
-          <div>Wallet: Br{wallet-stake.toFixed(2)}</div>
+          <div>Wallet: Br{wallet.toFixed(2)}</div>
           <div>Game ID: {gameId}</div>
           <div>Stake: Br{stake}</div>
         </div>
 
-        <h4 style={{ margin: "10px 0", color: "#333" }}>
-          Select a Lucky Ticket Number
-        </h4>
-
-        <div
+        <h4 style={{ margin: "10px 0", color: "#333" }}>Your Bingo Ticket</h4>
+        <button
+          onClick={() => setShowCartelaModal(true)}
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(8, 1fr)",
-            gap: "6px",
-            margin: "10px 0",
-            background: "linear-gradient(135deg, #6a5acd, #9370db)",
-            padding: "15px",
-            borderRadius: "12px",
+            padding: "10px",
+            borderRadius: "8px",
+            background: "#4CAF50",
+            color: "white",
+            border: "none",
+            cursor: "pointer",
           }}
         >
-          {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => {
-            const { isSelected, selectedBy } = isNumberSelected(num);
-            const currentUserId = userIdRef.current || "anonymous";
-            const isCurrentUserSelected = selectedBy.includes(currentUserId);
+          View Ticket
+        </button>
 
-            return (
-              <button
-                key={num}
-                onClick={() => handleNumberClick(num)}
-                disabled={isSelected && !isCurrentUserSelected}
-                style={{
-                  padding: "8px",
-                  background: isCurrentUserSelected
-                    ? "#f7ad2eff"
-                    : isSelected
-                    ? "#FF5722"
-                    : "#333",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  fontSize: "12px",
-                  cursor:
-                    isSelected && !isCurrentUserSelected
-                      ? "not-allowed"
-                      : "pointer",
-                  transition: "all 0.2s ease-in-out",
-                }}
-                title={
-                  isSelected
-                    ? selectedBy.length > 1
-                      ? "Selected by multiple players"
-                      : "Selected by another player"
-                    : "Click to select"
-                }
-              >
-                {num}
-              </button>
-            );
-          })}
-        </div><button
+        <button
           onClick={handleStartGame}
           disabled={gameStarted}
           style={{
@@ -285,7 +161,6 @@ const generateCard = (selected) => {
             fontWeight: "bold",
             cursor: gameStarted ? "not-allowed" : "pointer",
             fontSize: "16px",
-            transition: "background 0.3s",
           }}
         >
           🎮 Start Game
@@ -301,7 +176,7 @@ const generateCard = (selected) => {
             left: 0,
             width: "100vw",
             height: "100vh",
-            background: "rgba(0, 0, 0, 0.7)",
+            background: "rgba(0,0,0,0.7)",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -317,14 +192,7 @@ const generateCard = (selected) => {
               maxWidth: "300px",
             }}
           >
-            <p
-              style={{
-                fontSize: "16px",
-                fontWeight: "bold",
-                color: "#333",
-                marginBottom: "20px",
-              }}
-            >
+            <p style={{ fontSize: "16px", fontWeight: "bold", marginBottom: "20px" }}>
               ⚠️ Please select a ticket first!
             </p>
             <button
@@ -353,20 +221,18 @@ const generateCard = (selected) => {
         >
           <div className="cartela-container" onClick={(e) => e.stopPropagation()}>
             <h3 className="cartela-title">(Cartela: #{cartelaId})</h3>
-
             <div className="cartela-grid">
-              {bingoCard.flat().map((num, idx) => (
-                <div
-                  key={idx}
-                  className={`cartela-cell ${
-                    num === selectedNumber ? "selected" : ""
-                  }`}
-                >
-                  {num === selectedNumber ? "*" : num}
-                </div>
-              ))}
+              {bingoCard.map((row, rIdx) =>
+                row.map((num, cIdx) => (
+                  <div
+                    key={`${rIdx}-${cIdx}`}
+                    className={`cartela-cell ${num === selectedNumber ? "selected" : ""}`}
+                  >
+                    {num === selectedNumber ? "*" : num}
+                  </div>
+                ))
+              )}
             </div>
-
             <button
               onClick={() => setShowCartelaModal(false)}
               className="cartela-close"
