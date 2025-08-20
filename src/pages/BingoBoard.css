@@ -1,0 +1,47 @@
+/* Main page background (was white before) */
+.bingo-board-page {
+  min-height: 100vh;
+  width: 100%;
+
+  /* 🌄 Custom image background */
+  background: url("../assets/bg.jpg") no-repeat center center/cover;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+
+  /* Optional dark overlay */
+  position: relative;
+}
+
+.bingo-board-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4); /* overlay */
+  z-index: 0;
+}
+
+.top-menu {
+  position: relative;
+  z-index: 1; /* keep above overlay */
+  width: 100%;
+  text-align: center;
+  padding: 15px;
+  color: #fff;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.bingo-board-wrapper {
+  position: relative;
+  z-index: 1; /* keep above overlay */
+  margin-top: 30px;
+  padding: 20px;
+  border-radius: 15px;
+
+  /* optional semi-transparent box for numbers */
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+}
