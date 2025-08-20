@@ -117,6 +117,19 @@ body, html {
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
   margin-top: -60px; 
 }
+/* Leftside board number boxes */
+.board-grid .number-box {
+  width: 30px;       /* same width and height */
+  height: 30px;
+  border-radius: 50%; /* make perfect circle */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: all 0.2s;
+}
+
 .board-grid .number-box.called {
   color: gold !important;
   font-weight: bold;
@@ -124,7 +137,7 @@ body, html {
   background: #fff8dc;
   transform: scale(1.15);
   box-shadow: 0 0 8px gold, 0 0 14px goldenrod;
-  animation: blink 0.6s 2; /* blink effect for 2 times */
+  animation: blink 0.6s 2;
 }
 .board-column {
   display: flex;
