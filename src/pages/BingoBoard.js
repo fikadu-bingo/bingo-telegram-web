@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import io from "socket.io-client";
 import "../components/CartelaModal.css";
+import "./BingoBoard.css";
 
 const SOCKET_SERVER_URL = "https://bingo-server-rw7p.onrender.com";
 
@@ -52,7 +53,7 @@ function BingoBoard() {
     const userId = telegramUser?.id ?? "anonymous";
     userIdRef.current = userId;
 
-    // ✅ UPDATED: send selectedNumber as null at join
+    // ✅ send selectedNumber as null at join
     socketRef.current.emit("joinGame", { userId, stake, ticket: [] });
 
     // ===============================
@@ -61,7 +62,7 @@ function BingoBoard() {
     socketRef.current.on("ticketNumbersUpdated", (tickets) => {
       setAllTicketSelections(tickets);
 
-      // ✅ UPDATED: Auto mark our number live on bingoCard
+      // ✅ Auto mark our number live on bingoCard
       const myNumbers = tickets[userIdRef.current] ?? [];
       if (myNumbers.length > 0) {
         const myNumber = myNumbers[0]; // only one selection per user
@@ -93,11 +94,11 @@ function BingoBoard() {
   // Generate 5x5 bingo card with selected number in correct positions
   const generateCard = (selected) => {
     const columns = [
-      Array.from({ length: 15 }, (_, i) => i + 1),    // B
-      Array.from({ length: 15 }, (_, i) => i + 16),   // I
-      Array.from({ length: 15 }, (_, i) => i + 31),   // N
-      Array.from({ length: 15 }, (_, i) => i + 46),   // G
-      Array.from({ length: 15 }, (_, i) => i + 61),   // O
+      Array.from({ length: 15 }, (_, i) => i + 1), // B
+      Array.from({ length: 15 }, (_, i) => i + 16), // I
+      Array.from({ length: 15 }, (_, i) => i + 31), // N
+      Array.from({ length: 15 }, (_, i) => i + 46), // G
+      Array.from({ length: 15 }, (_, i) => i + 61), // O
     ];
 
     const card = [];
@@ -115,7 +116,7 @@ function BingoBoard() {
       card.push(rowNumbers);
     }
 
-    // ✅ UPDATED: Mark selected number as "*" in card
+    // ✅ Mark selected number as "*"
     for (let r = 0; r < 5; r++) {
       for (let c = 0; c < 5; c++) {
         if (card[r][c] === selected) {
@@ -125,13 +126,12 @@ function BingoBoard() {
     }
     setBingoCard(card);
   };
-
   const handleNumberClick = (number) => {
     if (gameStarted) return;
 
     const userId = userIdRef.current;
 
-    // If user had selected a different ticket before, deselect that first on server
+    // If user had selected a different ticket before, deselect that first
     if (selectedNumber !== null && selectedNumber !== number) {
       socketRef.current.emit("deselectTicketNumber", {
         stake,
@@ -145,7 +145,7 @@ function BingoBoard() {
     generateCard(number);
     setShowCartelaModal(true);
 
-    // ✅ UPDATED: Send selection to server for live marking
+    // ✅ Send selection to server
     socketRef.current.emit("selectTicketNumber", {
       stake,
       userId,
@@ -192,29 +192,10 @@ function BingoBoard() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "linear-gradient(135deg, #82007eff, #ba5acdff)",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-start",
-        alignItems: "center",
-        padding: "20px",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "450px",
-          background: "#fff",
-          borderRadius: "15px",
-          boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
-          padding: "20px",
-          textAlign: "center",
-          fontFamily: "Arial, sans-serif",
-          width: "100%",
-        }}
-      >
+    <div className="bingo-board-page">
+      <div className="top-menu">🎯 Bingo Game</div>
+
+      <div className="bingo-board-wrapper">
         <img
           src={logo}
           alt="Logo"
@@ -239,7 +220,7 @@ function BingoBoard() {
           <div>Stake: Br{stake}</div>
         </div>
 
-        <h4 style={{ margin: "10px 0", color: "#333" }}>
+        <h4 style={{ margin: "10px 0", color: "#fff" }}>
           Select a Lucky Ticket Number
         </h4>
 
@@ -265,7 +246,8 @@ function BingoBoard() {
                 onClick={() => handleNumberClick(num)}
                 disabled={isSelected && !isCurrentUserSelected}
                 style={{
-                  padding: "8px",background: isCurrentUserSelected
+                  padding: "8px",
+                  background: isCurrentUserSelected
                     ? "#f7ad2eff"
                     : isSelected
                     ? "#FF5722"
@@ -278,8 +260,7 @@ function BingoBoard() {
                     isSelected && !isCurrentUserSelected
                       ? "not-allowed"
                       : "pointer",
-                  transition: "all 0.2s ease-in-out",
-                }}
+                  transition: "all 0.2s ease-in-out",}}
                 title={
                   isSelected
                     ? selectedBy.length > 1
@@ -381,9 +362,7 @@ function BingoBoard() {
               {bingoCard.flat().map((num, idx) => (
                 <div
                   key={idx}
-                  className={`cartela-cell ${
-                    num === "*" ? "selected" : ""
-                  }`}
+                  className={`cartela-cell ${num === "*" ? "selected" : ""}`}
                 >
                   {num}
                 </div>
