@@ -183,25 +183,25 @@ function Call() {
               </div>
             ))}
           </div>
-          <div className="board-grid">
-            {["B","I","N","G","O"].map((col, idx) => {
-              const start = idx * 15 + 1;
-              return (
-                <div key={col} className="board-column">
-                  {Array.from({ length: 15 }, (_, i) => start + i).map((num) => (
-                    <div
-                      key={num}
-                      className={`number-box ${
-                        calledNumbers.includes(formatBingoNumber(num)) ? "marked" : "unmarked"
-                      }`}
-                    >
-                      {num}
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
+       <div className="board-grid">
+  {["B", "I", "N", "G", "O"].map((col, idx) => {
+    const start = idx * 15 + 1;
+    return (
+      <div key={col} className="board-column">
+        {Array.from({ length: 15 }, (_, i) => start + i).map((num) => (
+          <div
+            key={num}
+            className={`number-box ${
+              calledNumbers.includes(num) ? "called" : ""
+            }`}
+          >
+            {num}
           </div>
+        ))}
+      </div>
+    );
+  })}
+</div>
         </div>
 
         {/* Cartela Wrapper */}
@@ -310,6 +310,5 @@ function Call() {
     </div>
   );
 }
-
 
 export default Call;
