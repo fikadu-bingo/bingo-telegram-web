@@ -234,6 +234,7 @@ function BingoBoard() {
             background: "rgba(0,0,0,0.3)",
             padding: "15px",
             borderRadius: "12px",
+            justifyContent: "center"
           }}
         >
           {Array.from({ length: 200 }, (_, i) => i + 1).map((num) => {
@@ -299,5 +300,6 @@ function BingoBoard() {
     </div>
   );
 }
+
 
 export default BingoBoard; 
