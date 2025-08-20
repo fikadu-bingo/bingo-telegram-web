@@ -75,31 +75,40 @@ function BingoBoard() {
   }, [stake, selectedNumber]);
 
   // Generate 5x5 Bingo card properly by column
-  const generateCard = (selected) => {
-    const columns = [
-      Array.from({ length: 25 }, (_, i) => i + 1),    // B
-      Array.from({ length: 25 }, (_, i) => i + 26),   // I
-      Array.from({ length: 25 }, (_, i) => i + 51),   // N
-      Array.from({ length: 25 }, (_, i) => i + 76),   // G
-      Array.from({ length: 25 }, (_, i) => i + 101),  // O
-    ];
+const generateCard = (selected) => {
+  const columns = [
+    Array.from({ length: 25 }, (_, i) => i + 1),    // B
+    Array.from({ length: 25 }, (_, i) => i + 26),   // I
+    Array.from({ length: 25 }, (_, i) => i + 51),   // N
+    Array.from({ length: 25 }, (_, i) => i + 76),   // G
+    Array.from({ length: 25 }, (_, i) => i + 101),  // O
+  ];
 
-    const card = [];
+  // Fill columns with random numbers
+  const filledColumns = columns.map((colNums, colIdx) => {
+    const col = [];
     for (let row = 0; row < 5; row++) {
-      const rowNumbers = [];
-      for (let col = 0; col < 5; col++) {
-        if (row === 2 && col === 2) {
-          rowNumbers.push(selected); // center
-        } else {
-          const nums = columns[col];
-          const idx = Math.floor(Math.random() * nums.length);
-          rowNumbers.push(nums.splice(idx, 1)[0]);
-        }
+      if (row === 2 && colIdx === 2) {
+        col.push(selected); // center
+      } else {
+        const idx = Math.floor(Math.random() * colNums.length);
+        col.push(colNums.splice(idx, 1)[0]);
       }
-      card.push(rowNumbers);
     }
-    setBingoCard(card);
-  };
+    return col;
+  });
+
+  // Transpose columns to rows
+  const card = [];
+  for (let row = 0; row < 5; row++) {
+    card[row] = [];
+    for (let col = 0; col < 5; col++) {
+      card[row][col] = filledColumns[col][row];
+    }
+  }
+
+  setBingoCard(card);
+};
 
   const handleNumberClick = (number) => {
     if (gameStarted) return;
