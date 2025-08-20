@@ -118,8 +118,13 @@ body, html {
   margin-top: -60px; 
   margin-left: 20px;
 }
-.board-grid {
-  display: flex;
+.board-grid .number-box.called {
+  color: gold !important;
+  font-weight: bold;
+  border: 2px solid gold;
+  background: #fff8dc; /* light golden background */
+  transform: scale(1.15);
+  box-shadow: 0 0 8px gold, 0 0 14px goldenrod;
 }
 .board-column {
   display: flex;
