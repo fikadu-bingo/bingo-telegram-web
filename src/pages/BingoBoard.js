@@ -43,19 +43,17 @@ function BingoBoard() {
   const userIdRef = useRef(null);
 
   useEffect(() => {
-    // Generate random gameId on mount
     const id = generateGameId();
     setGameId(id);
 
-    // Connect socket
     socketRef.current = io(SOCKET_SERVER_URL, { transports: ["websocket"] });
 
     const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
     const userId = telegramUser?.id ?? "anonymous";
     userIdRef.current = userId;
 
-    // Join socket room/game
-    socketRef.current.emit("joinGame", { gameId: id, userId, stake });
+    // ✅ UPDATED: send selectedNumber as null at join
+    socketRef.current.emit("joinGame", { userId, stake, ticket: [] });
 
     // ===============================
     // LISTEN FOR LIVE TICKET UPDATES
@@ -63,39 +61,43 @@ function BingoBoard() {
     socketRef.current.on("ticketNumbersUpdated", (tickets) => {
       setAllTicketSelections(tickets);
 
-      // Reset selection if our number got removed (optional)
-      if (selectedNumber !== null) {
-        const userTickets = tickets[userIdRef.current] ?? [];
-        if (!userTickets.includes(selectedNumber)) {
-          setSelectedNumber(null);
-          setBingoCard([]);
-          setCartelaId("");
+      // ✅ UPDATED: Auto mark our number live on bingoCard
+      const myNumbers = tickets[userIdRef.current] ?? [];
+      if (myNumbers.length > 0) {
+        const myNumber = myNumbers[0]; // only one selection per user
+        if (myNumber !== selectedNumber) {
+          setSelectedNumber(myNumber);
+          setCartelaId(myNumber);
+          generateCard(myNumber);
+          setShowCartelaModal(true);
         }
+      } else {
+        setSelectedNumber(null);
+        setCartelaId("");
+        setBingoCard([]);
       }
     });
 
-    // Listen assigned ticket from server (optional)
     socketRef.current.on("ticketAssigned", ({ ticket }) => {
       console.log("Server assigned ticket:", ticket);
     });
 
-    // Cleanup on unmount
     return () => {
       if (socketRef.current) {
         socketRef.current.emit("leaveGame", { gameId: id, userId, stake });
         socketRef.current.disconnect();
       }
     };
-  }, [stake, selectedNumber]);
+  }, [stake]);
 
   // Generate 5x5 bingo card with selected number in correct positions
   const generateCard = (selected) => {
     const columns = [
-      Array.from({ length: 25 }, (_, i) => i + 1),    // B
-      Array.from({ length: 25 }, (_, i) => i + 26),   // I
-      Array.from({ length: 25 }, (_, i) => i + 51),   // N
-      Array.from({ length: 25 }, (_, i) => i + 76),   // G
-      Array.from({ length: 25 }, (_, i) => i + 101),  // O
+      Array.from({ length: 15 }, (_, i) => i + 1),    // B
+      Array.from({ length: 15 }, (_, i) => i + 16),   // I
+      Array.from({ length: 15 }, (_, i) => i + 31),   // N
+      Array.from({ length: 15 }, (_, i) => i + 46),   // G
+      Array.from({ length: 15 }, (_, i) => i + 61),   // O
     ];
 
     const card = [];
@@ -103,7 +105,7 @@ function BingoBoard() {
       const rowNumbers = [];
       for (let col = 0; col < 5; col++) {
         if (row === 2 && col === 2) {
-          rowNumbers.push(selected); // center
+          rowNumbers.push("★"); // center free space
         } else {
           const nums = columns[col];
           const idx = Math.floor(Math.random() * nums.length);
@@ -112,14 +114,23 @@ function BingoBoard() {
       }
       card.push(rowNumbers);
     }
+
+    // ✅ UPDATED: Mark selected number as "*" in card
+    for (let r = 0; r < 5; r++) {
+      for (let c = 0; c < 5; c++) {
+        if (card[r][c] === selected) {
+          card[r][c] = "*";
+        }
+      }
+    }
     setBingoCard(card);
   };
 
-  // When user clicks a number to select ticket
   const handleNumberClick = (number) => {
     if (gameStarted) return;
 
     const userId = userIdRef.current;
+
     // If user had selected a different ticket before, deselect that first on server
     if (selectedNumber !== null && selectedNumber !== number) {
       socketRef.current.emit("deselectTicketNumber", {
@@ -134,9 +145,7 @@ function BingoBoard() {
     generateCard(number);
     setShowCartelaModal(true);
 
-    // ===============================
-    // SEND SELECTION TO SERVER (LIVE)
-    // ===============================
+    // ✅ UPDATED: Send selection to server for live marking
     socketRef.current.emit("selectTicketNumber", {
       stake,
       userId,
@@ -144,7 +153,6 @@ function BingoBoard() {
     });
   };
 
-  // Start the game: deduct stake, update balance, and navigate to Call page
   const handleStartGame = () => {
     if (!selectedNumber) {
       setShowModal(true);
@@ -238,7 +246,7 @@ function BingoBoard() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(8, 1fr)", // 8 columns
+            gridTemplateColumns: "repeat(8, 1fr)",
             gap: "6px",
             margin: "10px 0",
             background: "linear-gradient(135deg, #6a5acd, #9370db)",
@@ -285,6 +293,7 @@ function BingoBoard() {
             );
           })}
         </div>
+
         <button
           onClick={handleStartGame}
           disabled={gameStarted}
@@ -373,10 +382,10 @@ function BingoBoard() {
                 <div
                   key={idx}
                   className={`cartela-cell ${
-                    num === selectedNumber ? "selected" : ""
+                    num === "*" ? "selected" : ""
                   }`}
                 >
-                  {num === selectedNumber ? "*" : num}
+                  {num}
                 </div>
               ))}
             </div>
