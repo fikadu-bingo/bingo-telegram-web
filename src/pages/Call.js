@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
-import logo from "../assets/logo.png";
 import WinModal from "../components/WinModal";
 import "./Call.css";
 
@@ -37,10 +36,13 @@ function Call() {
   const [showPopup, setShowPopup] = useState(false);
   const [players, setPlayers] = useState(1);
   const [winAmount, setWinAmount] = useState(0);
-  const [rollingNumbers, setRollingNumbers] = useState([]); // rolling numbers inside rectangle
+  const [rollingNumbers, setRollingNumbers] = useState([]);
+  const [markedNumbers, setMarkedNumbers] = useState([]);
+  const [blinkNumbers, setBlinkNumbers] = useState([]);
 
   const socket = useRef(null);
 
+  // ------------------ Socket Setup ------------------
   useEffect(() => {
     if (!stake || !userId) {
       alert("Invalid game data. Returning to home...");
@@ -55,30 +57,32 @@ function Call() {
     socket.current.emit("joinGame", { userId, username, stake, ticket: playerCard });
 
     socket.current.on("playerCountUpdate", (count) => setPlayers(count));
-
     socket.current.on("countdownUpdate", (time) => {
       setCountdown(time);
       if (time === 0) setGameStarted(true);
     });
-
     socket.current.on("countdownStopped", () => {
       setCountdown(null);
       setGameStarted(false);
     });
 
     socket.current.on("numberCalled", (number) => {
-      if (number < 1 || number > 75) return; // only 1-75
+      if (number < 1 || number > 75) return;
       const formatted = formatBingoNumber(number);
 
       setCurrentNumber(formatted);
       setCalledNumbers((prev) => (prev.includes(formatted) ? prev : [...prev, formatted]));
-
-      // Update rolling numbers
       setRollingNumbers((prev) => {
         const updated = [...prev, formatted];
-        if (updated.length > 4) updated.shift(); // keep max 5 numbers visible
+        if (updated.length > 4) updated.shift();
         return updated;
       });
+
+      // Blink effect for 2 seconds
+      setBlinkNumbers((prev) => [...prev, formatted]);
+      setTimeout(() => {
+        setBlinkNumbers((prev) => prev.filter((num) => num !== formatted));
+      }, 2000);
     });
 
     socket.current.on("winAmountUpdate", (amount) => setWinAmount(amount));
@@ -86,15 +90,6 @@ function Call() {
 
     socket.current.on("gameWon", ({ userId: winnerId, username: winnerUsername, prize, balances }) => {
       const numericPrize = Number(prize) || 0;
-      try {
-        if (balances && balances[userId] !== undefined) {
-          const updatedBalance = Number(balances[userId]);
-          if (!isNaN(updatedBalance)) setWinAmount(updatedBalance);
-        }
-      } catch (err) {
-        console.error("Failed to update local balance on gameWon:", err);
-      }
-
       setWinnerInfo({ userId: winnerId, username: winnerUsername, prize: numericPrize });
       setShowPopup(true);
     });
@@ -119,6 +114,8 @@ function Call() {
       setWinnerInfo(null);
       setShowPopup(false);
       setRollingNumbers([]);
+      setMarkedNumbers([]);
+      setBlinkNumbers([]);
     });
 
     return () => {
@@ -130,49 +127,66 @@ function Call() {
     };
   }, [stake, userId, username, playerCard, navigate, winnerInfo]);
 
+  // ------------------ Bingo Check ------------------
+  const checkBingo = () => {
+    const grid = playerCard;
+    const allMarked = (num) => markedNumbers.includes(formatBingoNumber(num)) || num === "*";
+
+    // Rows
+    for (let r = 0; r < 5; r++) if (grid[r].every(allMarked)) return true;
+    // Columns
+    for (let c = 0; c < 5; c++) if (grid.every((row) => allMarked(row[c]))) return true;
+    // Diagonals
+    const diag1 = [0, 1, 2, 3, 4].every((i) => allMarked(grid[i][i]));
+    const diag2 = [0, 1, 2, 3, 4].every((i) => allMarked(grid[i][4 - i]));
+    return diag1 || diag2;
+  };
+
+  const handleMarkNumber = (num) => {
+    const formatted = formatBingoNumber(num);
+    if (!calledNumbers.includes(formatted)) return;
+    setMarkedNumbers((prev) => (prev.includes(formatted) ? prev : [...prev, formatted]));
+  };
+
   const getMarkedCartela = () =>
     playerCard.map((row, rowIndex) =>
       row.map((num, colIndex) => {
         const isCenter = rowIndex === 2 && colIndex === 2;
-        const marked = isCenter || calledNumbers.includes(formatBingoNumber(num));
+        const marked = isCenter || markedNumbers.includes(formatBingoNumber(num));
         return { num, marked, isCenter };
       })
     );
 
   return (
     <div className="container">
-      {/* Logo */}
-     
-
       {/* Top Menu */}
-    <div className="top-menu">
-  <div className="menu-item-box">
-    <div className="menu-label">Players</div>
-    <div className="menu-value">{players}</div>
-  </div>
-  <div className="menu-item-box">
-    <div className="menu-label">Bet</div>
-    <div className="menu-value">{stake}</div>
-  </div>
-  <div className="menu-item-box">
-    <div className="menu-label">Win</div>
-    <div className="menu-value">{winAmount}</div>
-  </div>
-  <div className="menu-item-box">
-    <div className="menu-label">Call</div>
-    <div className="menu-value">{calledNumbers.length}</div>
-  </div>
-
-  {/* Digital Countdown Timer next to Call */}
-  {!gameStarted && countdown !== null && (
-    <div className="menu-item-box timer-box">
-      <div className="timer-circle">
-        <span className="timer-value">{countdown}</span>
+      <div className="top-menu">
+        <div className="menu-item-box">
+          <div className="menu-label">Players</div>
+          <div className="menu-value">{players}</div>
+        </div>
+        <div className="menu-item-box">
+          <div className="menu-label">Bet</div>
+          <div className="menu-value">{stake}</div>
+        </div>
+        <div className="menu-item-box">
+          <div className="menu-label">Win</div>
+          <div className="menu-value">{winAmount}</div>
+        </div>
+        <div className="menu-item-box">
+          <div className="menu-label">Call</div>
+          <div className="menu-value">{calledNumbers.length}</div>
+        </div>
+        {!gameStarted && countdown !== null && (
+          <div className="menu-item-box timer-box">
+            <div className="timer-circle">
+              <span className="timer-value">{countdown}</span>
+            </div>
+            <div className="menu-label">⏲️</div>
+          </div>
+        )}
       </div>
-      <div className="menu-label">⏲️</div>
-    </div>
-  )}
-</div>
+
       <div className="main-content">
         {/* Leftside Board */}
         <div className="board">
@@ -183,34 +197,31 @@ function Call() {
               </div>
             ))}
           </div>
-<div className="board-grid">
-  {["B", "I", "N", "G", "O"].map((col, idx) => {
-    const start = idx * 15 + 1;
-    return (
-      <div key={col} className="board-column">
-        {Array.from({ length: 15 }, (_, i) => {
-          const num = start + i;
-          const formatted = formatBingoNumber(num); // e.g., B10, I23
-          const isCalled = calledNumbers.includes(formatted); // check formatted string
-
-          return (
-            <div
-              key={num}
-              className={`number-box ${isCalled ? "called" : ""}`}
-            >
-              {num}
-            </div>
-          );
-        })}
-      </div>
-    );
-  })}
-</div>
+          <div className="board-grid">
+            {["B", "I", "N", "G", "O"].map((col, idx) => {
+              const start = idx * 15 + 1;
+              return (
+                <div key={col} className="board-column">
+                  {Array.from({ length: 15 }, (_, i) => {
+                    const num = start + i;
+                    const formatted = formatBingoNumber(num);
+                    const isCalled = calledNumbers.includes(formatted);
+                    return (
+                      <div
+                        key={num}
+                        className={`number-box ${isCalled ? "called" : ""}`}
+                      >
+                        {num}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
         </div>
-
-        {/* Cartela Wrapper */}
+        {/* Cartela */}
         <div className="cartela-wrapper">
-          {/* Current Ball */}
           <div
             className={`current-ball ${
               currentNumber ? getBingoLetter(parseInt(currentNumber.slice(1))) : ""
@@ -219,14 +230,16 @@ function Call() {
             {currentNumber ?? "--"}
           </div>
 
-          {/* Rolling Rectangle */}
           <div className="waiting-rectangle">
             {!gameStarted ? (
               "Waiting for first ball"
             ) : (
               <div className="rolling-numbers">
                 {rollingNumbers.map((num, idx) => (
-                  <div key={idx} className={`rolling-number ${getBingoLetter(parseInt(num.slice(1)))}`}>
+                  <div
+                    key={idx}
+                    className={`rolling-number ${getBingoLetter(parseInt(num.slice(1)))}`}
+                  >
                     {num}
                   </div>
                 ))}
@@ -234,9 +247,8 @@ function Call() {
             )}
           </div>
 
-          {/* Cartela Title */}
           <h4 className="cartela-title">Cartela: #{cartelaNumber}</h4>
-          {/* Cartela Grid */}
+
           <div className="cartela">
             <div className="bingo-header-row">
               {["B", "I", "N", "G", "O"].map((letter) => (
@@ -250,52 +262,61 @@ function Call() {
                 const row = Math.floor(idx / 5);
                 const col = idx % 5;
                 const isCenter = row === 2 && col === 2;
-                const marked = isCenter || calledNumbers.includes(formatBingoNumber(num));
+                const marked = isCenter || markedNumbers.includes(formatBingoNumber(num));
+                const blink = blinkNumbers.includes(formatBingoNumber(num));
                 return (
-                  <div key={idx} className={`number-box ${marked ? "marked" : "unmarked"}`}>
+                  <div
+                    key={idx}
+                    className={`number-box ${marked ? "marked" : "unmarked"} ${
+                      blink ? "blink" : ""
+                    }`}
+                    onClick={() => handleMarkNumber(num)}
+                  >
                     {isCenter ? "*" : num}
                   </div>
                 );
               })}
             </div>
           </div>
-
-       
         </div>
       </div>
-{/* Buttons Below Boards */}
-<div className="action-buttons-wrapper">
-  {/* Wide Bingo Button */}
-  <button
-    className="bingo-button"
-    onClick={() => {
-      /* handle Bingo click */
-      console.log("Bingo clicked");
-    }}
-    disabled={!gameStarted}
-  >
-    🎉 Bingo
-  </button>
 
-  {/* Refresh and Leave buttons */}
-  <div className="bottom-buttons">
-    <button
-      className="action-btn refresh-button"
-      onClick={() => window.location.reload()}
-      title="Refresh Game"
-    >
-      🔄 Refresh
-    </button>
-    <button
-      className="action-btn leave-button"
-      onClick={() => navigate("/")}
-      disabled={gameStarted && winnerInfo === null}
-      title={gameStarted && winnerInfo === null ? "You can't leave during an active game" : ""}
-    >
-      🚪 Leave
-    </button>
-  </div>
-</div>
+      {/* Buttons */}
+      <div className="action-buttons-wrapper">
+        <button
+          className="bingo-button"
+          onClick={() => {
+            if (checkBingo()) {
+              setWinnerInfo({ username, prize: winAmount });
+              setShowPopup(true);
+            } else {
+              alert("Not correct");
+            }
+          }}
+          disabled={!gameStarted}
+        >
+          🎉 Bingo
+        </button>
+
+        <div className="bottom-buttons">
+          <button
+            className="action-btn refresh-button"
+            onClick={() => window.location.reload()}
+            title="Refresh Game"
+          >
+            🔄 Refresh
+          </button>
+          <button
+            className="action-btn leave-button"
+            onClick={() => navigate("/")}
+            disabled={gameStarted && winnerInfo === null}
+            title={gameStarted && winnerInfo === null ? "You can't leave during an active game" : ""}
+          >
+            🚪 Leave
+          </button>
+        </div>
+      </div>
+
       {showPopup && winnerInfo && (
         <WinModal
           username={winnerInfo.username}
