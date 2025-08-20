@@ -187,7 +187,7 @@ function BingoBoard() {
       <div
         style={{
           maxWidth: "450px",
-          backgroundImage: url(`${bg}`),
+          backgroundImage: `url(${bg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           borderRadius: "15px",
