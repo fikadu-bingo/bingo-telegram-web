@@ -183,21 +183,25 @@ function Call() {
               </div>
             ))}
           </div>
-       <div className="board-grid">
+<div className="board-grid">
   {["B", "I", "N", "G", "O"].map((col, idx) => {
     const start = idx * 15 + 1;
     return (
       <div key={col} className="board-column">
-        {Array.from({ length: 15 }, (_, i) => start + i).map((num) => (
-          <div
-            key={num}
-            className={`number-box ${
-              calledNumbers.includes(num) ? "called" : ""
-            }`}
-          >
-            {num}
-          </div>
-        ))}
+        {Array.from({ length: 15 }, (_, i) => {
+          const num = start + i;
+          const formatted = formatBingoNumber(num); // e.g., B10, I23
+          const isCalled = calledNumbers.includes(formatted); // check formatted string
+
+          return (
+            <div
+              key={num}
+              className={`number-box ${isCalled ? "called" : ""}`}
+            >
+              {num}
+            </div>
+          );
+        })}
       </div>
     );
   })}
