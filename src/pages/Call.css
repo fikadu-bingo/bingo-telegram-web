@@ -30,13 +30,13 @@ body, html {
   align-items: center;
   background: linear-gradient(to right, #3a7bd5, #3a6073);
   border-radius: 12px;
-  padding: 5px 10px; /* slightly bigger padding */
+  padding: 5px 10px;
   gap: 8px;
-  width: 360px; /* stretch wider to fit all menu items */
-  margin-left: -15px; /* center horizontally and add space below for logo */
+  width: 360px;
+  margin-left: -15px;
   margin-top: -40;
 }
-/* ---------------- Timer Circle ---------------- */
+
 .timer-box {
   display: flex;
   flex-direction: column;
@@ -69,11 +69,10 @@ body, html {
   display: inline-block;
 }
 
-/* Individual menu boxes */
 .menu-item-box {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 8px;
-  min-width: 50px; /* fixed width */
+  min-width: 50px;
   padding: 4px 6px;
   text-align: center;
   color: white;
@@ -91,6 +90,7 @@ body, html {
   font-size: 16px;
   font-weight: bold;
 }
+
 /* ======================= Main Boards Wrapper ======================= */
 .main-content {
   display: flex;
@@ -98,7 +98,7 @@ body, html {
   gap: 10px;                 
   align-items: flex-end;
   position: relative;
-  padding-top: 70px; /* more space from logo */
+  padding-top: 70px;
   padding-left: 20px;
   padding-right: 20px;
   box-sizing: border-box;
@@ -116,15 +116,15 @@ body, html {
   border: 2px solid rgba(255,255,255,0.3);
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
   margin-top: -60px; 
-  margin-left: 20px;
 }
 .board-grid .number-box.called {
   color: gold !important;
   font-weight: bold;
   border: 2px solid gold;
-  background: #fff8dc; /* light golden background */
+  background: #fff8dc;
   transform: scale(1.15);
   box-shadow: 0 0 8px gold, 0 0 14px goldenrod;
+  animation: blink 0.6s 2; /* blink effect for 2 times */
 }
 .board-column {
   display: flex;
@@ -183,7 +183,7 @@ body, html {
   padding: 12px 8px;
   margin: 12px 0;
   border-radius: 12px;
-  max-width: 180px; /* same as cartela board width */
+  max-width: 180px;
   width: 100%;
   box-sizing: border-box;
   overflow-x: auto;
@@ -191,8 +191,6 @@ body, html {
   justify-content: flex-start;
   align-items: center;
 }
-
-/* Smooth scrollbar */
 .waiting-rectangle::-webkit-scrollbar {
   height: 6px;
 }
@@ -201,17 +199,15 @@ body, html {
   border-radius: 3px;
 }
 
-/* Rolling numbers inside rectangle */
 .rolling-numbers {
   display: flex;
   gap: 10px;
   align-items: center;
   flex-wrap: nowrap;
-  overflow: hidden; /* hide overflow while sliding */
+  overflow: hidden;
   position: relative;
 }
 
-/* Individual rolling number balls */
 .rolling-number {
   min-width: 44px;
   min-height: 44px;
@@ -224,7 +220,7 @@ body, html {
   box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.4);
   transition: transform 0.3s;
   position: relative;
-  animation: slide-in 0.6s ease forwards; /* new balls slide in */
+  animation: slide-in 0.6s ease forwards;
 }
 .rolling-number::after {
   content: '';
@@ -237,16 +233,9 @@ body, html {
   background: rgba(255,255,255,0.5);
 }
 
-/* Slide-in from right animation */
 @keyframes slide-in {
-  from {
-    transform: translateX(100%);
-    opacity: 0.5;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+  from { transform: translateX(100%); opacity: 0.5; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
 .rolling-number.B { background: #FFA500; color: #fff; }
@@ -255,6 +244,7 @@ body, html {
 .rolling-number.G { background: #2196F3; color: #fff; }
 .rolling-number.O { background: #9C27B0; color: #fff; }
 .rolling-number:hover { transform: scale(1.25); }
+
 /* ---------------- Cartela Board ---------------- */
 .cartela {
   min-width: 140px;
@@ -270,7 +260,6 @@ body, html {
   position: relative;
 }
 
-/* ---------------- Cartela Title ---------------- */
 .cartela-title {
   text-align: center;
   margin: 0 0 8px 0;
@@ -279,7 +268,6 @@ body, html {
   color: #333;
 }
 
-/* ---------------- Bingo Header Row ---------------- */
 .bingo-header-row {
   display: grid;
   grid-template-columns: repeat(5, 30px);
@@ -305,7 +293,6 @@ body, html {
 .bingo-g { background: #2196F3; }
 .bingo-o { background: #9C27B0; }
 
-/* ---------------- Grids ---------------- */
 .board-grid,
 .cartela-grid {
   display: grid;
@@ -315,11 +302,7 @@ body, html {
   margin: 0;
 }
 
-.board-grid .number-box {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-}
+.board-grid .number-box,
 .cartela-grid .number-box {
   width: 30px;
   height: 30px;
@@ -335,6 +318,7 @@ body, html {
   transition: all 0.2s;
   background: #f9f9f9;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
 }
 
 .number-box.b { background: #FFA500; color: #fff; }
@@ -343,26 +327,22 @@ body, html {
 .number-box.g { background: #2196F3; color: #fff; }
 .number-box.o { background: #9C27B0; color: #fff; }
 
+/* Marked numbers on cartela after click */
 .number-box.marked {
-  transform: scale(1.1);
-  box-shadow: 0 0 6px #b41ca9, 0 0 12px #b41ca9;
+  background: gold !important;
+  color: #fff !important;
+  transform: scale(1.15);
+  box-shadow: 0 0 6px gold, 0 0 12px goldenrod;
+  animation: none; /* stop blink after marked */
 }
 
-/* ---------------- Leave Button ---------------- */
-
-
-/* Border colors by Bingo letter */
-.small-ball.B { border-color: #FFA500; color: #FFA500; }
-.small-ball.I { border-color: #FFC107; color: #FFC107; }
-.small-ball.N { border-color: #F44336; color: #F44336; }
-.small-ball.G { border-color: #2196F3; color: #2196F3; }
-.small-ball.O { border-color: #4CAF50; color: #4CAF50; }
-/* Hover scale effect */
-.rolling-number:hover {
-  transform: scale(1.2);
+/* Blink effect for called numbers on cartela */
+@keyframes blink {
+  0%, 100% { background-color: #fff8dc; color: gold; }
+  50% { background-color: #fff; color: gold; }
 }
 
-/* Wrapper for all action buttons below boards */
+/* ---------------- Buttons Below Boards ---------------- */
 .action-buttons-wrapper {
   display: flex;
   flex-direction: column;
@@ -371,10 +351,9 @@ body, html {
   gap: 12px;
 }
 
-/* Wide Bingo button */
 .bingo-button {
-  width: 100%; /* full width of container */
-  max-width: 500px; /* match approximate width of both boards */
+  width: 100%;
+  max-width: 500px;
   padding: 15px 0;
   font-size: 20px;
   font-weight: bold;
@@ -390,11 +369,9 @@ body, html {
   transform: scale(1.05);
   background: linear-gradient(135deg, #ff4757, #ff6b6b);
 }
-
-/* Bottom two buttons */
 .bottom-buttons {
   width: 100%;
-  max-width: 500px; /* match Bingo button width */
+  max-width: 500px;
   display: flex;
   justify-content: space-between;
   gap: 20px;
@@ -428,4 +405,3 @@ body, html {
   background: #c0392b;
   transform: scale(1.05);
 }
-
