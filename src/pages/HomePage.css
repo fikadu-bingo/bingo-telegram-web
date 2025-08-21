@@ -135,6 +135,8 @@
   margin-top: auto;
   font-size: 12px;
   opacity: 0.9;
+  position: relative;
+  top: -5px; /* moves the text up */
 }
 
 /* ====== Balance card ====== */
@@ -262,4 +264,5 @@
   font-weight: bold;
 
 }
+
 
