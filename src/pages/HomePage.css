@@ -1,15 +1,31 @@
-/* ====== Page Container ====== */
+/* Make entire page background same as HomePage */
+body, html {
+  margin: 0;
+  padding: 0;
+  background: #1c1c3a; /* match .hp-container bg */
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+/* HomePage container */
 .hp-container {
   max-width: 400px;
-  margin: 20px auto;
+  margin: 0 auto;          /* remove top margin */
+  margin-top: 10px;        /* slight upward shift, adjust as needed */
   background: #1c1c3a;
   border-radius: 15px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   padding: 20px;
   color: white;
-  font-family: Arial, sans-serif;
   position: relative;
   overflow-x: hidden;
+
+  /* Full viewport height for consistent background */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-clip: padding-box;
 }
 
 /* ====== Header ====== */
@@ -271,5 +287,4 @@
   color: #fff;
   cursor: pointer;
   font-size: 13px;
-
 }
