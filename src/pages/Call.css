@@ -388,6 +388,7 @@ body, html {
   cursor: pointer;
   box-shadow: 0 6px 12px rgba(0,0,0,0.3);
   transition: transform 0.2s, background 0.3s;
+  margin-top: 20px;
 }
 .bingo-button:hover {
   transform: scale(1.05);
@@ -431,4 +432,5 @@ body, html {
   background: #c0392b;
   transform: scale(1.05);
 }
+
 
