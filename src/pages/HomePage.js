@@ -1,104 +1,91 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { io } from "socket.io-client"; // socket client
+import { io } from "socket.io-client";
+
 import DepositModal from "../components/DepositModal";
 import DepositSuccessModal from "../components/DepositSuccessModal";
 import CashOutModal from "../components/CashOutModal";
 import CashOutSuccessModal from "../components/CashOutSuccessModal";
-import TransferModal from "../components/TransferModal";
 import PromoCodeModal from "../components/PromoCodeModal";
+import TransactionHistoryModal from "../components/TransactionHistoryModal"; // if you have it
 import logo from "../assets/logo.png";
+
+import "./HomePage.css";
 
 function HomePage() {
   const navigate = useNavigate();
 
-  // --- user & balance state
+  // ===== Sidebar state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const openSidebar = () => setIsSidebarOpen(true);
+  const closeSidebar = () => setIsSidebarOpen(false);
+
+  // ===== User & balance state
   const [balance, setBalance] = useState(() => {
     const stored = localStorage.getItem("balance");
     return stored ? parseFloat(stored) : 200;
   });
-
   const [firstName, setFirstName] = useState("User");
   const [telegramId, setTelegramId] = useState(null);
 
-  // --- socket & realtime game info
+  // ===== Socket & realtime game info
   const socketRef = useRef(null);
-
-  // We only allow ONE selected stake at a time (single-game mode)
   const [selectedStake, setSelectedStake] = useState(null);
-
-  // Live game info from server:
   const [livePlayerCount, setLivePlayerCount] = useState(0);
   const [countdown, setCountdown] = useState(null); // seconds or null
   const [winAmount, setWinAmount] = useState(null);
 
-  // --- UI modal states
+  // ===== UI modal states
   const [showModal, setShowModal] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCashOutSuccess, setShowCashOutSuccess] = useState(false);
   const [showPromoModal, setShowPromoModal] = useState(false);
+  const [showTransactionModal, setShowTransactionModal] = useState(false);
 
   const stakes = [10, 20, 50, 100, 200];
 
-  // Initialize socket connection & listeners - only ONCE
+  // ===== Socket setup
   useEffect(() => {
     const socket = io("https://bingo-server-rw7p.onrender.com");
-
     socketRef.current = socket;
 
     socket.on("connect", () => {
-      console.log("Socket connected:", socket.id);
-      // Rejoin game if stake selected and userId exists
-      const userId = localStorage.getItem("telegram_id") || telegramId;
+      const userId = localStorage.getItem("telegram_id") ?? telegramId;
       if (selectedStake && userId) {
-        const username = firstName || "User";
+        const username = firstName ?? "User";
         socket.emit("joinGame", { userId, username, stake: selectedStake });
       }
     });
 
-    // Live player count (for selected single-room)
-    socket.on("playerCountUpdate", (count) => {
-      setLivePlayerCount(count);
+    socket.on("playerCountUpdate", (count) => setLivePlayerCount(count));
+    socket.on("countdownUpdate", (time) => setCountdown(time));
+    socket.on("countdownStopped", () => setCountdown(null));
+    socket.on("winAmountUpdate", (amount) => setWinAmount(amount));
+
+    socket.on("balanceChange", ({ userId: changedUserId, newBalance }) => {
+      const userId = localStorage.getItem("telegram_id") ?? telegramId;
+      if (!userId) return;
+      if (changedUserId === userId && typeof newBalance === "number") {
+        setBalance(newBalance);
+        localStorage.setItem("balance", newBalance);
+      }
     });
 
-    // Countdown updates
-    socket.on("countdownUpdate", (time) => {
-      setCountdown(time);
-    });
-
-    socket.on("countdownStopped", () => {
-      setCountdown(null);
-    });
-
-    // Win amount update
-    socket.on("winAmountUpdate", (amount) => {
-      setWinAmount(amount);
-    });
-
-    // The server sends updated balances object keyed by userId
-  socket.on("balanceChange", ({ userId: changedUserId, newBalance }) => {
-  const userId = localStorage.getItem("telegram_id") ?? telegramId;
-  if (!userId) return;
-
-  if (changedUserId === userId && typeof newBalance === "number") {
-    setBalance(newBalance);
-    localStorage.setItem("balance", newBalance);
-  }
-});
-    // Server may send a targeted deduct (e.g., when leaving)
-    socket.on("deductBalance", ({ amount, reason } = {}) => {
+    socket.on("deductBalance", ({ amount } = {}) => {
       try {
-        const userId = localStorage.getItem("telegram_id")||  telegramId;
+        const userId = localStorage.getItem("telegram_id") ?? telegramId;
         if (!userId) return;
-        const current = parseFloat(localStorage.getItem("balance") ?? balance ?? 0);
-        const newBal = Number((current - Number(amount || 0)).toFixed(2));
+        const current = parseFloat(
+          localStorage.getItem("balance") ?? balance ?? 0
+        );
+        const newBal = Number((current - Number(amount ?? 0)).toFixed(2));
         setBalance(newBal);
         localStorage.setItem("balance", newBal);
       } catch (err) {
         console.error("Failed to apply deductBalance:", err);
       }
     });
-    // Clear per-game markers on reset so next game can apply again
+
     socket.on("gameReset", () => {
       try {
         localStorage.removeItem("last_balance_change");
@@ -109,18 +96,15 @@ function HomePage() {
         console.warn("Error handling gameReset:", err);
       }
     });
-    // Cleanup on unmount
+
     return () => {
-      const userId = localStorage.getItem("telegram_id")||  telegramId;
-      if (socket && userId) {
-        socket.emit("leaveGame", { userId });
-      }
+      const userId = localStorage.getItem("telegram_id") ?? telegramId;
+      if (socket && userId) socket.emit("leaveGame", { userId });
       socket.disconnect();
       socketRef.current = null;
     };
   }, [telegramId, selectedStake, firstName, balance]);
-
-  // Fetch and sync user data (balance etc.)
+  // ===== Fetch and sync user data
   const fetchUserData = async () => {
     try {
       const telegram_id = localStorage.getItem("telegram_id");
@@ -149,12 +133,13 @@ function HomePage() {
     }
   };
 
-  // Load user info on mount from URL or localStorage
+  // ===== Load user info from URL or localStorage
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const telegram_id = params.get("telegram_id");
     const first_name = params.get("first_name");
     const username = params.get("username");
+
     if (telegram_id && first_name) {
       const telegramUser = { id: telegram_id, first_name, username };
       localStorage.setItem("telegramUser", JSON.stringify(telegramUser));
@@ -174,34 +159,28 @@ function HomePage() {
         localStorage.setItem("telegram_id", storedUser.id);
       }
     }
-
     fetchUserData();
   }, []);
 
-  // Refresh user data every 15s
+  // ===== Refresh user data every 15s
   useEffect(() => {
     const interval = setInterval(fetchUserData, 15000);
     return () => clearInterval(interval);
   }, []);
 
-  // Listen for balance changes in localStorage (from other tabs/components)
+  // ===== Listen for balance changes (other tabs)
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === "balance") {
         const newBalance = parseFloat(event.newValue);
-        if (!isNaN(newBalance)) {
-          setBalance(newBalance);
-        }
+        if (!isNaN(newBalance)) setBalance(newBalance);
       }
     };
-
     window.addEventListener("storage", handleStorageChange);
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  // Join game when user selects stake
+  // ===== Game actions
   const handleStakeSelect = (amount) => {
     if (balance < amount) {
       alert("Not enough balance!");
@@ -214,14 +193,15 @@ function HomePage() {
       return;
     }
 
-    let userId = localStorage.getItem("telegram_id") || telegramId;
+    let userId = localStorage.getItem("telegram_id") ?? telegramId;
     if (!userId) {
       userId = `guest_${Date.now()}`;
       localStorage.setItem("telegram_id", userId);
       setTelegramId(userId);
     }
-    const username = firstName || "User";
-// Leave previous stake if different
+    const username = firstName ?? "User";
+
+    // Leave previous stake if different
     if (selectedStake !== null && selectedStake !== amount) {
       socket.emit("leaveGame", { userId });
       setLivePlayerCount(0);
@@ -230,38 +210,32 @@ function HomePage() {
     }
 
     socket.emit("joinGame", { userId, username, stake: amount });
-
     setSelectedStake(amount);
   };
 
-  // Leave game manually (optional)
   const leaveCurrentStake = () => {
     const socket = socketRef.current;
-    const userId = localStorage.getItem("telegram_id") || telegramId;
-    if (socket && userId) {
-      socket.emit("leaveGame", { userId });
-    }
+    const userId = localStorage.getItem("telegram_id") ?? telegramId;
+    if (socket && userId) socket.emit("leaveGame", { userId });
     setSelectedStake(null);
     setLivePlayerCount(0);
     setCountdown(null);
     setWinAmount(null);
   };
 
-  // Play now button navigates to bingo with all needed info
   const handlePlayNow = () => {
     if (!selectedStake) {
       setShowModal("stakeWarning");
       return;
     }
-
     if (balance < selectedStake) {
       alert("Not enough balance!");
       return;
     }
-
     const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
-    const username = telegramUser?.first_name || firstName || "User";
-    const userId = localStorage.getItem("telegram_id") || telegramId;
+    const username =
+      (telegramUser && telegramUser.first_name) ?? firstName ?? "User";
+    const userId = localStorage.getItem("telegram_id") ?? telegramId;
 
     navigate("/bingo", {
       state: {
@@ -269,7 +243,7 @@ function HomePage() {
         stake: selectedStake,
         userJoined: true,
         username,
-        userId, // important for Call.js to join socket
+        userId,
       },
     });
   };
@@ -288,130 +262,103 @@ function HomePage() {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "400px",
-        margin: "20px auto",
-        background: "#1C1C3A",
-        borderRadius: "15px",
-        boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
-        padding: "20px",
-        textAlign: "center",
-        color: "white",
-        fontFamily: "Arial, sans-serif",
-      }}
-    >
-      <img
-        src={logo}
-        alt="1Bingo Logo"
-        style={{ width: "120px", height: "auto", marginBottom: "10px" }}
-      />
+    <div className="hp-container">
+      {/* Header */}
+      <div className="hp-header">
+        <button className="hp-menu-btn" onClick={openSidebar} aria-label="Open menu">
+          <span />
+          <span />
+          <span />
+        </button>
 
-      <div style={{ fontSize: "18px", marginBottom: "10px", color: "#00BFFF" }}>
-        👋 Welcome, {firstName}
+        <img src={logo} alt="1Bingo Logo" className="hp-logo" />
       </div>
 
-      <div
-        style={{
-          background: "#29294D",
-          borderRadius: "12px",
-          padding: "15px",
-          margin: "20px 0",
-        }}
-      >
-        <h3 style={{ margin: "0", fontSize: "18px" }}>Your Balance</h3>
-        <p
-          style={{
-            fontSize: "26px",
-            fontWeight: "bold",
-            color: "#4CAF50",
-            margin: "5px 0",
-          }}
-        >
-          {balance} Br
+      <div className="hp-welcome">👋 Welcome, {firstName}</div>
+
+      {/* Sidebar + Backdrop */}
+      {isSidebarOpen && <div className="hp-backdrop" onClick={closeSidebar} />}
+      <aside className={`hp-sidebar ${isSidebarOpen ? "open" : ""}`}>
+        <div className="hp-sidebar-top">
+          <h2>1Bingo</h2>
+          <button className="hp-close" onClick={closeSidebar} aria-label="Close menu">
+            ×
+          </button>
+        </div>
+
+        <div className="hp-side-items">
+          <button className="hp-side-btn" onClick={closeSidebar}>🎮 Games</button>
+          <button className="hp-side-btn" onClick={closeSidebar}>🏆 Leaderboard</button>
+          <button className="hp-side-btn" onClick={closeSidebar}>❓ How to Play</button>
+          <button className="hp-side-btn" onClick={closeSidebar}>👥 Referral</button>
+          <button className="hp-side-btn" onClick={closeSidebar}>📩 Contact</button>
+
+          <div className="hp-side-welcome">Welcome back 👋 {firstName}</div>
+
+          <div className="hp-side-balance">💰 {balance} ETB</div>
+
+          <button
+            className="hp-side-btn"
+            onClick={() => {
+              closeSidebar();
+              setShowTransactionModal(true);
+            }}
+          >
+            📜 Transaction History
+          </button>
+        </div>
+
+        <p className="hp-side-footer">
+          Developed by F-tech Solutions PLC © 2025
         </p>
+      </aside>
+
+      {/* Balance card */}
+      <div className="hp-balance-card">
+        <h3>Your Balance</h3>
+        <p className="hp-balance-amount">{balance} Br</p>
       </div>
 
-      <h4 style={{ marginTop: "10px", color: "#ddd" }}>Select Stake Group</h4>
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          padding: "5px 10px",
-          fontWeight: "bold",
-          fontSize: "13px",
-          color: "#00BFFF",
-        }}
-      >
-        <div style={{ flex: 1, textAlign: "left" }}>Stake</div>
-        <div style={{ flex: 1, textAlign: "center" }}>Users</div>
-        <div style={{ flex: 1, textAlign: "center" }}>Timer</div>
-        <div style={{ flex: 1, textAlign: "center" }}>Win</div>
-        <div style={{ flex: 1, textAlign: "center" }}>Join</div>
+      {/* Stake header */}
+      <div className="hp-stake-header">
+        <div>Stake</div>
+        <div>Users</div>
+        <div>Timer</div>
+        <div>Win</div>
+        <div>Join</div>
       </div>
 
+      {/* Stake rows */}
       {stakes.map((amount) => {
         const isSelected = selectedStake === amount;
         const users = isSelected ? livePlayerCount : 0;
         const timer =
-          isSelected && countdown !== null && users >= 2
-            ? `${countdown}s`
-            : "...";
-        const win =
-          isSelected && users > 0
-            ? `${winAmount ?? Math.floor(amount * users * 0.8)} Br`
-            : `${Math.floor(amount * 0.8)} Br`;
-            // Disable join button if countdown running (timeLeft > 0)
+          isSelected && countdown !== null && users >= 2 ? `${countdown}s` : "...";
+        const win = isSelected && users > 0
+          ? `${winAmount ?? Math.floor(amount * users * 0.8)} Br`
+          : `${Math.floor(amount * 0.8)} Br`;
         const countdownActive = isSelected && countdown > 0;
+
         return (
           <div
             key={amount}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              background: isSelected ? "#0E0E2C" : "#22224A",
-              border: isSelected ? "1px solid orange" : "1px solid transparent",
-              borderRadius: "10px",
-              padding: "10px",
-              margin: "8px 0",
-            }}
+            className={`hp-stake-row ${isSelected ? "selected" : ""}`}
           >
-            <div style={{ flex: 1, textAlign: "left", fontWeight: "bold" }}>
-              Br{amount}
-            </div>
-            <div style={{ flex: 1, textAlign: "center" }}>👥 {users}</div>
-            <div style={{ flex: 1, textAlign: "center" }}>⏰ {timer}</div>
-            <div style={{ flex: 1, textAlign: "center" }}>💰 {win}</div>
-            <div style={{ flex: 1, textAlign: "center" }}>
+            <div className="left">Br{amount}</div>
+            <div className="center">👥 {users}</div>
+            <div className="center">⏰ {timer}</div>
+            <div className="center">💰 {win}</div>
+            <div className="center">
               {isSelected ? (
-                <div
-                  style={{
-                    background: "#FF5722",
-                    color: "white",
-                    padding: "5px 10px",
-                    borderRadius: "8px",
-                    fontWeight: "bold",
-                    fontSize: "12px",
-                  }}
-                >
-                  Selected ✓
-                </div>
-              ) : (
+                <div className="hp-selected-badge">Selected ✓</div>
+                ) : (
                 <button
                   onClick={() => handleStakeSelect(amount)}
                   disabled={countdownActive}
-                  title={countdownActive ? "Game already started for this stake" : ""}
-                  style={{
-                    background: countdownActive ? "#555" : "#00BFFF",
-                    color: "white",
-                    border: "none",
-                    padding: "5px 10px",
-                    borderRadius: "8px",
-                    fontWeight: "bold",
-                    cursor: countdownActive ? "not-allowed" : "pointer",
-                  }}
+                  title={
+                    countdownActive ? "Game already started for this stake" : ""
+                  }
+                  className={`hp-start-btn ${countdownActive ? "disabled" : ""}`}
                 >
                   Start
                 </button>
@@ -421,85 +368,54 @@ function HomePage() {
         );
       })}
 
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          gap: "10px",
-          marginTop: "25px",
-        }}
-      >
-        <button style={actionBtnStyle} onClick={() => setShowModal("deposit")}>
+      {/* Actions */}
+      <div className="hp-actions">
+        <button className="hp-action-btn" onClick={() => setShowModal("deposit")}>
           💰 Deposit
         </button>
-        <button style={actionBtnStyle} onClick={() => setShowModal("cashout")}>
+        <button className="hp-action-btn" onClick={() => setShowModal("cashout")}>
           💵 Cash out
         </button>
-        <button style={actionBtnStyle} onClick={fetchUserData}>
+        <button className="hp-action-btn" onClick={fetchUserData}>
           🔄 Refresh
         </button>
-        <button style={actionBtnStyle} onClick={handlePlayNow}>
+        <button className="hp-action-btn" onClick={handlePlayNow}>
           🎮 Play now
         </button>
       </div>
 
-      <p
-        style={{
-          fontSize: "13px",
-          color: "#00BFFF",
-          textDecoration: "underline",
-          cursor: "pointer",
-          marginTop: "10px",
-        }}
-        onClick={() => setShowPromoModal(true)}
-      >
+      <p className="hp-promo-link" onClick={() => setShowPromoModal(true)}>
         Have a promo code? Click here
       </p>
+
+      {/* Modals */}
       {showModal === "stakeWarning" && (
-        <div style={overlayStyle}>
-          <div
-            style={{
-              background: "white",
-              padding: "30px",
-              borderRadius: "10px",
-              textAlign: "center",
-              color: "#333",
-            }}
-          >
+        <div className="hp-overlay">
+          <div className="hp-alert">
             ⚠️ Please select stake
-            <div style={{ marginTop: "20px" }}>
-              <button
-                onClick={() => setShowModal(null)}
-                style={{
-                  padding: "8px 20px",
-                  background: "#4CAF50",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
+            <div className="hp-alert-actions">
+              <button onClick={() => setShowModal(null)} className="hp-ok-btn">
                 OK
               </button>
             </div>
           </div>
         </div>
       )}
+
       {showModal === "deposit" && (
-        <div style={overlayStyle}>
+        <div className="hp-overlay">
           <DepositModal onClose={() => setShowModal(null)} onDeposit={handleDeposit} />
         </div>
       )}
+
       {showModal === "cashout" && (
-        <div style={overlayStyle}>
+        <div className="hp-overlay">
           <CashOutModal onClose={() => setShowModal(null)} onConfirm={handleCashOut} />
         </div>
       )}
 
       {showPromoModal && (
-        <div style={overlayStyle}>
+        <div className="hp-overlay">
           <PromoCodeModal
             onClose={() => setShowPromoModal(false)}
             onSuccess={() => {
@@ -510,34 +426,20 @@ function HomePage() {
         </div>
       )}
 
-      {showSuccessModal && <DepositSuccessModal onClose={() => setShowSuccessModal(false)} />}
-      {showCashOutSuccess && <CashOutSuccessModal onClose={() => setShowCashOutSuccess(false)} />}
+      {showTransactionModal && (
+        <div className="hp-overlay">
+          <TransactionHistoryModal onClose={() => setShowTransactionModal(false)} />
+        </div>
+      )}
+
+      {showSuccessModal && (
+        <DepositSuccessModal onClose={() => setShowSuccessModal(false)} />
+      )}
+      {showCashOutSuccess && (
+        <CashOutSuccessModal onClose={() => setShowCashOutSuccess(false)} />
+      )}
     </div>
   );
 }
-
-const actionBtnStyle = {
-  flex: "1 1 45%",
-  padding: "12px",
-  background: "#4CAF50",
-  color: "white",
-  border: "none",
-  borderRadius: "10px",
-  fontWeight: "bold",
-  cursor: "pointer",
-  fontSize: "14px",
-};
-
-const overlayStyle = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  width: "100vw",
-  height: "100vh",
-  backgroundColor: "rgba(0, 0, 0, 0.7)",
-  display: "flex",
-  justifyContent: "center",
-  zIndex: 1000,
-};
 
 export default HomePage;
