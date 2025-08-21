@@ -51,7 +51,7 @@ body, html {
 }
 
 .hp-logo {
-  height: 50px;              /* bigger logo */
+  height: 80px;              /* bigger logo */
   object-fit: contain;
   margin: 0 16px;            /* spacing between menu and logo */
   flex-shrink: 0;
@@ -291,4 +291,5 @@ body, html {
   color: #fff;
   cursor: pointer;
   font-size: 13px;
+
 }
