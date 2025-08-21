@@ -22,26 +22,16 @@ body, html {
   background: #1c1c3a;
 }
 
-.hp-menu-btn span {
-  display: block;
-  height: 3px;
-  background: #fff;
-  border-radius: 2px;
-}
 .hp-header {
-  position: relative;
   display: flex;
-  align-items: center; /* vertically center all elements */
-  justify-content: center;
-  height: 60px; /* adjust as needed for proper spacing */
-  padding: 0 10px;
+  align-items: center;       /* vertical center */
+  justify-content: space-between; /* menu left, balance right */
+  height: 60px;              /* header height */
+  padding: 0 16px;           /* left/right spacing */
+  position: relative;
 }
 
 .hp-menu-btn {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%); /* center vertically */
   width: 32px;
   height: 28px;
   display: flex;
@@ -53,34 +43,34 @@ body, html {
   padding: 0;
 }
 
+.hp-menu-btn span {
+  display: block;
+  height: 3px;
+  background: #ffffff;
+  border-radius: 2px;
+}
+
 .hp-logo {
-  height: 40px; /* keep logo bigger */
+  height: 50px;              /* bigger logo */
   object-fit: contain;
-  z-index: 1;
+  margin: 0 16px;            /* spacing between menu and logo */
+  flex-shrink: 0;
 }
 
 .hp-balance-top-right {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%); /* vertically center with header */
-}
-
-.hp-balance-box {
-  background: #ff9800; /* different color */
+  background: #ff9800;       /* balance box color */
   color: white;
   padding: 6px 12px;
   border-radius: 12px;
   font-weight: bold;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .hp-coin {
-  margin-right: 6px;
+  margin-right: 6px;         /* space between coin symbol and amount */
 }
-
-
 .hp-welcome {
   text-align: center;
   font-size: 18px;
