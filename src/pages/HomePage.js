@@ -278,7 +278,7 @@ function HomePage() {
 </div>
       {/* Welcome line below logo */}
       <div className="hp-welcome-line">
-        👋 Welcome, {firstName}. Please Choose Your Stake
+        👋 Welcome, {firstName}. 
       </div>{/* Sidebar + Backdrop */}
       {isSidebarOpen && <div className="hp-backdrop" onClick={closeSidebar} />}
       <aside className={`hp-sidebar ${isSidebarOpen ? "open" : ""}`}>
@@ -434,5 +434,6 @@ function HomePage() {
     </div>
   );
 }
+
 
 export default HomePage;
