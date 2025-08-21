@@ -1,0 +1,263 @@
+/* ====== Page Container ====== */
+.hp-container {
+  max-width: 400px;
+  margin: 20px auto;
+  background: #1c1c3a;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  padding: 20px;
+  color: white;
+  font-family: Arial, sans-serif;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ====== Header ====== */
+.hp-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.hp-menu-btn {
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 32px;
+  height: 28px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.hp-menu-btn span {
+  display: block;
+  height: 3px;
+  background: #ffffff;
+  border-radius: 2px;
+}
+
+.hp-logo {
+  width: 120px;
+  height: auto;
+}
+
+.hp-welcome {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #00bfff;
+  text-align: center;
+}
+
+/* ====== Sidebar & Backdrop ====== */
+.hp-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 1999;
+}
+
+.hp-sidebar {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100vh;
+  background: linear-gradient(180deg, #6a11cb 0%, #2575fc 100%);
+  color: #fff;
+  padding: 18px;
+  transition: left 0.28s ease-in-out;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+}
+.hp-sidebar.open { left: 0; }
+
+.hp-sidebar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+.hp-sidebar-top h2 {
+  margin: 0;
+  font-weight: 700;
+}
+.hp-close {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.hp-side-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hp-side-btn {
+  background: #ffffff;
+  color: #333;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+.hp-side-welcome {
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.hp-side-balance {
+  background: #0e0e2c;
+  padding: 12px;
+  border-radius: 12px;
+  margin-top: 6px;
+  text-align: center;
+  font-weight: 800;
+}
+
+.hp-side-footer {
+  margin-top: auto;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* ====== Balance card ====== */
+.hp-balance-card {
+  background: #29294d;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 20px 0;
+  text-align: center;
+}
+.hp-balance-card h3 { margin: 0; font-size: 18px; }
+.hp-balance-amount {
+  font-size: 26px;
+  font-weight: bold;
+  color: #4caf50;
+  margin: 5px 0 0 0;
+}
+
+/* ====== Stake table ====== */
+.hp-stake-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 10px;
+  font-weight: bold;
+  font-size: 13px;
+  color: #00bfff;
+}
+.hp-stake-header > div { flex: 1; text-align: center; }
+.hp-stake-header > div:first-child { text-align: left; }
+
+.hp-stake-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #22224a;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid transparent;
+}
+.hp-stake-row.selected {
+  background: #0e0e2c;
+  border-color: orange;
+}
+.hp-stake-row .left { flex: 1; text-align: left; font-weight: bold; }
+.hp-stake-row .center { flex: 1; text-align: center; }
+
+.hp-selected-badge {
+  background: #ff5722;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.hp-start-btn {
+  background: #00bfff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.hp-start-btn.disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+/* ====== Action buttons ====== */
+.hp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 25px;
+}
+.hp-action-btn {
+  flex: 1 1 45%;
+  padding: 12px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 14px;
+}
+/* ====== Promo link ====== */
+.hp-promo-link {
+  font-size: 13px;
+  color: #00bfff;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* ====== Overlay / Alerts (reused by existing modals) ====== */
+.hp-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  z-index: 2100; /* above sidebar */
+}
+.hp-alert {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  color: #333;
+  margin-top: 80px;
+}
+.hp-alert-actions { margin-top: 20px; }
+.hp-ok-btn {
+  padding: 8px 20px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
