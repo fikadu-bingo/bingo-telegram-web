@@ -42,11 +42,42 @@ body, html {
   background: #fff;
   border-radius: 2px;
 }
+.hp-header {
+  position: relative;
+  display: flex;
+  align-items: flex-start; /* align top of elements */
+  justify-content: center;
+  height: 40px; /* adjust as needed */
+}
 
 .hp-logo {
-  width: 120px;
-  height: auto;
+  height: 28px; /* same as menu button height */
+  margin-left: 40px; /* space from menu */
+  object-fit: contain;
 }
+
+.hp-balance-top-right {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.hp-balance-box {
+  background: #ff9800; /* different color for visibility */
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  height: 28px; /* same as menu and logo */
+}
+
+.hp-coin {
+  margin-right: 6px;
+}
+
+
 
 .hp-welcome {
   text-align: center;
@@ -147,23 +178,8 @@ body, html {
   top: -15px;
 }
 
-.hp-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* menu, logo, balance in one line */
-  padding: 0 15px;
-  margin-bottom: 10px;
-}
 
-.hp-balance-box {
-  background: #4caf50; /* different color for balance box */
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  color: white;
-}
+
 
 .hp-money-bag {
   margin-right: 6px;
