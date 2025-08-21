@@ -7,7 +7,7 @@ import DepositSuccessModal from "../components/DepositSuccessModal";
 import CashOutModal from "../components/CashOutModal";
 import CashOutSuccessModal from "../components/CashOutSuccessModal";
 import PromoCodeModal from "../components/PromoCodeModal";
-import TransactionHistoryModal from "../components/TransactionHistoryModal"; // if you have it
+import TransactionHistoryModal from "../components/TransactionHistoryModal"; 
 import logo from "../assets/logo.png";
 
 import "./HomePage.css";
@@ -32,7 +32,7 @@ function HomePage() {
   const socketRef = useRef(null);
   const [selectedStake, setSelectedStake] = useState(null);
   const [livePlayerCount, setLivePlayerCount] = useState(0);
-  const [countdown, setCountdown] = useState(null); // seconds or null
+  const [countdown, setCountdown] = useState(null);
   const [winAmount, setWinAmount] = useState(null);
 
   // ===== UI modal states
@@ -75,9 +75,7 @@ function HomePage() {
       try {
         const userId = localStorage.getItem("telegram_id") ?? telegramId;
         if (!userId) return;
-        const current = parseFloat(
-          localStorage.getItem("balance") ?? balance ?? 0
-        );
+        const current = parseFloat(localStorage.getItem("balance") ?? balance ?? 0);
         const newBal = Number((current - Number(amount ?? 0)).toFixed(2));
         setBalance(newBal);
         localStorage.setItem("balance", newBal);
@@ -186,13 +184,11 @@ function HomePage() {
       alert("Not enough balance!");
       return;
     }
-
     const socket = socketRef.current;
     if (!socket) {
       alert("Realtime connection not ready. Try again in a moment.");
       return;
     }
-
     let userId = localStorage.getItem("telegram_id") ?? telegramId;
     if (!userId) {
       userId = `guest_${Date.now()}`;
@@ -200,15 +196,12 @@ function HomePage() {
       setTelegramId(userId);
     }
     const username = firstName ?? "User";
-
-    // Leave previous stake if different
     if (selectedStake !== null && selectedStake !== amount) {
       socket.emit("leaveGame", { userId });
       setLivePlayerCount(0);
       setCountdown(null);
       setWinAmount(null);
     }
-
     socket.emit("joinGame", { userId, username, stake: amount });
     setSelectedStake(amount);
   };
@@ -263,20 +256,31 @@ function HomePage() {
 
   return (
     <div className="hp-container">
-      {/* Header */}
+      {/* Header with menu button, centered logo, and top-right balance */}
       <div className="hp-header">
-        <button className="hp-menu-btn" onClick={openSidebar} aria-label="Open menu">
+        <button
+          className="hp-menu-btn"
+          onClick={openSidebar}
+          aria-label="Open menu"
+        >
           <span />
           <span />
           <span />
         </button>
 
         <img src={logo} alt="1Bingo Logo" className="hp-logo" />
+
+        <div className="hp-balance-top-right">
+          <div className="hp-balance-box">
+            <span className="hp-money-bag">💰</span> ETB: {balance}
+          </div>
+        </div>
       </div>
 
-      <div className="hp-welcome">👋 Welcome, {firstName}</div>
-
-      {/* Sidebar + Backdrop */}
+      {/* Welcome line below logo */}
+      <div className="hp-welcome-line">
+        👋 Welcome, {firstName}. Please Choose Your Stake
+      </div>{/* Sidebar + Backdrop */}
       {isSidebarOpen && <div className="hp-backdrop" onClick={closeSidebar} />}
       <aside className={`hp-sidebar ${isSidebarOpen ? "open" : ""}`}>
         <div className="hp-sidebar-top">
@@ -294,7 +298,6 @@ function HomePage() {
           <button className="hp-side-btn" onClick={closeSidebar}>📩 Contact</button>
 
           <div className="hp-side-welcome">Welcome back 👋 {firstName}</div>
-
           <div className="hp-side-balance">💰 {balance} ETB</div>
 
           <button
@@ -334,16 +337,14 @@ function HomePage() {
         const users = isSelected ? livePlayerCount : 0;
         const timer =
           isSelected && countdown !== null && users >= 2 ? `${countdown}s` : "...";
-        const win = isSelected && users > 0
-          ? `${winAmount ?? Math.floor(amount * users * 0.8)} Br`
-          : `${Math.floor(amount * 0.8)} Br`;
+        const win =
+          isSelected && users > 0
+            ? `${winAmount ?? Math.floor(amount * users * 0.8)} Br`
+            : `${Math.floor(amount * 0.8)} Br`;
         const countdownActive = isSelected && countdown > 0;
 
         return (
-          <div
-            key={amount}
-            className={`hp-stake-row ${isSelected ? "selected" : ""}`}
-          >
+          <div key={amount} className={`hp-stake-row ${isSelected ? "selected" : ""}`}>
             <div className="left">Br{amount}</div>
             <div className="center">👥 {users}</div>
             <div className="center">⏰ {timer}</div>
@@ -351,13 +352,11 @@ function HomePage() {
             <div className="center">
               {isSelected ? (
                 <div className="hp-selected-badge">Selected ✓</div>
-                ) : (
+              ) : (
                 <button
                   onClick={() => handleStakeSelect(amount)}
                   disabled={countdownActive}
-                  title={
-                    countdownActive ? "Game already started for this stake" : ""
-                  }
+                  title={countdownActive ? "Game already started for this stake" : ""}
                   className={`hp-start-btn ${countdownActive ? "disabled" : ""}`}
                 >
                   Start
@@ -386,9 +385,7 @@ function HomePage() {
 
       <p className="hp-promo-link" onClick={() => setShowPromoModal(true)}>
         Have a promo code? Click here
-      </p>
-
-      {/* Modals */}
+      </p>{/* Modals */}
       {showModal === "stakeWarning" && (
         <div className="hp-overlay">
           <div className="hp-alert">
@@ -435,6 +432,7 @@ function HomePage() {
       {showSuccessModal && (
         <DepositSuccessModal onClose={() => setShowSuccessModal(false)} />
       )}
+
       {showCashOutSuccess && (
         <CashOutSuccessModal onClose={() => setShowCashOutSuccess(false)} />
       )}
