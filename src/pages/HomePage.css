@@ -81,8 +81,8 @@ body, html {
   text-align: center;
   font-size: 18px;
   color: #00bfff;
- margin-bottom: 70px;
-  margin-top: 70px;
+  margin-bottom: 15px;
+  margin-top: 15px;
   font-weight: 600;
 }
 
@@ -94,7 +94,21 @@ body, html {
   font-size: 16px;
   margin-left: 5px;
 }
+.hp-welcome-line {
+  text-align: center;
+  font-size: 18px;
+  color: #00bfff;
+  margin: 25px 0; /* increased top and bottom margin */
+  font-weight: 600;
+}
 
+.hp-welcome-line::after {
+  content: " — Please Choose Your Stake";
+  font-weight: 400;
+  color: #00dfff;
+  font-size: 16px;
+  margin-left: 5px;
+}
 /* ==================== Sidebar ==================== */
 .hp-backdrop {
   position: fixed;
@@ -298,7 +312,4 @@ body, html {
   color: #fff;
   cursor: pointer;
   font-size: 13px;
-
 }
-
-
