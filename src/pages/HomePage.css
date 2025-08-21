@@ -9,25 +9,20 @@ body, html {
 
 /* HomePage container */
 .hp-container {
-  max-width: 400px;
-  margin: 0 auto;          /* remove top margin */
-  margin-top: 10px;        /* slight upward shift, adjust as needed */
-  background: #1c1c3a;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  padding: 20px;
+  width: 100%;             /* full width */
+  height: 100vh;           /* full viewport height */
+  margin: 0;               /* remove any spacing */
+  background: #1c1c3a;     /* same as body */
+  border-radius: 0;        /* no rounding */
+  box-shadow: none;        /* remove shadow for full coverage */
+  padding: 20px;           /* inner spacing for content */
   color: white;
   position: relative;
   overflow-x: hidden;
-
-  /* Full viewport height for consistent background */
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  background-clip: padding-box;
 }
-
 /* ====== Header ====== */
 .hp-header {
   display: flex;
