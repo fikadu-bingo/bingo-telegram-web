@@ -1,44 +1,43 @@
-/* Make entire page background same as HomePage */
+/* ==================== Global ==================== */
 body, html {
   margin: 0;
   padding: 0;
-  background: #1c1c3a; /* match .hp-container bg */
+  background: #1c1c3a;
   height: 100%;
   font-family: Arial, sans-serif;
+  color: white;
 }
 
-/* HomePage container */
+/* ==================== Container ==================== */
 .hp-container {
-  width: 100%;             /* full width */
-  min-height: 100vh;            /* full viewport height */
-  margin: 0;               /* remove any spacing */
-  background: #1c1c3a;     /* same as body */
-  border-radius: 0;        /* no rounding */
-  box-shadow: none;        /* remove shadow for full coverage */
-  padding: 20px;           /* inner spacing for content */
-  color: white;
-  position: relative;
-  overflow-x: hidden;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  position: relative;
+  overflow-x: hidden;
+  background: #1c1c3a;
 }
-/* ====== Header ====== */
+
+/* ==================== Header ==================== */
 .hp-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 10px;
   position: relative;
+  margin-bottom: 10px;
 }
 
 .hp-menu-btn {
   position: absolute;
   left: 0;
-  top: 2px;
+  top: 0;
   width: 32px;
   height: 28px;
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   justify-content: space-between;
   background: transparent;
@@ -49,7 +48,7 @@ body, html {
 .hp-menu-btn span {
   display: block;
   height: 3px;
-  background: #ffffff;
+  background: #fff;
   border-radius: 2px;
 }
 
@@ -59,13 +58,23 @@ body, html {
 }
 
 .hp-welcome {
-  font-size: 18px;
-  margin-bottom: 10px;
-  color: #00bfff;
   text-align: center;
+  font-size: 18px;
+  color: #00bfff;
+  margin-bottom: 15px;
+  font-weight: 600;
 }
 
-/* ====== Sidebar & Backdrop ====== */
+/* Combine welcome + "Please choose your stake" */
+.hp-welcome::after {
+  content: " — Please Choose Your Stake";
+  font-weight: 400;
+  color: #00dfff;
+  font-size: 16px;
+  margin-left: 5px;
+}
+
+/* ==================== Sidebar ==================== */
 .hp-backdrop {
   position: fixed;
   inset: 0;
@@ -95,10 +104,7 @@ body, html {
   justify-content: space-between;
   margin-bottom: 22px;
 }
-.hp-sidebar-top h2 {
-  margin: 0;
-  font-weight: 700;
-}
+.hp-sidebar-top h2 { margin: 0; font-weight: 700; }
 .hp-close {
   background: rgba(255,255,255,0.2);
   border: none;
@@ -147,16 +153,28 @@ body, html {
   font-size: 12px;
   opacity: 0.9;
   position: relative;
-  top: -5px; /* moves the text up */
+  top: -15px;
 }
-/* ====== Balance card ====== */
+
+/* ==================== Balance Card ==================== */
 .hp-balance-card {
   background: #29294d;
   border-radius: 12px;
   padding: 15px;
   margin: 20px 0;
   text-align: center;
+  position: relative;
 }
+
+/* Small money bag icon */
+.hp-balance-card::before {
+  content: "💰";
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 22px;
+}
+
 .hp-balance-card h3 { margin: 0; font-size: 18px; }
 .hp-balance-amount {
   font-size: 26px;
@@ -165,7 +183,7 @@ body, html {
   margin: 5px 0 0 0;
 }
 
-/* ====== Stake table ====== */
+/* ==================== Stake Table ==================== */
 .hp-stake-header {
   display: flex;
   justify-content: space-between;
@@ -193,7 +211,6 @@ body, html {
 }
 .hp-stake-row .left { flex: 1; text-align: left; font-weight: bold; }
 .hp-stake-row .center { flex: 1; text-align: center; }
-
 .hp-selected-badge {
   background: #ff5722;
   color: white;
@@ -217,7 +234,7 @@ body, html {
   cursor: not-allowed;
 }
 
-/* ====== Action buttons ====== */
+/* ==================== Actions ==================== */
 .hp-actions {
   display: flex;
   flex-wrap: wrap;
@@ -236,7 +253,8 @@ body, html {
   cursor: pointer;
   font-size: 14px;
 }
-/* ====== Promo link ====== */
+
+/* ==================== Promo Link ==================== */
 .hp-promo-link {
   font-size: 13px;
   color: #00bfff;
@@ -246,34 +264,30 @@ body, html {
   text-align: center;
 }
 
-/* ====== Overlay / Alerts (reused by existing modals) ====== */
+/* ==================== Overlay / Alerts ==================== */
 .hp-overlay {
   position: fixed;
   inset: 0;
   background-color: rgba(0,0,0,0.7);
   display: flex;
   justify-content: center;
-  z-index: 2100; /* above sidebar */
+  z-index: 2100;
 }
 .hp-alert {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* center on screen */
+  transform: translate(-50%, -50%);
   background: #f3484b;
-  padding: 15px 25px; /* small padding */
+  padding: 15px 25px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   font-size: 14px;
   text-align: center;
   z-index: 1000;
-  max-width: 250px; /* compact width */
+  max-width: 250px;
 }
-
-.hp-alert-actions {
-  margin-top: 10px;
-}
-
+.hp-alert-actions { margin-top: 10px; }
 .hp-ok-btn {
   padding: 5px 12px;
   border: none;
@@ -282,5 +296,4 @@ body, html {
   color: #fff;
   cursor: pointer;
   font-size: 13px;
-
 }
