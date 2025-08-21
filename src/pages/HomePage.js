@@ -257,7 +257,7 @@ function HomePage() {
   return (
     <div className="hp-container">
       {/* Header with menu button, centered logo, and top-right balance */}
-  <div className="hp-header">
+<div className="hp-header">
   <button
     className="hp-menu-btn"
     onClick={openSidebar}
@@ -270,11 +270,12 @@ function HomePage() {
 
   <img src={logo} alt="1Bingo Logo" className="hp-logo" />
 
-  <div className="hp-balance-box">
-    <span className="hp-money-bag">🪙</span> {balance} ETB
+  <div className="hp-balance-top-right">
+    <div className="hp-balance-box">
+      <span className="hp-coin">🪙</span> ETB: {balance}
+    </div>
   </div>
 </div>
-
       {/* Welcome line below logo */}
       <div className="hp-welcome-line">
         👋 Welcome, {firstName}. Please Choose Your Stake
