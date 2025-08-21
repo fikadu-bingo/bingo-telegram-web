@@ -22,15 +22,6 @@ body, html {
   background: #1c1c3a;
 }
 
-/* ==================== Header ==================== */
-.hp-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  margin-bottom: 10px;
-}
-
 .hp-menu-btn {
   position: absolute;
   left: 0;
@@ -156,31 +147,27 @@ body, html {
   top: -15px;
 }
 
-/* ==================== Balance Card ==================== */
-.hp-balance-card {
-  background: #29294d;
-  border-radius: 12px;
-  padding: 15px;
-  margin: 20px 0;
-  text-align: center;
-  position: relative;
+.hp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* menu, logo, balance in one line */
+  padding: 0 15px;
+  margin-bottom: 10px;
 }
 
-/* Small money bag icon */
-.hp-balance-card::before {
-  content: "💰";
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  font-size: 22px;
-}
-
-.hp-balance-card h3 { margin: 0; font-size: 18px; }
-.hp-balance-amount {
-  font-size: 26px;
+.hp-balance-box {
+  background: #4caf50; /* different color for balance box */
+  padding: 6px 12px;
+  border-radius: 8px;
   font-weight: bold;
-  color: #4caf50;
-  margin: 5px 0 0 0;
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+.hp-money-bag {
+  margin-right: 6px;
+  font-size: 18px;
 }
 
 /* ==================== Stake Table ==================== */
