@@ -22,10 +22,26 @@ body, html {
   background: #1c1c3a;
 }
 
+.hp-menu-btn span {
+  display: block;
+  height: 3px;
+  background: #fff;
+  border-radius: 2px;
+}
+.hp-header {
+  position: relative;
+  display: flex;
+  align-items: center; /* vertically center all elements */
+  justify-content: center;
+  height: 60px; /* adjust as needed for proper spacing */
+  padding: 0 10px;
+}
+
 .hp-menu-btn {
   position: absolute;
-  left: 0;
-  top: 0;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%); /* center vertically */
   width: 32px;
   height: 28px;
   display: flex;
@@ -36,47 +52,33 @@ body, html {
   cursor: pointer;
   padding: 0;
 }
-.hp-menu-btn span {
-  display: block;
-  height: 3px;
-  background: #fff;
-  border-radius: 2px;
-}
-.hp-header {
-  position: relative;
-  display: flex;
-  align-items: flex-start; /* align top of elements */
-  justify-content: center;
-  height: 40px; /* adjust as needed */
-}
 
 .hp-logo {
-  height: 28px; /* same as menu button height */
-  margin-left: 40px; /* space from menu */
+  height: 40px; /* keep logo bigger */
   object-fit: contain;
+  z-index: 1;
 }
 
 .hp-balance-top-right {
   position: absolute;
-  right: 0;
-  top: 0;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%); /* vertically center with header */
 }
 
 .hp-balance-box {
-  background: #ff9800; /* different color for visibility */
+  background: #ff9800; /* different color */
   color: white;
-  padding: 4px 10px;
-  border-radius: 8px;
+  padding: 6px 12px;
+  border-radius: 12px;
   font-weight: bold;
   display: flex;
   align-items: center;
-  height: 28px; /* same as menu and logo */
 }
 
 .hp-coin {
   margin-right: 6px;
 }
-
 
 
 .hp-welcome {
