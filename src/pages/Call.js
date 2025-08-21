@@ -14,6 +14,7 @@ function getBingoLetter(number) {
   return "";
 }
 
+
 function formatBingoNumber(number) {
   return `${getBingoLetter(number)}${number}`;
 }
@@ -304,10 +305,9 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
   onClick={() => {
     socket.current.emit("bingoWin", {
       userId,
-      username,
-      cartela: playerCard,
-      markedNumbers,
+      
       stake,
+       ticket: playerCard
     });
   }}
   disabled={!gameStarted}
