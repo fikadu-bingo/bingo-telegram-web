@@ -65,7 +65,7 @@
 .hp-sidebar {
   position: fixed;
   top: 0;
-  left: -300px;
+  left: -320px;
   width: 280px;
   height: 100vh;
   background: linear-gradient(180deg, #6a11cb 0%, #2575fc 100%);
@@ -262,3 +262,4 @@
   font-weight: bold;
 
 }
+
