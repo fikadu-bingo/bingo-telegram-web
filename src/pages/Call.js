@@ -302,7 +302,7 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
    <button
   className="bingo-button"
   onClick={() => {
-    socket.current.emit("claimBingo", {
+    socket.current.emit("bingoWin", {
       userId,
       username,
       cartela: playerCard,
