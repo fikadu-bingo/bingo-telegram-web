@@ -33,7 +33,7 @@ body, html {
   padding: 5px 10px;
   gap: 8px;
   width: 360px;
-  margin-left: -15px;
+  margin-left: -25px;
   margin-top: -40;
 }
 
@@ -431,3 +431,4 @@ body, html {
   background: #c0392b;
   transform: scale(1.05);
 }
+
