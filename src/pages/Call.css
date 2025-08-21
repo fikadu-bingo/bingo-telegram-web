@@ -416,7 +416,6 @@ body, html {
   
   margin-top: 20px; /* <-- added to move buttons down */
 }
-
 .refresh-button {
   background: #1e90ff;
 }
@@ -432,5 +431,3 @@ body, html {
   background: #c0392b;
   transform: scale(1.05);
 }
-
-
