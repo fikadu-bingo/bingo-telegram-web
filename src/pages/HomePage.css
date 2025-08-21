@@ -10,7 +10,7 @@ body, html {
 /* HomePage container */
 .hp-container {
   width: 100%;             /* full width */
-  height: 100vh;           /* full viewport height */
+  min-height: 100vh;            /* full viewport height */
   margin: 0;               /* remove any spacing */
   background: #1c1c3a;     /* same as body */
   border-radius: 0;        /* no rounding */
@@ -282,4 +282,5 @@ body, html {
   color: #fff;
   cursor: pointer;
   font-size: 13px;
+
 }
