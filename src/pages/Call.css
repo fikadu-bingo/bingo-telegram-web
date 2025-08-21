@@ -412,6 +412,8 @@ body, html {
   color: white;
   box-shadow: 0 4px 8px rgba(0,0,0,0.3);
   transition: transform 0.2s, background 0.3s;
+  
+  margin-top: 20px; /* <-- added to move buttons down */
 }
 
 .refresh-button {
@@ -429,3 +431,4 @@ body, html {
   background: #c0392b;
   transform: scale(1.05);
 }
+
