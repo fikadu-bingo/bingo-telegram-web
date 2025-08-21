@@ -94,6 +94,23 @@ function Call() {
       setShowPopup(true);
     });
 
+    socket.current.on("bingoSuccess", ({ winnerId, username, prize, cartela }) => {
+  setWinnerInfo({ userId: winnerId, username, prize });
+  setShowPopup(true);
+});
+
+socket.current.on("bingoFail", ({ message }) => {
+  alert(message || "Invalid Bingo claim!");
+});
+
+socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => {
+  if (winnerId !== userId) {
+    setWinnerInfo({ userId: winnerId, username, prize });
+    setShowPopup(true);
+  }
+});
+
+
     socket.current.on("balanceChange", (payload) => {
       try {
         if (!payload || !payload.balances) return;
@@ -282,21 +299,21 @@ function Call() {
       </div>
 
       {/* Buttons */}
-      <div className="action-buttons-wrapper">
-        <button
-          className="bingo-button"
-          onClick={() => {
-            if (checkBingo()) {
-              setWinnerInfo({ username, prize: winAmount });
-              setShowPopup(true);
-            } else {
-              alert("Not correct");
-            }
-          }}
-          disabled={!gameStarted}
-        >
-          🎉 Bingo
-        </button>
+   <button
+  className="bingo-button"
+  onClick={() => {
+    socket.current.emit("claimBingo", {
+      userId,
+      username,
+      cartela: playerCard,
+      markedNumbers,
+      stake,
+    });
+  }}
+  disabled={!gameStarted}
+>
+  🎉 Bingo
+</button>
 
         <div className="bottom-buttons">
           <button
@@ -315,7 +332,7 @@ function Call() {
             🚪 Leave
           </button>
         </div>
-      </div>
+      
 
       {showPopup && winnerInfo && (
         <WinModal
@@ -333,7 +350,8 @@ function Call() {
         />
       )}
     </div>
-  );
+  
+    );
 }
 
 export default Call;
