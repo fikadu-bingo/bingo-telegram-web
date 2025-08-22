@@ -167,14 +167,14 @@ body, html {
 /* ---------------- Current Number Ball (Glass-Like Green Bingo Ball) ---------------- */
 .current-ball {
   position: absolute;
-  top: -135px;
+  top: -150px;
   left: 50%;
   transform: translate(-50%, 0);
   width: 105px;
   height: 105px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #8ae28a, #28a745 70%); /* smooth curved 3D gradient */
-  border: 12px solid #28a745; /* thick outer border */
+  background: radial-gradient(circle at 35% 35%, #ff7f7f, #d32f2f 70%); /* light red → deep red */
+ border: 12px solid #d32f2f; /* outer thick red border */
   color: #fff; /* number in white */
   font-size: 44px;
   font-weight: bold;
@@ -500,3 +500,4 @@ body, html {
   background: #c0392b;
   transform: scale(1.05);
 }
+
