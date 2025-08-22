@@ -164,7 +164,7 @@ body, html {
   align-items: center;
   justify-content: flex-end;
 }
-/* ---------------- Current Number Ball (Glass-Like Green Bingo Ball) ---------------- */
+/* ---------------- Current Number Ball (Realistic Blue-Black Bingo Ball) ---------------- */
 .current-ball {
   position: absolute;
   top: -150px;
@@ -173,53 +173,38 @@ body, html {
   width: 105px;
   height: 105px;
   border-radius: 50%;
- background: radial-gradient(circle at 35% 35%, #3a4a7f, #0d1a33 70%); /* light blue → dark navy */
-border: 12px solid #0d1a33; /* outer dark border */
-  color: #fff; /* number in white */
+  background: radial-gradient(circle at 30% 30%, #3a3a5c, #0d0d1a 85%);
+  border: 8px solid #0d0d1a; /* outer dark border */
+  color: #fff;
   font-size: 44px;
   font-weight: bold;
   display: flex;
   justify-content: center;
   align-items: center;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
   box-shadow:
-    0 14px 28px rgba(0,0,0,0.35),       /* outer floating shadow */
-    inset 0 5px 8px rgba(255,255,255,0.2), /* inner top highlight */
-    inset 0 -5px 8px rgba(0,0,0,0.2);      /* inner bottom shadow */
-  position: absolute;
+    0 14px 28px rgba(0,0,0,0.35),
+    inset -6px -6px 15px rgba(255,255,255,0.25),
+    inset 6px 6px 15px rgba(0,0,0,0.35);
   z-index: 10;
 }
 
-/* Thin inner circle for depth */
-.current-ball::before {
-  content: "";
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  right: 6px;
-  bottom: 6px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.35); /* subtle inner line */
-  pointer-events: none;
-}
-
-/* Main large highlight for glass effect */
+/* Main glossy highlight (big) */
 .current-ball::after {
   content: "";
   position: absolute;
   top: 10%;
-  left: 10%;
-  width: 40%;
-  height: 40%;
+  left: 15%;
+  width: 25%;
+  height: 25%;
   border-radius: 50%;
-  background: rgba(255,255,255,0.35);
-  filter: blur(3px);
+  background: rgba(255,255,255,0.4);
+  filter: blur(4px);
   pointer-events: none;
 }
 
 /* Additional small reflections for realism */
-.current-ball .highlight1,
-.current-ball .highlight2,
-.current-ball .highlight3 {
+.current-ball .highlight {
   position: absolute;
   border-radius: 50%;
   background: rgba(255,255,255,0.3);
@@ -227,27 +212,11 @@ border: 12px solid #0d1a33; /* outer dark border */
   pointer-events: none;
 }
 
-.current-ball .highlight1 {
-  top: 20%;
-  right: 18%;
-  width: 12%;
-  height: 12%;
-}
+.current-ball .highlight1 { top: 20%; right: 18%; width: 12%; height: 12%; }
+.current-ball .highlight2 { top: 30%; left: 25%; width: 8%; height: 8%; }
+.current-ball .highlight3 { bottom: 15%; right: 22%; width: 6%; height: 6%; }
 
-.current-ball .highlight2 {
-  top: 30%;
-  left: 25%;
-  width: 8%;
-  height: 8%;
-}
-
-.current-ball .highlight3 {
-  bottom: 15%;
-  right: 22%;
-  width: 6%;
-  height: 6%;
-}
-
+/* Pulse animation for active ball */
 .current-ball.pulse {
   animation: pulse 1s infinite alternate;
 }
@@ -257,17 +226,18 @@ border: 12px solid #0d1a33; /* outer dark border */
     transform: translate(-50%, 0) scale(1);
     box-shadow:
       0 14px 28px rgba(0,0,0,0.35),
-      inset 0 5px 8px rgba(255,255,255,0.2),
-      inset 0 -5px 8px rgba(0,0,0,0.2);
+      inset -6px -6px 15px rgba(255,255,255,0.25),
+      inset 6px 6px 15px rgba(0,0,0,0.35);
   }
   100% {
     transform: translate(-50%, 0) scale(1.05);
     box-shadow:
       0 16px 32px rgba(0,0,0,0.4),
-      inset 0 6px 10px rgba(255,255,255,0.25),
-      inset 0 -6px 10px rgba(0,0,0,0.25);
+      inset -7px -7px 18px rgba(255,255,255,0.3),
+      inset 7px 7px 18px rgba(0,0,0,0.4);
   }
 }
+
 /* ---------------- Rolling Numbers Rectangle ---------------- */
 .waiting-rectangle {
   background-color: #0077b6;
@@ -500,5 +470,3 @@ border: 12px solid #0d1a33; /* outer dark border */
   background: #c0392b;
   transform: scale(1.05);
 }
-
-
