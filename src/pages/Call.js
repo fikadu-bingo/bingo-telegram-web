@@ -316,13 +316,15 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
 </button>
 
         <div className="bottom-buttons">
-          <button
-            className="action-btn refresh-button"
-            onClick={() => window.location.reload()}
-            title="Refresh Game"
-          >
-            🔄 Refresh
-          </button>
+<button
+  className="action-btn refresh-button"
+  onClick={() => {
+    socket.emit("refreshGame", { userId, stake });
+  }}
+  title="Refresh"
+>
+  🔄 Refresh
+</button>
           <button
             className="action-btn leave-button"
             onClick={() => navigate("/")}
