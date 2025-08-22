@@ -164,8 +164,7 @@ body, html {
   align-items: center;
   justify-content: flex-end;
 }
-
-/* ---------------- Current Number Ball (Green Style) ---------------- */
+/* ---------------- Current Number Ball (With Inner Thin Circle) ---------------- */
 .current-ball {
   position: absolute;
   top: -135px;
@@ -175,31 +174,56 @@ body, html {
   height: 105px;
   border-radius: 50%;
   background: #fff; /* white center */
-  border: 8px solid #28a745; /* thick outer green border */
-  box-sizing: border-box;
-  color: #28a745; /* number color matches border */
+  border: 12px solid #d32f2f; /* thick outer border */
+  color: #d32f2f; /* number color */
   font-size: 44px;
   font-weight: bold;
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3), inset 0 4px 6px rgba(255,255,255,0.4);
   z-index: 10;
+  position: relative;
 }
 
-/* Thin inner border line */
+/* Inner thin circle */
 .current-ball::before {
   content: "";
   position: absolute;
-  top: 4px;
-  left: 4px;
-  right: 4px;
-  bottom: 4px;
+  top: 6px;   /* space from outer border */
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
   border-radius: 50%;
-  border: 2px solid #28a745; /* thin inner green line */
+  border: 2px solid #d32f2f; /* thin inner line matching outer color */
   pointer-events: none;
 }
 
+.current-ball::after {
+  content: "";
+  position: absolute;
+  top: 15%;
+  left: 15%;
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5); /* subtle highlight */
+}
+
+.current-ball.pulse {
+  animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translateX(-50%) scale(1);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3), inset 0 4px 6px rgba(255,255,255,0.4);
+  }
+  100% {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.35), inset 0 5px 8px rgba(255,255,255,0.5);
+  }
+}
 /* ---------------- Rolling Numbers Rectangle ---------------- */
 .waiting-rectangle {
   background-color: #0077b6;
