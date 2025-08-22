@@ -173,8 +173,8 @@ body, html {
   width: 105px;
   height: 105px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ff7f7f, #d32f2f 70%); /* light red → deep red */
- border: 12px solid #d32f2f; /* outer thick red border */
+ background: radial-gradient(circle at 35% 35%, #3a4a7f, #0d1a33 70%); /* light blue → dark navy */
+border: 12px solid #0d1a33; /* outer dark border */
   color: #fff; /* number in white */
   font-size: 44px;
   font-weight: bold;
@@ -500,4 +500,5 @@ body, html {
   background: #c0392b;
   transform: scale(1.05);
 }
+
 
