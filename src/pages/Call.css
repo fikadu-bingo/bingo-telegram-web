@@ -171,8 +171,8 @@ body, html {
   top: -135px;
   left: 50%;
   transform: translateX(-50%);
-  width: 95px;
-  height: 95px;
+  width: 105px;
+  height: 105px;
   border-radius: 50%;
   background: #fff;
   border: 12px solid #d32f2f;
@@ -431,5 +431,6 @@ body, html {
   background: #c0392b;
   transform: scale(1.05);
 }
+
 
 
