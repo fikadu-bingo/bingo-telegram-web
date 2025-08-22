@@ -164,7 +164,7 @@ body, html {
   align-items: center;
   justify-content: flex-end;
 }
-/* ---------------- Current Number Ball (With Inner Thin Circle) ---------------- */
+/* ---------------- Current Number Ball (Inner Thin Circle Added) ---------------- */
 .current-ball {
   position: absolute;
   top: -135px;
@@ -173,9 +173,9 @@ body, html {
   width: 105px;
   height: 105px;
   border-radius: 50%;
-  background: #fff; /* white center */
+  background: #fff;
   border: 12px solid #d32f2f; /* thick outer border */
-  color: #d32f2f; /* number color */
+  color: #d32f2f;
   font-size: 44px;
   font-weight: bold;
   display: flex;
@@ -186,19 +186,20 @@ body, html {
   position: relative;
 }
 
-/* Inner thin circle */
+/* Inner thin circle inside the thick border */
 .current-ball::before {
   content: "";
   position: absolute;
-  top: 6px;   /* space from outer border */
+  top: 6px;   /* inside the thick border */
   left: 6px;
   right: 6px;
   bottom: 6px;
   border-radius: 50%;
-  border: 2px solid #d32f2f; /* thin inner line matching outer color */
+  border: 2px solid #d32f2f; /* thin inner line */
   pointer-events: none;
 }
 
+/* Subtle highlight */
 .current-ball::after {
   content: "";
   position: absolute;
@@ -207,7 +208,7 @@ body, html {
   width: 30%;
   height: 30%;
   border-radius: 50%;
-  background: rgba(255,255,255,0.5); /* subtle highlight */
+  background: rgba(255,255,255,0.5);
 }
 
 .current-ball.pulse {
