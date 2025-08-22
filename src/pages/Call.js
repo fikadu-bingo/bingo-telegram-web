@@ -240,17 +240,17 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
         </div>
         {/* Cartela */}
         <div className="cartela-wrapper">
-          <div
-            className={`current-ball ${
-              currentNumber ? getBingoLetter(parseInt(currentNumber.slice(1))) : ""
-            }pulse`}
-          >
-            {currentNumber ?? "--"}
-              {/* Glass-like highlights */}
-  <div className="highlight1"></div>
-  <div className="highlight2"></div>
-  <div className="highlight3"></div>
-          </div>
+     <div
+  className={`current-ball pulse ${
+    currentNumber ? getBingoLetter(parseInt(currentNumber.slice(1))) : ""
+  }`}
+>
+  {currentNumber ?? "--"}
+  {/* Realistic glossy highlights */}
+  <div className="highlight highlight1"></div>
+  <div className="highlight highlight2"></div>
+  <div className="highlight highlight3"></div>
+</div>
 
           <div className="waiting-rectangle">
             {!gameStarted ? (
