@@ -164,18 +164,18 @@ body, html {
   align-items: center;
   justify-content: flex-end;
 }
-/* ---------------- Current Number Ball (Inner Thin Circle Added) ---------------- */
+/* ---------------- Current Number Ball (Centered Green Double Circle) ---------------- */
 .current-ball {
   position: absolute;
   top: -135px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, 0); /* perfectly center horizontally */
   width: 105px;
   height: 105px;
   border-radius: 50%;
-  background: #fff;
-  border: 12px solid #d32f2f; /* thick outer border */
-  color: #d32f2f;
+  background: #fff; /* white center */
+  border: 12px solid #28a745; /* thick outer green border */
+  color: #28a745; /* number color */
   font-size: 44px;
   font-weight: bold;
   display: flex;
@@ -183,19 +183,19 @@ body, html {
   align-items: center;
   box-shadow: 0 6px 12px rgba(0,0,0,0.3), inset 0 4px 6px rgba(255,255,255,0.4);
   z-index: 10;
-  position: relative;
+  position: absolute; /* keep absolute */
 }
 
-/* Inner thin circle inside the thick border */
+/* Thin inner circle inside the thick border */
 .current-ball::before {
   content: "";
   position: absolute;
-  top: 6px;   /* inside the thick border */
+  top: 6px;   /* spacing from outer border */
   left: 6px;
   right: 6px;
   bottom: 6px;
   border-radius: 50%;
-  border: 2px solid #d32f2f; /* thin inner line */
+  border: 2px solid #28a745; /* thin inner green line */
   pointer-events: none;
 }
 
@@ -209,6 +209,7 @@ body, html {
   height: 30%;
   border-radius: 50%;
   background: rgba(255,255,255,0.5);
+  pointer-events: none;
 }
 
 .current-ball.pulse {
@@ -217,11 +218,11 @@ body, html {
 
 @keyframes pulse {
   0% {
-    transform: translateX(-50%) scale(1);
+    transform: translate(-50%, 0) scale(1);
     box-shadow: 0 6px 12px rgba(0,0,0,0.3), inset 0 4px 6px rgba(255,255,255,0.4);
   }
   100% {
-    transform: translateX(-50%) scale(1.05);
+    transform: translate(-50%, 0) scale(1.05);
     box-shadow: 0 8px 16px rgba(0,0,0,0.35), inset 0 5px 8px rgba(255,255,255,0.5);
   }
 }
