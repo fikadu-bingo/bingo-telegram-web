@@ -178,8 +178,8 @@ body, html {
 }
 
 .current-ball-inner {
-  width: 32px;              /* Inner white circle */
-  height: 32px;
+  width: 70px;              /* Inner white circle */
+  height: 70px;
   border-radius: 50%;
   background: white;
   display: flex;
