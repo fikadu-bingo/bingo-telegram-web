@@ -2,76 +2,60 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(255, 165, 0, 0.85); /* light orange backdrop */
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10000;
-  padding: 20px;
+  z-index: 2000;
 }
 
-.cartela-container {
-  background: #a4e0fa;
-  padding: 15px 20px;
-  border-radius: 15px;
-  box-shadow: 0 8px 15px rgb(252, 252, 251);
-  max-width: 200px; /* same max width as call page cartela */
-  width: 100%;
-  text-align: center;
+.cartela-modal {
+  background: #f8f9fa;
+  border-radius: 14px;
+  overflow: hidden;
+  width: 330px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
 
-.cartela-title {
-  margin-bottom: 10px;
-  color: #151514;
+.cartela-header {
+  background: #073c87;
+  color: white;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-weight: bold;
-  font-size: 16px;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: red;
+  font-size: 18px;
+  cursor: pointer;
 }
 
 .cartela-grid {
   display: grid;
-  grid-template-columns: repeat(5, 30px);
+  grid-template-columns: repeat(5, 1fr);
   gap: 6px;
-  justify-content: center;
-  margin-bottom: 10px;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding: 14px;
 }
 
 .cartela-cell {
-  width: 25px;
-  height: 25px;
-  /* Remove padding */
-  background: #f4f3f2;
-  color: #0c0c0c;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 6px;
-  font-size: 14px;
+  background: white;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 14px;
+  text-align: center;
   font-weight: bold;
-  user-select: none;
+  font-size: 15px;
 }
 
-.cartela-cell.selected {
-  background: #1f0439;
-  color: white;
-}
-
-.cartela-close {
-  padding: 8px 20px;
-  background: #e67300;
-  color: white;
-  border: none;
-  border-radius: 10px;
+.free-star {
+  color: green;
+  font-size: 18px;
   font-weight: bold;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background 0.3s;
-}
-
-.cartela-close:hover {
-  background: #cc6600;
-
 }
