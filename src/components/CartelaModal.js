@@ -12,9 +12,7 @@ function CartelaModal({ show, onClose, cartelaId, card }) {
       >
         <div className="cartela-header">
           <span>Cartela #{cartelaId}</span>
-          <button className="delete-btn" onClick={onClose}>
-            🗑
-          </button>
+         <button className="delete-btn" onClick={onClose}>✖</button>
         </div>
 
         <div className="cartela-grid">
