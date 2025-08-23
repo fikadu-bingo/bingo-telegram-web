@@ -13,13 +13,9 @@ function CartelaModal({ show, onClose, cartelaId, card }) {
         </div>
 
         <div className="cartela-grid">
-          {card.map((row, rowIndex) => (
-            <div key={rowIndex} className="cartela-row">
-              {row.map((num, colIndex) => (
-                <div key={colIndex} className="cartela-cell">
-                  {num === "★" ? <span className="free-star">★</span> : num}
-                </div>
-              ))}
+          {card.flat().map((num, index) => (
+            <div key={index} className="cartela-cell">
+              {num === "★" ? <span className="free-star">★</span> : num}
             </div>
           ))}
         </div>
