@@ -5,6 +5,7 @@ import bg from "../assets/bg.jpg";
 import io from "socket.io-client";
 import "../components/CartelaModal.css";
 import "./BingoBoard.css";
+import CartelaModal from "../components/CartelaModal";
 
 const SOCKET_SERVER_URL = "https://bingo-server-rw7p.onrender.com";
 
@@ -297,9 +298,15 @@ function BingoBoard() {
           🎮 Start Game
         </button>
       </div>
+<CartelaModal
+  show={showCartelaModal}
+  onClose={() => setShowCartelaModal(false)}
+  cartelaId={cartelaId}
+  card={bingoCard}
+/>
+
     </div>
   );
 }
-
 
 export default BingoBoard; 
