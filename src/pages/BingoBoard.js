@@ -115,28 +115,31 @@ function BingoBoard() {
     setBingoCard(card);
   };
 
-  const handleNumberClick = (number) => {
-    if (gameStarted) return;
-    const userId = userIdRef.current;
+ const handleNumberClick = (number) => {
+  if (gameStarted) return;
+  const userId = userIdRef.current;
 
-    if (selectedNumber !== null && selectedNumber !== number) {
-      socketRef.current.emit("deselectTicketNumber", {
-        stake,
-        userId,
-        oldNumber: selectedNumber,
-      });
-    }
-
-    setSelectedNumber(number);
-    setCartelaId(number);
-    generateCard(number);
-    setShowCartelaModal(true);
-    socketRef.current.emit("selectTicketNumber", {
+  if (selectedNumber !== null && selectedNumber !== number) {
+    socketRef.current.emit("deselectTicketNumber", {
       stake,
       userId,
-      number,
+      oldNumber: selectedNumber,
     });
-  };
+  }
+
+  // ✅ generate a new card only once for this ticket
+  const newCard = generateCard();
+  setBingoCard(newCard);
+  setSelectedNumber(number);
+  setCartelaId(number);
+  setShowCartelaModal(true);
+
+  socketRef.current.emit("selectTicketNumber", {
+    stake,
+    userId,
+    number,
+  });
+};
 
   const handleStartGame = () => {
     if (!selectedNumber) {
