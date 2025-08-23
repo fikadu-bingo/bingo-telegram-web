@@ -48,8 +48,8 @@
 }
 
 .cartela-cell {
-  width: 60px; /* fixed size cells */
-  height: 60px;
+  width: 40px; /* fixed size cells */
+  height: 40px;
   background: #0c1d2e;
   border: 2px solid #ffcc00;
   border-radius: 6px;
@@ -64,5 +64,4 @@
 .free-star {
   color: red;
   font-size: 22px;
-
 }
