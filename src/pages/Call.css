@@ -188,7 +188,7 @@ body, html {
   align-items: center;
   border: 2px solid rgba(0,0,0,0.1); /* subtle outline */
   font-weight: bold;
-  font-size: 18px;
+  font-size: 36px;
   color: black;
 }
 
@@ -435,4 +435,5 @@ body, html {
   background: #c0392b;
   transform: scale(1.05);
 }
+
 
