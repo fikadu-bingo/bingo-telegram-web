@@ -13,7 +13,7 @@
 
 .cartela-modal {
   background: #fff;
-  padding: 20px 16px; /* small horizontal padding added */
+  padding: 20px 32px; /* small horizontal padding added */
   border-radius: 12px;
   width: fit-content; /* modal fits the grid content */
   box-sizing: border-box;
