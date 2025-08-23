@@ -15,10 +15,10 @@
   background: #fff;
   padding: 20px;
   border-radius: 12px;
-  max-width: 90%;
-  width: 400px;
+  width: fit-content; /* modal fits the grid content */
   box-sizing: border-box;
   box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  max-width: 90%; /* responsive on small screens */
 }
 
 .cartela-header {
@@ -40,19 +40,19 @@
 
 .cartela-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 5 columns */
+  grid-template-columns: repeat(5, auto); /* 5 columns, auto width */
   gap: 8px;
-  justify-items: stretch; /* stretch cells to fill each column */
-  padding: 8px;
+  justify-content: center; /* center the grid inside modal */
+  padding: 0; /* remove extra padding */
   box-sizing: border-box;
 }
 
 .cartela-cell {
-  width: 100%; /* fills grid column */
-  aspect-ratio: 1; /* keeps square shape */
+  width: 60px; /* fixed size cells */
+  height: 60px;
   background: #0c1d2e;
   border: 2px solid #ffcc00;
- border-radius: 6px;
+  border-radius: 6px;
   display: flex;
   justify-content: center;
   align-items: center;
