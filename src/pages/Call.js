@@ -242,7 +242,7 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
         <div className="cartela-wrapper">
   <div className="current-ball">
   <div className="current-ball-inner">
-    :
+    - -
   </div>
 </div>
 
@@ -353,5 +353,6 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
   
     );
 }
+
 
 export default Call;
