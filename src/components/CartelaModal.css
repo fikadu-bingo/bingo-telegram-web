@@ -12,15 +12,14 @@
 }
 
 .cartela-modal {
-  background: #fff;
-  padding: 20px 50px; /* horizontal padding keeps modal slightly wider */
+  background: #cec5c5;
+  padding: 20px 60px; /* a little wider padding to fit gaps */
   border-radius: 12px;
-  width: fit-content; /* modal fits grid content */
+  width: fit-content;
   box-sizing: border-box;
   box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-  max-width: 90%; /* responsive on small screens */
+  max-width: 90%;
 }
-
 .cartela-header {
   display: flex;
   justify-content: space-between;
@@ -40,16 +39,16 @@
 
 .cartela-grid {
   display: grid;
-  grid-template-columns: repeat(5, auto); /* 5 columns */
+  grid-template-columns: repeat(5, 1fr); /* flexible columns */
   row-gap: 16px;        /* vertical spacing */
-  column-gap: 24px;     /* horizontal spacing between cells */
+  column-gap: 24px;     /* horizontal spacing */
   justify-content: center; /* center grid inside modal */
   padding: 0;
   box-sizing: border-box;
 }
 
 .cartela-cell {
-  width: 40px; /* fixed cell size */
+  width: 40px;  /* fixed size */
   height: 40px;
   background: #0c1d2e;
   border: 2px solid #ffcc00;
@@ -60,9 +59,7 @@
   font-weight: bold;
   font-size: 18px;
   box-sizing: border-box;
-  /* removed margin-right to let column-gap work */
 }
-
 .free-star {
   color: red;
   font-size: 22px;
