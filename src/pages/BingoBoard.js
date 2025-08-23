@@ -81,39 +81,31 @@ function BingoBoard() {
     };
   }, [stake]);
 
-  const generateCard = (selected) => {
-    const columns = [
-      Array.from({ length: 15 }, (_, i) => i + 1),
-      Array.from({ length: 15 }, (_, i) => i + 16),
-      Array.from({ length: 15 }, (_, i) => i + 31),
-      Array.from({ length: 15 }, (_, i) => i + 46),
-      Array.from({ length: 15 }, (_, i) => i + 61),
-    ];
+const generateCard = () => {
+  const columns = [
+    Array.from({ length: 15 }, (_, i) => i + 1),
+    Array.from({ length: 15 }, (_, i) => i + 16),
+    Array.from({ length: 15 }, (_, i) => i + 31),
+    Array.from({ length: 15 }, (_, i) => i + 46),
+    Array.from({ length: 15 }, (_, i) => i + 61),
+  ];
 
-    const card = [];
-    for (let row = 0; row < 5; row++) {
-      const rowNumbers = [];
-      for (let col = 0; col < 5; col++) {
-        if (row === 2 && col === 2) {
-          rowNumbers.push("★");
-        } else {
-          const nums = columns[col];
-          const idx = Math.floor(Math.random() * nums.length);
-          rowNumbers.push(nums.splice(idx, 1)[0]);
-        }
-      }
-      card.push(rowNumbers);
-    }
-
-    for (let r = 0; r < 5; r++) {
-      for (let c = 0; c < 5; c++) {
-        if (card[r][c] === selected) {
-          card[r][c] = "*";
-        }
+  const card = [];
+  for (let row = 0; row < 5; row++) {
+    const rowNumbers = [];
+    for (let col = 0; col < 5; col++) {
+      if (row === 2 && col === 2) {
+        rowNumbers.push("★");
+      } else {
+        const nums = columns[col];
+        const idx = Math.floor(Math.random() * nums.length);
+        rowNumbers.push(nums.splice(idx, 1)[0]);
       }
     }
-    setBingoCard(card);
-  };
+    card.push(rowNumbers);
+  }
+  return card;
+};
 
  const handleNumberClick = (number) => {
   if (gameStarted) return;
