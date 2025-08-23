@@ -14,7 +14,7 @@
 .cartela-modal {
   background: #fff;
   border-radius: 12px;
-  padding: 0 40px 20px 40px; /* remove top padding, keep bottom padding for cells */
+  padding: 0 0 20px 0; /* remove horizontal padding so header touches sides */
   width: fit-content;
   box-sizing: border-box;
   box-shadow: 0 8px 20px rgba(0,0,0,0.3);
@@ -26,7 +26,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4px 12px;           /* compact height */
+  padding: 4px 12px;           /* keeps header compact */
   margin: 0;                    /* touches top of modal */
   font-weight: bold;
   font-size: 18px;
@@ -35,6 +35,16 @@
   border-radius: 12px 12px 0 0; /* rounded top corners */
 }
 
+/* Grid spacing */
+.cartela-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(40px, 1fr));
+  column-gap: 16px;
+  row-gap: 16px;
+  justify-content: center;
+  padding: 10px 10px 0 10px; /* 10px on left and right so cells don’t touch header edges */
+  box-sizing: border-box;
+}
 /* Close button as X */
 .delete-btn {
   background: transparent;
@@ -44,17 +54,7 @@
   color: #fff;
 }
 
-/* Add small spacing between header and grid */
-.cartela-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(40px, 1fr));
-  column-gap: 16px;
-  row-gap: 16px;
-  justify-content: center;
-  padding-top: 10px; /* space between header and cells */
-  padding-bottom: 0;
-  box-sizing: border-box;
-}
+
 
 .cartela-cell {
   height: 40px;
