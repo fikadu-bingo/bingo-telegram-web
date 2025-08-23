@@ -46,7 +46,7 @@
 .cartela-cell {
   width: 50px; /* fixed width */
   height: 50px; /* fixed height */
-  background: #fff;
+  background: #9307e4;
   border: 2px solid #ffcc00; /* yellow border */
   display: flex;
   justify-content: center;
