@@ -12,8 +12,8 @@
 }
 
 .cartela-modal {
-  background: #cec5c5;
-  padding: 20px 60px; /* a little wider padding to fit gaps */
+  background: #fff;
+  padding: 20px 40px; /* give horizontal padding so gaps have room */
   border-radius: 12px;
   width: fit-content;
   box-sizing: border-box;
@@ -39,17 +39,16 @@
 
 .cartela-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* flexible columns */
-  row-gap: 16px;        /* vertical spacing */
-  column-gap: 24px;     /* horizontal spacing */
-  justify-content: center; /* center grid inside modal */
+  grid-template-columns: repeat(5, minmax(40px, 1fr)); /* cells at least 40px */
+  column-gap: 16px; /* horizontal gap */
+  row-gap: 16px;    /* vertical gap */
+  justify-content: center;
   padding: 0;
   box-sizing: border-box;
 }
 
 .cartela-cell {
-  width: 40px;  /* fixed size */
-  height: 40px;
+  height: 40px; /* fixed height */
   background: #0c1d2e;
   border: 2px solid #ffcc00;
   border-radius: 6px;
@@ -59,6 +58,7 @@
   font-weight: bold;
   font-size: 18px;
   box-sizing: border-box;
+  width: 100%; /* now width is controlled by grid */
 }
 .free-star {
   color: red;
