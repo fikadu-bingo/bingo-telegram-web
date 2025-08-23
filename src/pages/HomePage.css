@@ -35,8 +35,8 @@ body, html {
 }
 
 .hp-menu-btn {
-  width: 40px;                    /* slightly bigger for better visual */
-  height: 32px;
+ width: 30px;                    /* slightly bigger for better visual */
+  height: 22px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -296,4 +296,5 @@ body, html {
   color: #fff;
   cursor: pointer;
   font-size: 13px;
+
 }
