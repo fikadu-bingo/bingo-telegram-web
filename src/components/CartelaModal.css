@@ -10,22 +10,21 @@
   align-items: center;
   z-index: 2000;
 }
-
 .cartela-modal {
-  background: #f8f9fa;
-  border-radius: 14px;
-  overflow: hidden;
-  width: 330px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  max-width: 90%;
+  width: 400px;
+  box-sizing: border-box;
 }
 
 .cartela-header {
-  background: #073c87;
-  color: white;
-  padding: 10px 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 16px;
   font-weight: bold;
 }
 
@@ -39,19 +38,23 @@
 
 .cartela-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
-  padding: 14px;
+  grid-template-columns: repeat(5, 1fr); /* 5 columns for bingo */
+  gap: 8px; /* space between cells */
+  justify-items: center; /* center content inside each cell */
+  padding: 4px; /* optional padding inside grid */
 }
-
 .cartela-cell {
-  background: white;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  padding: 14px;
-  text-align: center;
+  width: 50px; /* fixed width */
+  height: 50px; /* fixed height */
+  background: #fff;
+  border: 2px solid #ffcc00; /* yellow border */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-weight: bold;
-  font-size: 15px;
+  font-size: 18px;
+  border-radius: 6px;
+  box-sizing: border-box;
 }
 
 .free-star {
