@@ -51,23 +51,24 @@ function BingoBoard() {
 
     socketRef.current.emit("joinGame", { userId, stake, ticket: [] });
 
-    socketRef.current.on("ticketNumbersUpdated", (tickets) => {
-      setAllTicketSelections(tickets);
-      const myNumbers = tickets[userIdRef.current] ?? [];
-      if (myNumbers.length > 0) {
-        const myNumber = myNumbers[0];
-        if (myNumber !== selectedNumber) {
-          setSelectedNumber(myNumber);
-          setCartelaId(myNumber);
-          generateCard(myNumber);
-          setShowCartelaModal(true);
-        }
-      } else {
-        setSelectedNumber(null);
-        setCartelaId("");
-        setBingoCard([]);
-      }
-    });
+  socketRef.current.on("ticketNumbersUpdated", (tickets) => {
+  setAllTicketSelections(tickets);
+  const myNumbers = tickets[userIdRef.current] ?? [];
+  if (myNumbers.length > 0) {
+    const myNumber = myNumbers[0];
+    if (myNumber !== selectedNumber) {
+      setSelectedNumber(myNumber);
+      setCartelaId(myNumber);
+      const card = generateCard();
+      setBingoCard(card);
+      // ✅ no setShowCartelaModal here
+    }
+  } else {
+    setSelectedNumber(null);
+    setCartelaId("");
+    setBingoCard([]);
+  }
+});
 
     socketRef.current.on("ticketAssigned", ({ ticket }) => {
       console.log("Server assigned ticket:", ticket);
