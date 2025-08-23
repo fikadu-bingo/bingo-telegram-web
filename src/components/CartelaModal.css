@@ -14,7 +14,7 @@
 .cartela-modal {
   background: #fff;
   border-radius: 12px;
-  padding: 20px 40px;
+  padding: 0 40px 20px 40px; /* remove top padding, keep bottom padding for cells */
   width: fit-content;
   box-sizing: border-box;
   box-shadow: 0 8px 20px rgba(0,0,0,0.3);
@@ -26,13 +26,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;           /* padding inside header */
-  margin-bottom: 20px;         /* push header down */
+  padding: 4px 12px;           /* compact height */
+  margin: 0;                    /* touches top of modal */
   font-weight: bold;
   font-size: 18px;
   color: #fff;
-  background-color: #0077b6;   /* separate header background */
-  border-radius: 8px 8px 0 0;  /* rounded top corners only */
+  background-color: #0077b6;   
+  border-radius: 12px 12px 0 0; /* rounded top corners */
 }
 
 /* Close button as X */
@@ -44,13 +44,15 @@
   color: #fff;
 }
 
+/* Add small spacing between header and grid */
 .cartela-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(40px, 1fr));
   column-gap: 16px;
   row-gap: 16px;
   justify-content: center;
-  padding: 0;
+  padding-top: 10px; /* space between header and cells */
+  padding-bottom: 0;
   box-sizing: border-box;
 }
 
