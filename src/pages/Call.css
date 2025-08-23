@@ -165,46 +165,35 @@ body, html {
   justify-content: flex-end;
 }
 .current-ball {
-  width: 150px;         /* Increase size */
-  height: 150px;        /* Increase size */
-  font-size: 36px;      /* Bigger number */
-  position: absolute;   /* So we can move it */
-  top: 20px;            /* Move up: smaller value = higher */
-  left: 50%;            /* Center horizontally */
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: #FFA500;  /* Or your current ball color */
+  width: 60px;             /* Adjust size as needed */
+  height: 60px;
+  border-radius: 50%;       /* Make it circular */
+  background: radial-gradient(circle at 25% 25%, #5d9cec, #1e3aa7);
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-  z-index: 1000;
+  position: relative;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.3); /* Subtle shadow for depth */
 }
-
-.current-ball-inner {
-  width: 32px;              /* Inner white circle */
-  height: 32px;
+.current-ball {
+  width: 120px;
+  height: 120px;
+  position: relative;
   border-radius: 50%;
-  background: white;
+  background: #FFA500;
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 2px solid rgba(0,0,0,0.1); /* subtle outline */
-  font-weight: bold;
-  font-size: 18px;
-  color: black;
 }
 
-.current-ball::after {
-  content: '';
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  width: 15px;
-  height: 15px;
-  background: rgba(255,255,255,0.5);
+.current-ball .inner-circle {
+  width: 60%;            /* % of parent, scales automatically */
+  height: 60%;           /* % of parent, scales automatically */
   border-radius: 50%;
-  filter: blur(2px); /* simulate highlight */
+  background: white;     /* inner circle color */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 /* ---------------- Rolling Numbers Rectangle ---------------- */
 .waiting-rectangle {
@@ -438,4 +427,3 @@ body, html {
   background: #c0392b;
   transform: scale(1.05);
 }
-
