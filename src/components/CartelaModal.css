@@ -51,6 +51,7 @@
 .cartela-cell {
   width: 40px; /* fixed size cells */
   height: 40px;
+  margin-right: 8px;
   background: #0c1d2e;
   border: 2px solid #ffcc00;
   border-radius: 6px;
