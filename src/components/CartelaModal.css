@@ -40,19 +40,19 @@
 
 .cartela-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(5, 1fr); /* 5 columns */
   gap: 8px;
-  justify-items: center;
+  justify-items: stretch; /* stretch cells to fill each column */
   padding: 8px;
   box-sizing: border-box;
 }
 
 .cartela-cell {
-  width: 60px;
-  height: 60px;
+  width: 100%; /* fills grid column */
+  aspect-ratio: 1; /* keeps square shape */
   background: #0c1d2e;
   border: 2px solid #ffcc00;
-  border-radius: 6px;
+ border-radius: 6px;
   display: flex;
   justify-content: center;
   align-items: center;
