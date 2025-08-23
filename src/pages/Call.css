@@ -174,12 +174,13 @@ body, html {
   justify-content: center;
   align-items: center;
   position: relative;
+  top: 10px;
   box-shadow: 2px 2px 10px rgba(0,0,0,0.3); /* Subtle shadow for depth */
 }
 
 .current-ball-inner {
-  width: 70px;              /* Inner white circle */
-  height: 70px;
+  width: 80px;              /* Inner white circle */
+  height: 80px;
   border-radius: 50%;
   background: white;
   display: flex;
