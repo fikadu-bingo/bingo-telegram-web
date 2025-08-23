@@ -165,15 +165,20 @@ body, html {
   justify-content: flex-end;
 }
 .current-ball {
-  width: 60px;             /* Adjust size as needed */
-  height: 60px;
-  border-radius: 50%;       /* Make it circular */
-  background: radial-gradient(circle at 25% 25%, #5d9cec, #1e3aa7);
+  width: 150px;         /* Increase size */
+  height: 150px;        /* Increase size */
+  font-size: 36px;      /* Bigger number */
+  position: absolute;   /* So we can move it */
+  top: 20px;            /* Move up: smaller value = higher */
+  left: 50%;            /* Center horizontally */
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: #FFA500;  /* Or your current ball color */
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
-  box-shadow: 2px 2px 10px rgba(0,0,0,0.3); /* Subtle shadow for depth */
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+  z-index: 1000;
 }
 
 .current-ball-inner {
@@ -433,3 +438,4 @@ body, html {
   background: #c0392b;
   transform: scale(1.05);
 }
+
