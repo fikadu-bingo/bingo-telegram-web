@@ -41,7 +41,7 @@
 .cartela-grid {
   display: grid;
   grid-template-columns: repeat(5, auto); /* 5 columns, auto width */
-  gap: 8px;
+  gap: 16px;
   justify-content: center; /* center the grid inside modal */
   padding: 0; /* remove extra padding */
   box-sizing: border-box;
@@ -64,4 +64,5 @@
 .free-star {
   color: red;
   font-size: 22px;
+
 }
