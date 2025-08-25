@@ -282,9 +282,7 @@ function HomePage() {
 </div>
 </div>
       {/* Welcome line below logo */}
-      <div className="hp-welcome-line">
-        👋 Welcome, {firstName}.
-      </div>{/* Sidebar + Backdrop */}
+      {/* Sidebar + Backdrop */}
       {isSidebarOpen && <div className="hp-backdrop" onClick={closeSidebar} />}
       <aside className={`hp-sidebar ${isSidebarOpen ? "open" : ""}`}>
         <div className="hp-sidebar-top">
