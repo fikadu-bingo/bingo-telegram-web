@@ -195,12 +195,12 @@ const generateCard = () => {
 <div
   style={{
     display: "grid",
-    gridTemplateColumns: "repeat(10, 1fr)", // 10 columns
+    gridTemplateColumns: "repeat(10, 1fr)", // 10 equal columns
     gap: "6px",
     margin: "10px 0",
     borderRadius: "12px",
-    justifyContent: "center",
-    width: "100%",
+    width: "100%", // full width
+    maxWidth: "450px", // optional, keep within board container
   }}
 >
   {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => {
@@ -214,12 +214,13 @@ const generateCard = () => {
         onClick={() => handleNumberClick(num)}
         disabled={isSelected && !isCurrentUserSelected}
         style={{
-          padding: "12px",                // bigger button
-          background: "#047a8f",          // matches board background
-          color: "#fff",                  // white text
-          fontWeight: "bold",             // bold
-          fontSize: "16px",               // bigger text
-          border: "1px solid #025a63",   // subtle border
+          width: "100%",          // fill its grid cell
+          padding: "12px 0",      // vertical padding for square shape
+          background: "#047a8f",
+          color: "#fff",
+          fontWeight: "bold",
+          fontSize: "16px",
+          border: "1px solid #025a63",
           borderRadius: "6px",
           cursor:
             isSelected && !isCurrentUserSelected
