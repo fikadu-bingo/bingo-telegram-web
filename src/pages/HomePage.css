@@ -43,7 +43,7 @@ body, html {
 html, body {
   margin: 0;
   padding: 0;
-  padding-top: 60px;   /* push content below header */
+  padding-top: 80px;   /* push content below header */
   overflow-x: hidden;  /* block horizontal scroll */
 }
 
