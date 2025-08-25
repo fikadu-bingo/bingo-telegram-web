@@ -340,40 +340,57 @@ function HomePage() {
       </div>
 
       {/* Stake rows */}
-      {stakes.map((amount) => {
-        const isSelected = selectedStake === amount;
-        const users = isSelected ? livePlayerCount : 0;
-        const timer =
-          isSelected && countdown !== null && users >= 2 ? `${countdown}s` : "...";
-        const win =
-          isSelected && users > 0
-            ? `${winAmount ?? Math.floor(amount * users * 0.8)} Br`
-            : `${Math.floor(amount * 0.8)} Br`;
-        const countdownActive = isSelected && countdown > 0;
+    {/* Stake rows */}
+{stakes.map((amount) => {
+  const users = selectedStake === amount ? livePlayerCount : 0;
+  const timer =
+    selectedStake === amount && countdown !== null && users >= 2 ? `${countdown}s` : "...";
+  const win =
+    selectedStake === amount && users > 0
+      ? `${winAmount ?? Math.floor(amount * users * 0.8)} Br`
+      : `${Math.floor(amount * 0.8)} Br`;
+  const countdownActive = selectedStake === amount && countdown > 0;
 
-        return (
-          <div key={amount} className={`hp-stake-row ${isSelected ? "selected" : ""}`}>
-            <div className="left">Br{amount}</div>
-            <div className="center">👥 {users}</div>
-            <div className="center">⏰ {timer}</div>
-            <div className="center">💰 {win}</div>
-            <div className="center">
-              {isSelected ? (
-                <div className="hp-selected-badge">Selected ✓</div>
-              ) : (
-                <button
-                  onClick={() => handleStakeSelect(amount)}
-                  disabled={countdownActive}
-                  title={countdownActive ? "Game already started for this stake" : ""}
-                  className={`hp-start-btn ${countdownActive ? "disabled" : ""}`}
-                >
-                  Start
-                </button>
-              )}
-            </div>
-          </div>
-        );
-      })}
+  const handlePlay = () => {
+    if (balance < amount) {
+      alert("Not enough balance!");
+      return;
+    }
+
+    // Deduct balance immediately
+    const newBalance = balance - amount;
+    setBalance(newBalance);
+    localStorage.setItem("balance", newBalance);
+
+    // Set this stake as selected for socket join
+    handleStakeSelect(amount);
+
+    // Navigate to BingoBoard
+    navigate("/bingoboard", { state: { balance: newBalance, stake: amount } });
+  };
+
+  return (
+    <div
+      key={amount}
+      className={`hp-stake-row ${countdownActive ? "disabled" : ""}`}
+    >
+      <div className="left">Br{amount}</div>
+      <div className="center">👥 {users}</div>
+      <div className="center">⏰ {timer}</div>
+      <div className="center">💰 {win}</div>
+      <div className="center">
+        <button
+          onClick={handlePlay}
+          disabled={countdownActive}
+          title={countdownActive ? "Game already started for this stake" : ""}
+          className={`hp-start-btn ${countdownActive ? "disabled" : ""}`}
+        >
+          Play
+        </button>
+      </div>
+    </div>
+  );
+})}
 
       {/* Actions */}
       <div className="hp-actions">
@@ -386,9 +403,7 @@ function HomePage() {
         <button className="hp-action-btn" onClick={fetchUserData}>
           🔄 Refresh
         </button>
-        <button className="hp-action-btn" onClick={handlePlayNow}>
-          🎮 Play now
-        </button>
+       
       </div>
 
       <p className="hp-promo-link" onClick={() => setShowPromoModal(true)}>
