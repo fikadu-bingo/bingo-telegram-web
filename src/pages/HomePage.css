@@ -541,3 +541,11 @@ body, html {
   margin-bottom: 5px;
   font-size: 14px;
 }
+/* Main Balance and Bonus Balance text inside balance cards */
+.balance-card span:first-child {
+  color: #4a1a7c; /* dark purple */
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
