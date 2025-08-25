@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import logo from "../assets/logo.png";
-import bg from "../assets/bg.jpg";
 import io from "socket.io-client";
 import "../components/CartelaModal.css";
 import "./BingoBoard.css";
@@ -12,7 +10,7 @@ const SOCKET_SERVER_URL = "https://bingo-server-rw7p.onrender.com";
 // Helper to generate Game IDs like A001, A002...
 const generateGameId = () => {
   const prefix = "A";
-  const num = Math.floor(Math.random() * 900) + 100; // 100 - 999
+  const num = Math.floor(Math.random() * 900) + 100;
   return prefix + num;
 };
 
@@ -51,24 +49,23 @@ function BingoBoard() {
 
     socketRef.current.emit("joinGame", { userId, stake, ticket: [] });
 
-  socketRef.current.on("ticketNumbersUpdated", (tickets) => {
-  setAllTicketSelections(tickets);
-  const myNumbers = tickets[userIdRef.current] ?? [];
-  if (myNumbers.length > 0) {
-    const myNumber = myNumbers[0];
-    if (myNumber !== selectedNumber) {
-      setSelectedNumber(myNumber);
-      setCartelaId(myNumber);
-      const card = generateCard();
-      setBingoCard(card);
-      // ✅ no setShowCartelaModal here
-    }
-  } else {
-    setSelectedNumber(null);
-    setCartelaId("");
-    setBingoCard([]);
-  }
-});
+    socketRef.current.on("ticketNumbersUpdated", (tickets) => {
+      setAllTicketSelections(tickets);
+      const myNumbers = tickets[userIdRef.current] ?? [];
+      if (myNumbers.length > 0) {
+        const myNumber = myNumbers[0];
+        if (myNumber !== selectedNumber) {
+          setSelectedNumber(myNumber);
+          setCartelaId(myNumber);
+          const card = generateCard();
+          setBingoCard(card);
+        }
+      } else {
+        setSelectedNumber(null);
+        setCartelaId("");
+        setBingoCard([]);
+      }
+    });
 
     socketRef.current.on("ticketAssigned", ({ ticket }) => {
       console.log("Server assigned ticket:", ticket);
@@ -82,64 +79,62 @@ function BingoBoard() {
     };
   }, [stake]);
 
-const generateCard = () => {
-  const columns = [
-    Array.from({ length: 15 }, (_, i) => i + 1),
-    Array.from({ length: 15 }, (_, i) => i + 16),
-    Array.from({ length: 15 }, (_, i) => i + 31),
-    Array.from({ length: 15 }, (_, i) => i + 46),
-    Array.from({ length: 15 }, (_, i) => i + 61),
-  ];
+  const generateCard = () => {
+    const columns = [
+      Array.from({ length: 15 }, (_, i) => i + 1),
+      Array.from({ length: 15 }, (_, i) => i + 16),
+      Array.from({ length: 15 }, (_, i) => i + 31),
+      Array.from({ length: 15 }, (_, i) => i + 46),
+      Array.from({ length: 15 }, (_, i) => i + 61),
+    ];
 
-  const card = [];
-  for (let row = 0; row < 5; row++) {
-    const rowNumbers = [];
-    for (let col = 0; col < 5; col++) {
-      if (row === 2 && col === 2) {
-        rowNumbers.push("★");
-      } else {
-        const nums = columns[col];
-        const idx = Math.floor(Math.random() * nums.length);
-        rowNumbers.push(nums.splice(idx, 1)[0]);
+    const card = [];
+    for (let row = 0; row < 5; row++) {
+      const rowNumbers = [];
+      for (let col = 0; col < 5; col++) {
+        if (row === 2 && col === 2) {
+          rowNumbers.push("★");
+        } else {
+          const nums = columns[col];
+          const idx = Math.floor(Math.random() * nums.length);
+          rowNumbers.push(nums.splice(idx, 1)[0]);
+        }
       }
+      card.push(rowNumbers);
     }
-    card.push(rowNumbers);
-  }
-  return card;
-};
+    return card;
+  };
 
- const handleNumberClick = (number) => {
-  if (gameStarted) return;
-  const userId = userIdRef.current;
+  const handleNumberClick = (number) => {
+    if (gameStarted) return;
+    const userId = userIdRef.current;
 
-  if (selectedNumber !== null && selectedNumber !== number) {
-    socketRef.current.emit("deselectTicketNumber", {
+    if (selectedNumber !== null && selectedNumber !== number) {
+      socketRef.current.emit("deselectTicketNumber", {
+        stake,
+        userId,
+        oldNumber: selectedNumber,
+      });
+    }
+
+    const newCard = generateCard();
+    setBingoCard(newCard);
+    setSelectedNumber(number);
+    setCartelaId(number);
+    setShowCartelaModal(true);
+
+    socketRef.current.emit("selectTicketNumber", {
       stake,
       userId,
-      oldNumber: selectedNumber,
+      number,
     });
-  }
-
-  // ✅ generate a new card only once for this ticket
-  const newCard = generateCard();
-  setBingoCard(newCard);
-  setSelectedNumber(number);
-  setCartelaId(number);
-  setShowCartelaModal(true);
-
-  socketRef.current.emit("selectTicketNumber", {
-    stake,
-    userId,
-    number,
-  });
-};
+  };
 
   const handleStartGame = () => {
     if (!selectedNumber) {
       setShowModal(true);
       return;
     }
-
     if (wallet < stake) {
       alert("Not enough balance!");
       return;
@@ -170,106 +165,61 @@ const generateCard = () => {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-         background: "#047a8f", // solid color
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-start",
-        alignItems: "center",
-        padding: "20px",
-      }}
-    >
-  <div className="wallet-bar">
-    <div>Wallet: Br{(wallet - stake).toFixed(2)}</div>
-    <div>Game ID: {gameId}</div>
-    <div>Stake: Br{stake}</div>
-  </div>
+    <div className="bb-page">
+      <div className="bb-wallet-bar">
+        <div>Wallet: Br{(wallet - stake).toFixed(2)}</div>
+        <div>Game ID: {gameId}</div>
+        <div>Stake: Br{stake}</div>
+      </div>
 
+      <div className="bb-board-container">
+        <h4>Select a Lucky Ticket Number</h4>
 
-   <div className="board-container">
-       
-   <h4 style={{ margin: "10px 0" }}>Select a Lucky Ticket Number</h4>
+        <div className="bb-numbers">
+          {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => {
+            const { isSelected, selectedBy } = isNumberSelected(num);
+            const currentUserId = userIdRef.current || "anonymous";
+            const isCurrentUserSelected = selectedBy.includes(currentUserId);
 
-<div
-  style={{
-    display: "grid",
-    gridTemplateColumns: "repeat(10, 1fr)", // 10 equal columns
-    gap: "6px",
-    margin: "10px 0",
-    borderRadius: "12px",
-    width: "100%", // full width
-    maxWidth: "450px", // optional, keep within board container
-  }}
->
-  {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => {
-    const { isSelected, selectedBy } = isNumberSelected(num);
-    const currentUserId = userIdRef.current || "anonymous";
-    const isCurrentUserSelected = selectedBy.includes(currentUserId);
+            return (
+              <button
+                key={num}
+                onClick={() => handleNumberClick(num)}
+                disabled={isSelected && !isCurrentUserSelected}
+                className={`bb-num ${
+                  isCurrentUserSelected ? "bb-num-me" : ""
+                }`}
+                title={
+                  isSelected
+                    ? selectedBy.length > 1
+                      ? "Selected by multiple players"
+                      : "Selected by another player"
+                    : "Click to select"
+                }
+              >
+                {num}
+              </button>
+            );
+          })}
+        </div>
 
-    return (
-      <button
-        key={num}
-        onClick={() => handleNumberClick(num)}
-        disabled={isSelected && !isCurrentUserSelected}
-        style={{
-          width: "100%",          // fill its grid cell
-          padding: "12px 0",      // vertical padding for square shape
-          background: "#047a8f",
-          color: "#fff",
-          fontWeight: "bold",
-          fontSize: "16px",
-          border: "1px solid #025a63",
-          borderRadius: "6px",
-          cursor:
-            isSelected && !isCurrentUserSelected
-              ? "not-allowed"
-              : "pointer",
-          transition: "all 0.2s ease-in-out",
-        }}
-        title={
-          isSelected
-            ? selectedBy.length > 1
-              ? "Selected by multiple players"
-              : "Selected by another player"
-            : "Click to select"
-        }
-      >
-        {num}
-      </button>
-    );
-  })}
-</div>
-       <button
+        <button
           onClick={handleStartGame}
           disabled={gameStarted}
-          style={{
-            marginTop: "20px",
-            width: "100%",
-            padding: "12px",
-            background: gameStarted ? "#888" : "#4CAF50",
-            color: "white",
-            border: "none",
-            borderRadius: "10px",
-            fontWeight: "bold",
-            cursor: gameStarted ? "not-allowed" : "pointer",
-            fontSize: "16px",
-            transition: "background 0.3s",
-          }}
+          className="bb-start-btn"
         >
           🎮 Start Game
         </button>
       </div>
-<CartelaModal
-  show={showCartelaModal}
-  onClose={() => setShowCartelaModal(false)}
-  cartelaId={cartelaId}
-  card={bingoCard}
-/>
 
+      <CartelaModal
+        show={showCartelaModal}
+        onClose={() => setShowCartelaModal(false)}
+        cartelaId={cartelaId}
+        card={bingoCard}
+      />
     </div>
   );
 }
 
-export default BingoBoard; 
+export default BingoBoard;
