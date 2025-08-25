@@ -88,7 +88,7 @@ html, body {
   background: #1c1c3a; /* dark theme */
   color: #fff;
   font-weight: bold;
-  border: 2px solid #00bfff;
+  border: 2px solid #1c1c3a;
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
 }
@@ -106,5 +106,5 @@ html, body {
 /* Ensure all child elements inherit dark background */
 .board-bg * {
   background: inherit !important;
-  color: #fff;
+  color: #1c1c3a;
 }
