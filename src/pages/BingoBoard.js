@@ -199,8 +199,8 @@ const generateCard = () => {
     gap: "6px",
     margin: "10px 0",
     borderRadius: "12px",
-    width: "100%", // full width
-    maxWidth: "450px", // optional, keep within board container
+    width: "100%",
+    maxWidth: "450px",
   }}
 >
   {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => {
@@ -214,8 +214,8 @@ const generateCard = () => {
         onClick={() => handleNumberClick(num)}
         disabled={isSelected && !isCurrentUserSelected}
         style={{
-          width: "100%",          // fill its grid cell
-          padding: "12px 0",      // vertical padding for square shape
+          width: "100%",
+          aspectRatio: "1 / 1",        // makes it perfectly square
           background: "#047a8f",
           color: "#fff",
           fontWeight: "bold",
@@ -227,6 +227,9 @@ const generateCard = () => {
               ? "not-allowed"
               : "pointer",
           transition: "all 0.2s ease-in-out",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
         title={
           isSelected
