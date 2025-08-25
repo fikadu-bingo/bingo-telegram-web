@@ -190,21 +190,7 @@ const generateCard = () => {
 
    <div className="board-container">
        
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            background: "rgba(0,0,0,0.5)",
-            borderRadius: "12px",
-            color: "white",
-            padding: "8px 10px",
-            fontSize: "13px",
-            flexWrap: "wrap",
-            marginBottom: "15px",
-          }}
-        >
-         
-        </div>
+  
 
         <h4 style={{ margin: "10px 0" }}>Select a Lucky Ticket Number</h4>
 
@@ -220,46 +206,46 @@ const generateCard = () => {
             justifyContent: "center"
           }}
         >
-          {Array.from({ length: 200 }, (_, i) => i + 1).map((num) => {
-            const { isSelected, selectedBy } = isNumberSelected(num);
-            const currentUserId = userIdRef.current || "anonymous";
-            const isCurrentUserSelected = selectedBy.includes(currentUserId);
+         {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => {
+    const { isSelected, selectedBy } = isNumberSelected(num);
+    const currentUserId = userIdRef.current || "anonymous";
+    const isCurrentUserSelected = selectedBy.includes(currentUserId);
 
-            return (
-              <button
-                key={num}
-                onClick={() => handleNumberClick(num)}
-                disabled={isSelected && !isCurrentUserSelected}
-                style={{
-                  padding: "8px",
-                  background: isCurrentUserSelected
-                    ? "#f7ad2eff"
-                    : isSelected
-                    ? "#FF5722"
-                    : "#333",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  fontSize: "12px",
-                  cursor:
-                    isSelected && !isCurrentUserSelected
-                      ? "not-allowed"
-                      : "pointer",
-                  transition: "all 0.2s ease-in-out",
-                }}
-                title={
-                  isSelected
-                    ? selectedBy.length > 1
-                      ? "Selected by multiple players"
-                      : "Selected by another player"
-                    : "Click to select"
-                }
-              >
-                {num}
-              </button>
-            );
-          })}
-        </div>
+    return (
+      <button
+        key={num}
+        onClick={() => handleNumberClick(num)}
+        disabled={isSelected && !isCurrentUserSelected}
+        style={{
+          padding: "8px",
+          background: isCurrentUserSelected
+            ? "#f7ad2eff"
+            : isSelected
+            ? "#FF5722"
+            : "#333",
+          color: "white",
+          border: "none",
+          borderRadius: "6px",
+          fontSize: "12px",
+          cursor:
+            isSelected && !isCurrentUserSelected
+              ? "not-allowed"
+              : "pointer",
+          transition: "all 0.2s ease-in-out",
+        }}
+        title={
+          isSelected
+            ? selectedBy.length > 1
+              ? "Selected by multiple players"
+              : "Selected by another player"
+            : "Click to select"
+        }
+      >
+        {num}
+      </button>
+    );
+  })}
+</div>
        <button
           onClick={handleStartGame}
           disabled={gameStarted}
