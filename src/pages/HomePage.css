@@ -549,3 +549,18 @@ body, html {
   margin-bottom: 5px;
   font-size: 14px;
 }
+/* Balance card labels */
+.balance-label {
+  color: #4a1a7c; /* dark purple */
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+/* Balance numbers */
+.balance-value {
+  color: #4a1a7c; /* dark purple */
+  font-weight: bold;
+  font-size: 18px;
+}
