@@ -205,6 +205,7 @@ html, body {
   font-weight: bold;
   font-size: 13px;
   color: #00bfff;
+  margin-top: 20px;   /* <-- creates gap below fixed header */
 }
 .hp-stake-header > div { flex: 1; text-align: center; }
 .hp-stake-header > div:first-child { text-align: left; }
