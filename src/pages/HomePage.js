@@ -271,11 +271,15 @@ function HomePage() {
 
   <img src={logo} alt="1Bingo Logo" className="hp-logo" />
 
-  <div className="hp-balance-top-right">
-    <div className="hp-balance-box">
-      <span className="hp-coin">🪙</span> ETB: {balance}
-    </div>
+<div
+  className="hp-balance-top-right"
+  onClick={() => setShowModal("walletActions")}
+  style={{ cursor: "pointer" }}
+>
+  <div className="hp-balance-box">
+    <span className="hp-coin">🪙</span> ETB: {balance}
   </div>
+</div>
 </div>
       {/* Welcome line below logo */}
       <div className="hp-welcome-line">
@@ -394,12 +398,7 @@ function HomePage() {
 
       {/* Actions */}
       <div className="hp-actions">
-        <button className="hp-action-btn" onClick={() => setShowModal("deposit")}>
-          💰 Deposit
-        </button>
-        <button className="hp-action-btn" onClick={() => setShowModal("cashout")}>
-          💵 Cash out
-        </button>
+       
         <button className="hp-action-btn" onClick={fetchUserData}>
           🔄 Refresh
         </button>
@@ -458,6 +457,39 @@ function HomePage() {
     </div>
   </div>
 )}
+
+{showModal === "walletActions" && (
+  <div className="hp-overlay">
+    <div className="hp-alert">
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <button
+          className="hp-ok-btn"
+          onClick={() => {
+            setShowModal("deposit");
+          }}
+        >
+          💰 Deposit
+        </button>
+        <button
+          className="hp-ok-btn"
+          onClick={() => {
+            setShowModal("cashout");
+          }}
+        >
+          💵 Cash out
+        </button>
+        <button
+          className="hp-ok-btn"
+          onClick={() => setShowModal(null)}
+          style={{ background: "#f3484b" }}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
       {showModal === "stakeWarning" && (
         <div className="hp-overlay">
           <div className="hp-alert">
