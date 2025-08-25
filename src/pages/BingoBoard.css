@@ -41,7 +41,7 @@
 .bb-numbers {
   display: grid;
   grid-template-columns: repeat(10, 1fr); /* 10 per row */
-  gap: 4px;  /* tighter gap to fit 100 */
+  gap: 3px;  /* tighter gap to fit 100 */
 }
 
 /* Number buttons */
@@ -53,7 +53,7 @@
   background: #047a8f;
   color: #fff;
   font-weight: 900;         /* bold */
-  font-size: 20px;          /* smaller text so all 100 fit */
+  font-size: 18px;          /* smaller text so all 100 fit */
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   display: flex;
