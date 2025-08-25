@@ -11,14 +11,19 @@
   z-index: 2000;
 }
 
+/* Modal container (square) */
 .cartela-modal {
   background: #cbc7c7;
   border-radius: 12px;
-  padding: 0 0 20px 0; /* remove horizontal padding so header touches sides */
-  width: fit-content;
-  box-sizing: border-box;
+  padding: 0;                  /* remove extra padding */
+  width: 90vmin;               /* responsive square */
+  height: 90vmin;              /* same as width */
+  max-width: 500px;            /* optional max size */
+  max-height: 500px;           /* keep it square */
+  display: flex;
+  flex-direction: column;
   box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-  max-width: 90%;
+  box-sizing: border-box;
 }
 
 /* Header styling */
@@ -26,25 +31,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4px 12px;           /* keeps header compact */
-  margin: 0;                    /* touches top of modal */
+  padding: 6px 12px;
   font-weight: bold;
   font-size: 18px;
   color: #fff;
-  background-color: #0077b6;   
-  border-radius: 12px 12px 0 0; /* rounded top corners */
+  background-color: #0077b6;
+  border-radius: 12px 12px 0 0;
+  flex-shrink: 0;
 }
 
-/* Grid spacing */
-.cartela-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(40px, 1fr));
-  column-gap: 16px;
-  row-gap: 16px;
-  justify-content: center;
-  padding: 10px 10px 0 10px; /* 10px on left and right so cells don’t touch header edges */
-  box-sizing: border-box;
-}
 /* Close button as X */
 .delete-btn {
   background: transparent;
@@ -54,10 +49,18 @@
   color: #fff;
 }
 
+/* Grid */
+.cartela-grid {
+  flex: 1;                    /* fills remaining modal space */
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;                   /* equal row and column gaps */
+  padding: 10px;
+  box-sizing: border-box;
+}
 
-
+/* Cells (perfect squares) */
 .cartela-cell {
-  height: 40px;
   background: #0c1d2e;
   border: 2px solid #ffcc00;
   border-radius: 6px;
@@ -65,13 +68,14 @@
   justify-content: center;
   align-items: center;
   font-weight: bold;
-  font-size: 18px;
-  box-sizing: border-box;
-  width: 100%;
+  font-size: 20px;            /* bigger numbers */
+  color: #fff;
+  aspect-ratio: 1 / 1;        /* perfect square */
 }
 
+/* Free space star */
 .free-star {
   color: red;
-  font-size: 22px;
+  font-size: 24px;
+  font-weight: bold;
 }
-
