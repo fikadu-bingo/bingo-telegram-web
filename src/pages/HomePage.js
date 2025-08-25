@@ -407,19 +407,22 @@ function HomePage() {
       {/* Actions */}
       <div className="hp-actions">
        
-       <button
-  className="hp-action-btn"
-  style={{
-    padding: "6px 10px",     // smaller padding
-    fontSize: "14px",        // slightly smaller text
-    display: "flex",
-    alignItems: "center",
-    gap: "4px",              // small gap between icon and text
-  }}
-  onClick={() => window.location.reload()}
->
-  🔄 Refresh
-</button>
+<div style={{ display: "flex", justifyContent: "flex-end", marginTop: "10px" }}>
+  <span
+    style={{
+      cursor: "pointer",
+      color: "#00bfff",
+      fontWeight: "600",
+      display: "flex",
+      alignItems: "center",
+      gap: "4px",
+      fontSize: "14px",
+    }}
+    onClick={() => window.location.reload()}
+  >
+    🔄 Refresh
+  </span>
+</div>
       </div>
 
      {/* Modals */}
