@@ -11,22 +11,21 @@
   z-index: 2000;
 }
 
-/* Modal container (square) */
 .cartela-modal {
   background: #cbc7c7;
   border-radius: 12px;
-  padding: 0;                  /* remove extra padding */
-  width: 90vmin;               /* responsive square */
-  height: 90vmin;              /* same as width */
-  max-width: 500px;            /* optional max size */
-  max-height: 500px;           /* keep it square */
+  width: 90vmin;          /* responsive width based on viewport */
+  height: 90vmin;         /* equal height for square */
+  max-width: 500px;       /* optional max size */
+  max-height: 500px;      /* keep it square */
   display: flex;
   flex-direction: column;
   box-shadow: 0 8px 20px rgba(0,0,0,0.3);
   box-sizing: border-box;
+  overflow: hidden;       /* prevents content overflow */
 }
 
-/* Header styling */
+/* Header */
 .cartela-header {
   display: flex;
   justify-content: space-between;
@@ -40,7 +39,7 @@
   flex-shrink: 0;
 }
 
-/* Close button as X */
+/* Close button */
 .delete-btn {
   background: transparent;
   border: none;
@@ -49,17 +48,19 @@
   color: #fff;
 }
 
-/* Grid */
+/* Grid fills remaining modal space */
 .cartela-grid {
   flex: 1;                    /* fills remaining modal space */
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 8px;                   /* equal row and column gaps */
-  padding: 10px;
+  grid-template-rows: repeat(5, 1fr);
+  gap: 4px;                   /* small gap between cells */
+  width: 100%;
+  padding: 4px;               /* small padding inside modal */
   box-sizing: border-box;
 }
 
-/* Cells (perfect squares) */
+/* Cells (perfect squares, responsive) */
 .cartela-cell {
   background: #0c1d2e;
   border: 2px solid #ffcc00;
@@ -68,9 +69,10 @@
   justify-content: center;
   align-items: center;
   font-weight: bold;
-  font-size: 20px;            /* bigger numbers */
+  font-size: 18px;
   color: #fff;
   aspect-ratio: 1 / 1;        /* perfect square */
+  width: 100%;                /* fills grid cell */
 }
 
 /* Free space star */
@@ -78,4 +80,20 @@
   color: red;
   font-size: 24px;
   font-weight: bold;
+}
+
+/* Small screens adjustment */
+@media (max-width: 400px) {
+  .cartela-modal {
+    width: 95vmin;
+    height: 95vmin;
+  }
+
+  .cartela-cell {
+    font-size: 16px;
+  }
+
+  .free-star {
+    font-size: 20px;
+  }
 }
