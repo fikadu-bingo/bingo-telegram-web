@@ -49,7 +49,7 @@ body, html {
 
 .hp-menu-btn span {
   display: block;
-  height: 4px;                    /* thicker lines */
+  height: 2px;                    /* thicker lines */
   background: #ffffff;
   border-radius: 2px;
 }
