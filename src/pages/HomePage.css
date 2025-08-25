@@ -342,29 +342,72 @@ body, html {
   background: #1a5edb;
 }
 
+/* ==================== Wallet Modal ==================== */
+.hp-wallet {
+  background: #22224a;        /* darker card style */
+  padding: 20px;
+  border-radius: 12px;
+  color: white;
+  text-align: center;
+  width: 280px;
+}
+
+.hp-wallet h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 18px;
+  color: #e0cfff; /* slightly lighter for contrast */
+}
+
+.hp-wallet-balance {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.hp-wallet-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hp-wallet-btn {
+  background: #8a39c0; /* deep purple button */
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.hp-wallet-btn:hover {
+  background: #6c2a9b;
+}
+
 /* Wallet Large Modal */
 .hp-wallet-large {
-  background: #0cc0df; /* updated background */
+  background: #cb6ce6; /* main purple background */
   display: flex;
-  flex-direction: row; /* default desktop layout */
+  flex-direction: row;
   border-radius: 12px;
   width: 900px;
   max-width: 95%;
   min-height: 500px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.3);
   position: relative;
-  overflow: hidden; /* prevent overflow on smaller screens */
+  overflow: hidden;
 }
 
 /* Sidebar */
 .hp-wallet-sidebar {
-  background: #f5f7fa;
+  background: #d9a7ff; /* lighter purple for sidebar */
   padding: 20px;
-  width: 220px;  /* slightly wider for better readability */
+  width: 220px;
   display: flex;
   flex-direction: column;
   gap: 15px;
-  border-right: 1px solid #ddd;
+  border-right: 1px solid #c187f0;
 }
 
 .wallet-btn {
@@ -374,14 +417,14 @@ body, html {
   text-align: left;
   font-size: 16px;
   cursor: pointer;
-  color: #333;
+  color: #4a1a7c; /* dark purple text for readability */
   border-radius: 6px;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
 
 .wallet-btn:hover,
 .wallet-btn.active {
-  background: #2575fc;
+  background: #8a39c0; /* matches button */
   color: white;
 }
 
@@ -389,8 +432,8 @@ body, html {
 .hp-wallet-content {
   flex: 1;
   padding: 20px;
-  background: linear-gradient(to bottom right, #e9f3ff, #ffffff);
-  min-width: 0; /* prevents flex overflow issues */
+  background: linear-gradient(to bottom right, #f2d6ff, #e6b3ff); /* soft purple gradient */
+  min-width: 0;
 }
 
 /* Balances */
@@ -402,16 +445,16 @@ body, html {
 
 .balance-card {
   flex: 1;
-  background: #fff;
+  background: #f9e6ff; /* very light purple */
   padding: 15px;
   border-radius: 10px;
   text-align: center;
-  border: 1px solid #ddd;
+  border: 1px solid #d9a7ff;
 }
 
 .balance-card h3 {
   margin: 0;
-  color: #000;
+  color: #4a1a7c;
 }
 
 /* Deposit Section */
@@ -423,8 +466,10 @@ body, html {
   width: 100%;
   padding: 10px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid #c187f0;
   margin-top: 5px;
+  background: #f3e6ff;
+  color: #4a1a7c;
 }
 
 /* Payment Options */
@@ -435,18 +480,20 @@ body, html {
 }
 
 .payment-card {
-  background: #fff;
-  border: 1px solid #ddd;
+  background: #f9e6ff;
+  border: 1px solid #d9a7ff;
   padding: 15px;
   text-align: center;
   border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
+  color: #4a1a7c;
 }
 
 .payment-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  background: #d9a7ff;
 }
 
 /* Close button */
@@ -454,12 +501,16 @@ body, html {
   position: absolute;
   top: 10px;
   right: 10px;
-  background: red;
+  background: #8a39c0;
   border: none;
   color: white;
   padding: 8px 12px;
   border-radius: 6px;
   cursor: pointer;
+}
+
+.wallet-close-btn:hover {
+  background: #6c2a9b;
 }
 
 /* Mobile-friendly adjustments */
@@ -473,7 +524,7 @@ body, html {
   .hp-wallet-sidebar {
     width: 100%;
     border-right: none;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #c187f0;
   }
 
   .hp-wallet-content {
