@@ -4,14 +4,16 @@ html, body {
   padding: 0;
   height: 100%;
   width: 100%;
-  background: #1c0f66; /* full page background */
+  background: #1c1c3a; /* full page background */
   font-family: Arial, sans-serif;
+  overflow-x: hidden;
 }
 
+/* Main board background */
 .board-bg {
-  background: linear-gradient(135deg, #1c0f66, #2a1075); /* subtle gradient */
+  background: #1c1c3a; /* full board background */
   border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); /* stronger shadow for depth */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
   padding: 25px;
   text-align: center;
   width: 100%;
@@ -21,45 +23,41 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  transition: background 0.3s ease; /* smooth effect if hovered */
 }
 
+/* Optional overlay for subtle depth */
 .board-bg::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(28, 15, 102, 0.9); /* semi-transparent overlay for depth */
+  background: rgba(28, 28, 58, 0.9); /* semi-transparent overlay */
   border-radius: 12px;
   z-index: 0;
 }
 
+/* Board content container */
 .board-content {
   position: relative;
   z-index: 1;
   width: 100%;
 }
 
+/* Board inner container */
 .board-container {
   max-width: 450px;
-  background: linear-gradient(145deg, #1c0f66, #270f74); /* subtle container gradient */
+  background: #1c1c3a; /* container background */
   border-radius: 15px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
   padding: 20px;
   text-align: center;
   width: 100%;
   color: #fff;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Hover effect for container */
-.board-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-}
-
+/* Wallet bar */
 .wallet-bar {
   width: 100%;
-  background: linear-gradient(120deg, #1c0f66, #270f74);
+  background: #1c1c3a; /* wallet bar background */
   color: #fff;
   padding: 10px 15px;
   font-size: 14px;
@@ -69,16 +67,45 @@ html, body {
   box-sizing: border-box;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  transition: background 0.3s ease;
 }
 
-/* Optional: subtle hover effect for wallet bar */
-.wallet-bar:hover {
-  background: linear-gradient(120deg, #270f74, #1c0f66);
+/* Stake header */
+.hp-stake-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 10px;
+  font-weight: bold;
+  font-size: 13px;
+  color: #00bfff;
+  margin-top: 20px; /* gap below fixed header */
 }
 
-/* Optional: make all child elements inherit subtle background transparency */
+/* Number buttons / cartela cells */
+.number-button {
+  width: 40px;
+  height: 40px;
+  margin: 3px;
+  border-radius: 8px;
+  background: #1c1c3a; /* match full board background */
+  color: #fff;
+  font-weight: bold;
+  border: 2px solid #00bfff;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.number-button:hover {
+  background: #2a2a5a; /* slightly lighter on hover */
+  transform: translateY(-2px);
+}
+
+.number-button.selected {
+  background: #00bfff; /* highlight selected numbers */
+  color: #1c1c3a;
+}
+
+/* Ensure all children inherit the dark theme */
 .board-bg * {
   background: inherit;
-  transition: background 0.3s ease;
+  transition: background 0.2s ease;
 }
