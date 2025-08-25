@@ -173,7 +173,7 @@ const generateCard = () => {
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #82007eff, #ba5acdff)",
+         background: "#047a8f", // solid color
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-start",
