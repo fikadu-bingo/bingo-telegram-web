@@ -190,60 +190,53 @@ const generateCard = () => {
 
    <div className="board-container">
        
-  
+   <h4 style={{ margin: "10px 0" }}>Select a Lucky Ticket Number</h4>
 
-        <h4 style={{ margin: "10px 0" }}>Select a Lucky Ticket Number</h4>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(8, 1fr)",
-            gap: "6px",
-            margin: "10px 0",
-            background: "rgba(0,0,0,0.3)",
-            padding: "15px",
-            borderRadius: "12px",
-            justifyContent: "center"
-          }}
-        >
-         {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => {
+<div
+  style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(10, 1fr)", // 10 columns
+    gap: "6px",
+    margin: "10px 0",
+    borderRadius: "12px",
+    justifyContent: "center",
+    width: "100%",
+  }}
+>
+  {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => {
     const { isSelected, selectedBy } = isNumberSelected(num);
     const currentUserId = userIdRef.current || "anonymous";
     const isCurrentUserSelected = selectedBy.includes(currentUserId);
 
     return (
-     <button
-  key={num}
-  onClick={() => handleNumberClick(num)}
-  disabled={isSelected && !isCurrentUserSelected}
-  style={{
-    padding: "8px",
-    background: isCurrentUserSelected
-      ? "#065f6f"        // slightly darker than background for selected
-      : isSelected
-      ? "#065f6f"        // slightly darker for already selected
-      : "#047a8f",       // default matches the board background
-    color: "#fff",        // bold white text
-    fontWeight: "bold",   // make text bold
-    border: "1px solid #025a63", // subtle border to separate buttons
-    borderRadius: "6px",
-    fontSize: "12px",
-    cursor:
-      isSelected && !isCurrentUserSelected
-        ? "not-allowed"
-        : "pointer",
-    transition: "all 0.2s ease-in-out",
-  }}
-  title={
-    isSelected
-      ? selectedBy.length > 1
-        ? "Selected by multiple players"
-        : "Selected by another player"
-      : "Click to select"
-  }
->
-  {num}
-</button>
+      <button
+        key={num}
+        onClick={() => handleNumberClick(num)}
+        disabled={isSelected && !isCurrentUserSelected}
+        style={{
+          padding: "12px",                // bigger button
+          background: "#047a8f",          // matches board background
+          color: "#fff",                  // white text
+          fontWeight: "bold",             // bold
+          fontSize: "16px",               // bigger text
+          border: "1px solid #025a63",   // subtle border
+          borderRadius: "6px",
+          cursor:
+            isSelected && !isCurrentUserSelected
+              ? "not-allowed"
+              : "pointer",
+          transition: "all 0.2s ease-in-out",
+        }}
+        title={
+          isSelected
+            ? selectedBy.length > 1
+              ? "Selected by multiple players"
+              : "Selected by another player"
+            : "Click to select"
+        }
+      >
+        {num}
+      </button>
     );
   })}
 </div>
