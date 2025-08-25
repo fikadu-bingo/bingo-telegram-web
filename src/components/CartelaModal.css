@@ -58,7 +58,7 @@
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
   gap: 4px;
-  width: 100%;
+  width: 200%;
   height: calc(100% - 40px); /* subtract header */
   padding: 4px;
   box-sizing: border-box;
