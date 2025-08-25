@@ -1,122 +1,87 @@
-/* =================== Full Page Reset =================== */
-html, body, #root {
-  margin: 0;
-  padding: 0;
-  width: 100%;
+/* Page background */
+.bb-page {
   min-height: 100vh;
-  background-color: #1c1c3a; /* full browser dark background */
-  font-family: Arial, sans-serif;
-  overflow-x: hidden;
-  color: #fff;
-}
-
-/* =================== Fixed Header =================== */
-.hp-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 60px;
-  background-color: #1c1c3a; /* dark header */
-  z-index: 1000;
+  background: #1c1c3a;   /* dark theme */
+  color: white;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  padding: 0 16px;
-  box-sizing: border-box;
-  color: #fff;
-  border-bottom: 1px solid #2a2a5a; /* subtle separation */
-}
-
-/* =================== Board Background =================== */
-.board-bg {
-  margin-top: 60px; /* space below header */
-  background-color: #1c1c3a;
-  min-height: calc(100vh - 60px); /* full height minus header */
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  position: relative;
-  overflow: hidden;
-  padding: 25px;
-}
-
-/* Optional overlay for depth */
-.board-bg::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(28, 28, 58, 1);
-  z-index: 0;
-}
-
-/* =================== Board Container =================== */
-.board-container {
-  max-width: 450px;
-  width: 100%;
-  background-color: #1c1c3a;
   padding: 20px;
-  border-radius: 0;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-  text-align: center;
-  position: relative;
-  z-index: 1;
 }
 
-/* =================== Wallet Bar =================== */
-.wallet-bar {
+/* Wallet info bar */
+.bb-wallet-bar {
+  display: flex;
+  justify-content: space-between;
   width: 100%;
-  background-color: #1c1c3a;
-  color: #fff;
+  max-width: 500px;
+  background: #2a2a58;
   padding: 10px 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
   font-size: 14px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-sizing: border-box;
-  border-radius: 0;
-  margin-bottom: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
-/* =================== Stake Header =================== */
-.hp-stake-header {
-  display: flex;
-  justify-content: space-between;
-  padding: 5px 10px;
-  font-weight: bold;
-  font-size: 13px;
-  color: #00bfff;
-  margin-top: 20px; /* gap below header */
+/* Main board container */
+.bb-board-container {
+  width: 100%;
+  max-width: 500px;
+  background: #2a2a58;
+  padding: 15px;
+  border-radius: 12px;
+  text-align: center;
 }
 
-/* =================== Number Buttons / Cartela =================== */
-.number-button {
-  width: 40px;
-  height: 40px;
-  margin: 3px;
-  border-radius: 8px;
-  background-color: #1c1c3a !important; /* force dark */
-  color: #fff !important;
+.bb-board-container h4 {
+  margin: 10px 0 15px;
+}
+
+/* Numbers grid */
+.bb-numbers {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 6px;
+}
+
+/* Number buttons */
+.bb-num {
+  width: 100%;
+  aspect-ratio: 1 / 1;   /* square */
+  border: 1px solid #025a63;
+  border-radius: 6px;
+  background: #047a8f;
+  color: #fff;
   font-weight: bold;
-  border: 2px solid #00bfff;
+  font-size: 15px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
+  transition: all 0.2s ease-in-out;
 }
 
-.number-button:hover {
-  background-color: #2a2a5a;
-  transform: translateY(-2px);
+.bb-num:disabled {
+  background: #555;
+  cursor: not-allowed;
 }
 
-.number-button.selected {
-  background-color: #00bfff !important;
-  color: #1c1c3a !important;
+.bb-num-me {
+  background: #4caf50 !important;
 }
 
-/* =================== Ensure All Children Inherit Dark Theme =================== */
-.board-bg * {
-  background: inherit !important;
-  color: inherit !important;
-  transition: background 0.2s ease, color 0.2s ease;
+/* Start button */
+.bb-start-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.bb-start-btn:disabled {
+  background: #888;
+  cursor: not-allowed;
 }
