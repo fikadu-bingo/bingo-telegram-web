@@ -181,27 +181,15 @@ const generateCard = () => {
         padding: "20px",
       }}
     >
-      <div
-        style={{
-          maxWidth: "450px",
-          backgroundImage: `url(${bg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          borderRadius: "15px",
-          boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
-          padding: "20px",
-          textAlign: "center",
-          fontFamily: "Arial, sans-serif",
-          width: "100%",
-          color: "#fff",
-        }}
-      >
-        <img
-          src={logo}
-          alt="Logo"
-          style={{ width: "120px", marginBottom: "10px" }}
-        />
+  <div className="wallet-bar">
+    <div>Wallet: Br{(wallet - stake).toFixed(2)}</div>
+    <div>Game ID: {gameId}</div>
+    <div>Stake: Br{stake}</div>
+  </div>
 
+
+   <div className="board-container">
+       
         <div
           style={{
             display: "flex",
@@ -215,9 +203,7 @@ const generateCard = () => {
             marginBottom: "15px",
           }}
         >
-          <div>Wallet: Br{(wallet - stake).toFixed(2)}</div>
-          <div>Game ID: {gameId}</div>
-          <div>Stake: Br{stake}</div>
+         
         </div>
 
         <h4 style={{ margin: "10px 0" }}>Select a Lucky Ticket Number</h4>
