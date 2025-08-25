@@ -12,16 +12,16 @@
 }
 
 .cartela-modal {
+  position: relative;
   background: #cbc7c7;
   border-radius: 12px;
   width: 90vmin;
   height: 90vmin;
   max-width: 500px;
   max-height: 500px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
   display: flex;
   flex-direction: column;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-  box-sizing: border-box;
   overflow: hidden;
 }
 
@@ -47,20 +47,24 @@
   color: #fff;
 }
 
-/* Grid that fills modal perfectly */
+/* Grid filling remaining modal space */
 .cartela-grid {
+  position: absolute;
+  top: 40px; /* header height */
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);   /* 5 columns */
-  grid-template-rows: repeat(5, 1fr);      /* 5 equal rows */
-  flex: 1;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
   gap: 4px;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 40px); /* subtract header */
+  padding: 4px;
   box-sizing: border-box;
 }
 
-
-/* Cells (evenly fill entire modal) */
+/* Cells filling grid cells */
 .cartela-cell {
   display: flex;
   justify-content: center;
@@ -71,8 +75,8 @@
   background: #0c1d2e;
   border: 2px solid #ffcc00;
   border-radius: 6px;
-  aspect-ratio: 1/1;   /* ensures square cells */
-  /* remove width:100%; height:100%; */
+  width: 100%;
+  height: 100%;
 }
 
 /* Free star */
@@ -80,4 +84,18 @@
   color: red;
   font-size: 24px;
   font-weight: bold;
+}
+
+/* Small screens adjustment */
+@media (max-width: 400px) {
+  .cartela-modal {
+    width: 95vmin;
+    height: 95vmin;
+  }
+  .cartela-cell {
+    font-size: 16px;
+  }
+  .free-star {
+    font-size: 20px;
+  }
 }
