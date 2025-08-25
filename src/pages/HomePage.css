@@ -26,7 +26,7 @@ body, html {
   display: flex;
   align-items: center;            /* vertical center */
   justify-content: space-between; /* menu left, balance right */
-  height: 65px;                  /* increased header height */
+  height: 60px;                  /* increased header height */
   padding: 0 16px;                /* left/right spacing */
   position: relative;
   background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%); /* beautiful gradient */
