@@ -37,3 +37,24 @@ html, body {
   z-index: 1;
   width: 100%;
 }
+.board-container {
+  max-width: 450px;
+  background: #047a8f; /* solid background */
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  padding: 20px;
+  text-align: center;
+  width: 100%;
+  color: #fff;
+}
+.wallet-bar {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5); /* semi-transparent black */
+  color: #fff;
+  padding: 10px 15px;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+}
