@@ -404,35 +404,34 @@ function HomePage() {
         <button className="wallet-btn">🔄 Transfer</button>
         <button className="wallet-btn">📜 History</button>
       </div>
+{/* Main content */}
+<div className="hp-wallet-content">
+  {/* Balances */}
+  <div className="wallet-balances">
+    <div className="balance-card">
+      <span className="balance-label">Main Balance</span>
+      <h3 className="balance-value">ETB {balance.toFixed(2)} Birr</h3>
+    </div>
+    <div className="balance-card">
+      <span className="balance-label">Bonus Balance</span>
+      <h3 className="balance-value">ETB 0.00 Birr</h3>
+    </div>
+  </div>
 
-      {/* Main content */}
-      <div className="hp-wallet-content">
-        {/* Balances */}
-        <div className="wallet-balances">
-          <div className="balance-card">
-            <p>Main Balance</p>
-            <h3>ETB {balance.toFixed(2)} Birr</h3>
-          </div>
-          <div className="balance-card">
-            <p>Bonus Balance</p>
-            <h3>ETB 0.00 Birr</h3>
-          </div>
-        </div>
+  {/* Deposit Input */}
+  <div className="deposit-section">
+    <label className="deposit-label">Deposit Amount</label>
+    <input type="number" placeholder="Enter amount" />
+  </div>
 
-        {/* Deposit Input */}
-        <div className="deposit-section">
-          <label>Deposit Amount</label>
-          <input type="number" placeholder="Enter amount" />
-        </div>
-
-        {/* Payment Options */}
-        <div className="payment-options">
-          <div className="payment-card">⭐ Telebirr (Better Fee)</div>
-          <div className="payment-card">Telebirr (Normal)</div>
-          <div className="payment-card">⭐ CBE Birr (Better Fee)</div>
-          <div className="payment-card">CBE Birr (Normal)</div>
-        </div>
-      </div>
+  {/* Payment Options */}
+  <div className="payment-options">
+    <div className="payment-card">⭐️ Telebirr (Better Fee)</div>
+    <div className="payment-card">Telebirr (Normal)</div>
+    <div className="payment-card">⭐️ CBE Birr (Better Fee)</div>
+    <div className="payment-card">CBE Birr (Normal)</div>
+  </div>
+</div>
 
       {/* Close */}
       <button
