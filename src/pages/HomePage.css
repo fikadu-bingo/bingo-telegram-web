@@ -24,14 +24,26 @@ body, html {
 
 .hp-header {
   display: flex;
-  align-items: center;            /* vertical center */
-  justify-content: space-between; /* menu left, balance right */
-  height: 60px;                  /* increased header height */
-  padding: 0 16px;                /* left/right spacing */
-  position: relative;
-  background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%); /* beautiful gradient */
-  border-radius: 12px;            /* rounded edges for header */
+  align-items: center;            
+  justify-content: space-between; 
+  height: 60px;                  
+  padding: 0 16px;                
+  position: fixed;    /* stay at top */
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;        /* full screen */
+  background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;      /* keep above all content */
+  box-sizing: border-box;
+  border-radius: 0;   /* touches left & right edges */
+}
+
+body {
+  margin: 0;
+  padding-top: 60px;  /* prevent overlap with header */
+  overflow-x: hidden; /* no horizontal scroll */
 }
 
 .hp-menu-btn {
