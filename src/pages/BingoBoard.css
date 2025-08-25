@@ -9,9 +9,9 @@ html, body {
 }
 
 .board-bg {
-  background: #1c0f66; /* solid background color */
+  background: linear-gradient(135deg, #1c0f66, #2a1075); /* subtle gradient */
   border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); /* stronger shadow for depth */
   padding: 25px;
   text-align: center;
   width: 100%;
@@ -21,13 +21,14 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  transition: background 0.3s ease; /* smooth effect if hovered */
 }
 
 .board-bg::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0);
+  background: rgba(28, 15, 102, 0.9); /* semi-transparent overlay for depth */
   border-radius: 12px;
   z-index: 0;
 }
@@ -40,18 +41,25 @@ html, body {
 
 .board-container {
   max-width: 450px;
-  background: #1c0f66; /* solid background */
+  background: linear-gradient(145deg, #1c0f66, #270f74); /* subtle container gradient */
   border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   padding: 20px;
   text-align: center;
   width: 100%;
   color: #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover effect for container */
+.board-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
 .wallet-bar {
   width: 100%;
-  background: rgba(0, 0, 0, 0.5); /* semi-transparent black */
+  background: linear-gradient(120deg, #1c0f66, #270f74);
   color: #fff;
   padding: 10px 15px;
   font-size: 14px;
@@ -59,4 +67,18 @@ html, body {
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: background 0.3s ease;
+}
+
+/* Optional: subtle hover effect for wallet bar */
+.wallet-bar:hover {
+  background: linear-gradient(120deg, #270f74, #1c0f66);
+}
+
+/* Optional: make all child elements inherit subtle background transparency */
+.board-bg * {
+  background: inherit;
+  transition: background 0.3s ease;
 }
