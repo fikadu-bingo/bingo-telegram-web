@@ -1,37 +1,44 @@
-/* Reset and full viewport coverage */
-html, body {
+/* =================== Full Page Reset =================== */
+html, body, #root {
   margin: 0;
   padding: 0;
-  height: 100%;
   width: 100%;
-  background: #1c1c3a; /* full viewport background */
+  min-height: 100vh;
+  background-color: #1c1c3a; /* full browser dark background */
   font-family: Arial, sans-serif;
   overflow-x: hidden;
-}
-
-/* Fixed header */
-.hp-header {
-  background: #1c1c3a; /* match dark theme */
-  width: 100vw;
-  left: 0;
-  right: 0;
-  top: 0;
-  position: fixed;
-  z-index: 1000;
   color: #fff;
 }
 
-/* Main board background container */
+/* =================== Fixed Header =================== */
+.hp-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 60px;
+  background-color: #1c1c3a; /* dark header */
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  box-sizing: border-box;
+  color: #fff;
+  border-bottom: 1px solid #2a2a5a; /* subtle separation */
+}
+
+/* =================== Board Background =================== */
 .board-bg {
-  background: #1c1c3a; /* full board background */
-  border-radius: 0; /* remove rounded edges to fully cover */
-  padding-top: 80px; /* space below fixed header */
-  min-height: 100vh;
+  margin-top: 60px; /* space below header */
+  background-color: #1c1c3a;
+  min-height: calc(100vh - 60px); /* full height minus header */
   display: flex;
   justify-content: center;
   align-items: flex-start;
   position: relative;
   overflow: hidden;
+  padding: 25px;
 }
 
 /* Optional overlay for depth */
@@ -39,62 +46,77 @@ html, body {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(28, 28, 58, 1); /* fully opaque */
+  background: rgba(28, 28, 58, 1);
   z-index: 0;
 }
 
-/* Board container */
+/* =================== Board Container =================== */
 .board-container {
   max-width: 450px;
   width: 100%;
-  background: #1c1c3a;
+  background-color: #1c1c3a;
   padding: 20px;
-  border-radius: 0; /* remove rounding */
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  color: #fff;
+  border-radius: 0;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
   text-align: center;
-  z-index: 1;
   position: relative;
+  z-index: 1;
 }
 
-/* Wallet bar */
+/* =================== Wallet Bar =================== */
 .wallet-bar {
-  background: #1c1c3a;
+  width: 100%;
+  background-color: #1c1c3a;
   color: #fff;
   padding: 10px 15px;
-  border-radius: 0;
-  width: 100%;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   box-sizing: border-box;
+  border-radius: 0;
   margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
+/* =================== Stake Header =================== */
+.hp-stake-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 10px;
+  font-weight: bold;
+  font-size: 13px;
+  color: #00bfff;
+  margin-top: 20px; /* gap below header */
+}
 
-/* Number buttons / cartela cells */
+/* =================== Number Buttons / Cartela =================== */
 .number-button {
   width: 40px;
   height: 40px;
   margin: 3px;
   border-radius: 8px;
-  background: #1c1c3a; /* dark theme */
-  color: #fff;
+  background-color: #1c1c3a !important; /* force dark */
+  color: #fff !important;
   font-weight: bold;
-  border: 2px solid #1c1c3a;
+  border: 2px solid #00bfff;
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
 }
 
 .number-button:hover {
-  background: #2a2a5a; /* hover effect */
+  background-color: #2a2a5a;
   transform: translateY(-2px);
 }
 
 .number-button.selected {
-  background: #ff8c00;
-  color: #1c1c3a;
+  background-color: #00bfff !important;
+  color: #1c1c3a !important;
 }
 
-/* Ensure all child elements inherit dark background */
+/* =================== Ensure All Children Inherit Dark Theme =================== */
 .board-bg * {
   background: inherit !important;
-  color: #1c1c3a;
+  color: inherit !important;
+  transition: background 0.2s ease, color 0.2s ease;
 }
