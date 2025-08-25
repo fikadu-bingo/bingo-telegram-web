@@ -28,22 +28,23 @@ body, html {
   justify-content: space-between; 
   height: 60px;                  
   padding: 0 16px;                
-  position: fixed;    /* stay at top */
+  position: fixed;     /* always stay at top */
   top: 0;
   left: 0;
   right: 0;
-  width: 100%;        /* full screen */
+  width: 100vw;        /* force full viewport width */
   background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  z-index: 1000;      /* keep above all content */
+  z-index: 1000;       /* on top of everything */
   box-sizing: border-box;
-  border-radius: 0;   /* touches left & right edges */
+  border-radius: 0;    /* touches edges */
 }
 
-body {
+html, body {
   margin: 0;
-  padding-top: 60px;  /* prevent overlap with header */
-  overflow-x: hidden; /* no horizontal scroll */
+  padding: 0;
+  padding-top: 60px;   /* push content below header */
+  overflow-x: hidden;  /* block horizontal scroll */
 }
 
 .hp-menu-btn {
