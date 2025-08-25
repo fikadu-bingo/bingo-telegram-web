@@ -1,10 +1,19 @@
-.board-bg {
-  background: url("../assets/bg.jpg") no-repeat center center / cover;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  padding: 20px;
-  text-align: center;
+/* Reset body and html to take full viewport */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background: #047a8f; /* full page background */
   font-family: Arial, sans-serif;
+}
+
+.board-bg {
+  background: #047a8f; /* solid background color */
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  padding: 25px;
+  text-align: center;
   width: 100%;
   min-height: 100vh;
   position: relative;
@@ -18,8 +27,8 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4); /* overlay for readability */
-  border-radius: 15px;
+  background: rgba(0, 0, 0, 0);
+  border-radius: 12px;
   z-index: 0;
 }
 
