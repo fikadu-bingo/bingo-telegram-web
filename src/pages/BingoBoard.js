@@ -212,37 +212,38 @@ const generateCard = () => {
     const isCurrentUserSelected = selectedBy.includes(currentUserId);
 
     return (
-      <button
-        key={num}
-        onClick={() => handleNumberClick(num)}
-        disabled={isSelected && !isCurrentUserSelected}
-        style={{
-          padding: "8px",
-          background: isCurrentUserSelected
-            ? "#f7ad2eff"
-            : isSelected
-            ? "#FF5722"
-            : "#333",
-          color: "white",
-          border: "none",
-          borderRadius: "6px",
-          fontSize: "12px",
-          cursor:
-            isSelected && !isCurrentUserSelected
-              ? "not-allowed"
-              : "pointer",
-          transition: "all 0.2s ease-in-out",
-        }}
-        title={
-          isSelected
-            ? selectedBy.length > 1
-              ? "Selected by multiple players"
-              : "Selected by another player"
-            : "Click to select"
-        }
-      >
-        {num}
-      </button>
+     <button
+  key={num}
+  onClick={() => handleNumberClick(num)}
+  disabled={isSelected && !isCurrentUserSelected}
+  style={{
+    padding: "8px",
+    background: isCurrentUserSelected
+      ? "#065f6f"        // slightly darker than background for selected
+      : isSelected
+      ? "#065f6f"        // slightly darker for already selected
+      : "#047a8f",       // default matches the board background
+    color: "#fff",        // bold white text
+    fontWeight: "bold",   // make text bold
+    border: "1px solid #025a63", // subtle border to separate buttons
+    borderRadius: "6px",
+    fontSize: "12px",
+    cursor:
+      isSelected && !isCurrentUserSelected
+        ? "not-allowed"
+        : "pointer",
+    transition: "all 0.2s ease-in-out",
+  }}
+  title={
+    isSelected
+      ? selectedBy.length > 1
+        ? "Selected by multiple players"
+        : "Selected by another player"
+      : "Click to select"
+  }
+>
+  {num}
+</button>
     );
   })}
 </div>
