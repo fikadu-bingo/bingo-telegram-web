@@ -68,16 +68,6 @@ html, body {
   margin-bottom: 10px;
 }
 
-/* Stake header */
-.hp-stake-header {
-  display: flex;
-  justify-content: space-between;
-  padding: 5px 10px;
-  font-weight: bold;
-  font-size: 13px;
-  color: #00bfff;
-  margin-top: 20px; 
-}
 
 /* Number buttons / cartela cells */
 .number-button {
@@ -99,7 +89,7 @@ html, body {
 }
 
 .number-button.selected {
-  background: #00bfff;
+  background: #ff8c00;
   color: #1c1c3a;
 }
 
