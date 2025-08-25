@@ -4,12 +4,12 @@ html, body {
   padding: 0;
   height: 100%;
   width: 100%;
-  background: #047a8f; /* full page background */
+  background: #1c0f66; /* full page background */
   font-family: Arial, sans-serif;
 }
 
 .board-bg {
-  background: #047a8f; /* solid background color */
+  background: #1c0f66; /* solid background color */
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   padding: 25px;
@@ -37,9 +37,10 @@ html, body {
   z-index: 1;
   width: 100%;
 }
+
 .board-container {
   max-width: 450px;
-  background: #047a8f; /* solid background */
+  background: #1c0f66; /* solid background */
   border-radius: 15px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   padding: 20px;
@@ -47,6 +48,7 @@ html, body {
   width: 100%;
   color: #fff;
 }
+
 .wallet-bar {
   width: 100%;
   background: rgba(0, 0, 0, 0.5); /* semi-transparent black */
