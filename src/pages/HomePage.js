@@ -310,7 +310,15 @@ function HomePage() {
             👛 Wallet
           </button>
 
-          <button className="hp-side-btn" onClick={closeSidebar}>👥 Referral</button>
+          <button
+  className="hp-side-btn"
+  onClick={() => {
+    closeSidebar();
+    setShowPromoModal(true); // open promo code modal
+  }}
+>
+  🎟 Promo Code
+</button>
           <button className="hp-side-btn" onClick={closeSidebar}>📩 Contact</button>
 
           <div className="hp-side-welcome">Welcome back 👋 {firstName}</div>
@@ -399,15 +407,22 @@ function HomePage() {
       {/* Actions */}
       <div className="hp-actions">
        
-        <button className="hp-action-btn" onClick={fetchUserData}>
-          🔄 Refresh
-        </button>
-       
+       <button
+  className="hp-action-btn"
+  style={{
+    padding: "6px 10px",     // smaller padding
+    fontSize: "14px",        // slightly smaller text
+    display: "flex",
+    alignItems: "center",
+    gap: "4px",              // small gap between icon and text
+  }}
+  onClick={() => window.location.reload()}
+>
+  🔄 Refresh
+</button>
       </div>
 
-      <p className="hp-promo-link" onClick={() => setShowPromoModal(true)}>
-        Have a promo code? Click here
-      </p>{/* Modals */}
+     {/* Modals */}
 {showWalletModal && (
   <div className="hp-overlay">
     <div className="hp-wallet-large">
