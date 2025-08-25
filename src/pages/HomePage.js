@@ -36,6 +36,7 @@ function HomePage() {
   const [winAmount, setWinAmount] = useState(null);
 
   // ===== UI modal states
+  const [showWalletModal, setShowWalletModal] = useState(false);
   const [showModal, setShowModal] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCashOutSuccess, setShowCashOutSuccess] = useState(false);
@@ -278,7 +279,7 @@ function HomePage() {
 </div>
       {/* Welcome line below logo */}
       <div className="hp-welcome-line">
-        👋 Welcome, {firstName}. 
+        👋 Welcome, {firstName}.
       </div>{/* Sidebar + Backdrop */}
       {isSidebarOpen && <div className="hp-backdrop" onClick={closeSidebar} />}
       <aside className={`hp-sidebar ${isSidebarOpen ? "open" : ""}`}>
@@ -289,10 +290,22 @@ function HomePage() {
           </button>
         </div>
 
-        <div className="hp-side-items">
+      <div className="hp-side-items">
           <button className="hp-side-btn" onClick={closeSidebar}>🎮 Games</button>
           <button className="hp-side-btn" onClick={closeSidebar}>🏆 Leaderboard</button>
           <button className="hp-side-btn" onClick={closeSidebar}>❓ How to Play</button>
+
+          {/* 👛 Wallet button inserted here */}
+          <button
+            className="hp-side-btn"
+            onClick={() => {
+              closeSidebar();
+              setShowWalletModal(true); // <-- you'll define this state
+            }}
+          >
+            👛 Wallet
+          </button>
+
           <button className="hp-side-btn" onClick={closeSidebar}>👥 Referral</button>
           <button className="hp-side-btn" onClick={closeSidebar}>📩 Contact</button>
 
@@ -381,6 +394,56 @@ function HomePage() {
       <p className="hp-promo-link" onClick={() => setShowPromoModal(true)}>
         Have a promo code? Click here
       </p>{/* Modals */}
+{showWalletModal && (
+  <div className="hp-overlay">
+    <div className="hp-wallet-large">
+      {/* Sidebar */}
+      <div className="hp-wallet-sidebar">
+        <button className="wallet-btn active">💳 Deposit</button>
+        <button className="wallet-btn">💸 Withdraw</button>
+        <button className="wallet-btn">🔄 Transfer</button>
+        <button className="wallet-btn">📜 History</button>
+      </div>
+
+      {/* Main content */}
+      <div className="hp-wallet-content">
+        {/* Balances */}
+        <div className="wallet-balances">
+          <div className="balance-card">
+            <p>Main Balance</p>
+            <h3>ETB {balance.toFixed(2)} Birr</h3>
+          </div>
+          <div className="balance-card">
+            <p>Bonus Balance</p>
+            <h3>ETB 0.00 Birr</h3>
+          </div>
+        </div>
+
+        {/* Deposit Input */}
+        <div className="deposit-section">
+          <label>Deposit Amount</label>
+          <input type="number" placeholder="Enter amount" />
+        </div>
+
+        {/* Payment Options */}
+        <div className="payment-options">
+          <div className="payment-card">⭐ Telebirr (Better Fee)</div>
+          <div className="payment-card">Telebirr (Normal)</div>
+          <div className="payment-card">⭐ CBE Birr (Better Fee)</div>
+          <div className="payment-card">CBE Birr (Normal)</div>
+        </div>
+      </div>
+
+      {/* Close */}
+      <button
+        onClick={() => setShowWalletModal(false)}
+        className="wallet-close-btn"
+      >
+        ✖
+      </button>
+    </div>
+  </div>
+)}
       {showModal === "stakeWarning" && (
         <div className="hp-overlay">
           <div className="hp-alert">
@@ -434,6 +497,5 @@ function HomePage() {
     </div>
   );
 }
-
 
 export default HomePage;
