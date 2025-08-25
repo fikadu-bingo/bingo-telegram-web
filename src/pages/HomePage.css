@@ -532,3 +532,12 @@ body, html {
     padding: 15px;
   }
 }
+/* Labels for balances and deposit */
+.balance-card label,
+.deposit-section label {
+  color: #4a1a7c; /* dark purple */
+  font-weight: bold; /* optional for emphasis */
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
