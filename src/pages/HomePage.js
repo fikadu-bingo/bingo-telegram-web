@@ -339,7 +339,7 @@ function HomePage() {
         <div>Join</div>
       </div>
 
-      {/* Stake rows */}
+     
     {/* Stake rows */}
 {stakes.map((amount) => {
   const users = selectedStake === amount ? livePlayerCount : 0;
@@ -366,7 +366,7 @@ function HomePage() {
     handleStakeSelect(amount);
 
     // Navigate to BingoBoard
-    navigate("/bingoboard", { state: { balance: newBalance, stake: amount } });
+    navigate("/bingo", { state: { balance: newBalance, stake: amount } });
   };
 
   return (
