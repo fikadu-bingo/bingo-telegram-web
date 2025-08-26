@@ -1,25 +1,25 @@
 import React from "react";
-import "./SampleCartelaModal.css";
+import "./CartelaModal.css";
 
-const SampleCartelaModal = ({ isOpen, onClose, cartelaData }) => {
+const CartelaModal = ({ isOpen, onClose, cartelaData }) => {
   if (!isOpen) return null;
 
   const columnHeaders = ["B", "I", "N", "G", "O"];
 
   return (
-    <div className="sample-overlay" onClick={onClose}>
-      <div className="sample-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="cartela-overlay" onClick={onClose}>
+      <div className="cartela-modal" onClick={(e) => e.stopPropagation()}>
         {/* Column header */}
-        <div className="sample-column-header">
+        <div className="cartela-column-header">
           {columnHeaders.map((col, idx) => (
-            <div key={idx} className="sample-column-cell">{col}</div>
+            <div key={idx} className="cartela-column-cell">{col}</div>
           ))}
         </div>
 
         {/* Cartela numbers */}
-        <div className="sample-grid">
+        <div className="cartela-grid">
           {cartelaData.map((number, idx) => (
-            <div key={idx} className="sample-cell">
+            <div key={idx} className="cartela-cell">
               {number !== 0 ? number : ""}
             </div>
           ))}
@@ -29,4 +29,4 @@ const SampleCartelaModal = ({ isOpen, onClose, cartelaData }) => {
   );
 };
 
-export default SampleCartelaModal;
+export default CartelaModal;
