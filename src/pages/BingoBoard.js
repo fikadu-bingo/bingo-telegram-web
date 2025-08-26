@@ -49,23 +49,30 @@ function BingoBoard() {
 
     socketRef.current.emit("joinGame", { userId, stake, ticket: [] });
 
-    socketRef.current.on("ticketNumbersUpdated", (tickets) => {
-      setAllTicketSelections(tickets);
-      const myNumbers = tickets[userIdRef.current] ?? [];
-      if (myNumbers.length > 0) {
-        const myNumber = myNumbers[0];
-        if (myNumber !== selectedNumber) {
-          setSelectedNumber(myNumber);
-          setCartelaId(myNumber);
-          const card = generateCard();
-          setBingoCard(card);
-        }
-      } else {
-        setSelectedNumber(null);
-        setCartelaId("");
-        setBingoCard([]);
+  socketRef.current.on("ticketNumbersUpdated", (tickets) => {
+  setAllTicketSelections(tickets);
+  const myNumbers = tickets[userIdRef.current] ?? [];
+
+  if (myNumbers.length > 0) {
+    const myNumber = myNumbers[0];
+
+    // Only regenerate card if the ticket number changed
+    if (myNumber !== selectedNumber) {
+      setSelectedNumber(myNumber);
+      setCartelaId(myNumber);
+
+      // Only generate card here if the user hasn't already generated it
+      if (!bingoCard || bingoCard.length === 0) {
+        const card = generateCard();
+        setBingoCard(card);
       }
-    });
+    }
+  } else {
+    setSelectedNumber(null);
+    setCartelaId("");
+    setBingoCard([]);
+  }
+});
 
     socketRef.current.on("ticketAssigned", ({ ticket }) => {
       console.log("Server assigned ticket:", ticket);
