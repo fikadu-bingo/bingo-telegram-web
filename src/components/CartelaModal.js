@@ -9,7 +9,7 @@ const CartelaModal = ({ isOpen, onClose, cartelaData, title }) => {
       <div className="cartela-modal-wrapper" onClick={(e) => e.stopPropagation()}>
         <div className="cartela-modal">
           {title && (
-            <div className="cartela-title">
+            <div className="cartela-titles">
               <span>{title}</span>
               <button className="cartela-close-btn" onClick={onClose}>
                 ×
