@@ -1,97 +1,74 @@
+/* Modal overlay covering full screen */
 .cartela-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  z-index: 1000;
 }
 
+/* Modal container */
 .cartela-modal {
-  background: #cbc7c7;
+  background: #1c1c3a;
+  padding: 0;
   border-radius: 12px;
-  width: 90vmin;
-  max-width: 500px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-  padding: 0;
-  box-sizing: border-box;
+  width: auto;
+  max-width: 90%;
   overflow: hidden;
 }
 
-/* Header */
-.cartela-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* Cartela title bar */
+.cartela-title {
   width: 100%;
-  padding: 6px 12px;
-  font-weight: bold;
-  font-size: 18px;
+  background: linear-gradient(90deg, #ff4b4b, #ff8c42);
   color: #fff;
-  background-color: #0077b6;
-  border-radius: 12px 12px 0 0;
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+  padding: 8px 0;
+  position: relative;   /* for close button */
 }
 
-/* Close button */
-.delete-btn {
+/* Close button (X) */
+.cartela-close-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
   background: transparent;
   border: none;
-  cursor: pointer;
-  font-size: 20px;
   color: #fff;
+  font-size: 18px;
+  cursor: pointer;
 }
 
-/* Grid: square, fills modal width */
+/* Bingo card grid */
 .cartela-grid {
-  width: 100%;                  /* full modal width */
-  max-width: 90vmin;            /* same as modal width */
-  aspect-ratio: 1 / 1;          /* force square grid */
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(5, 1fr);
   gap: 4px;
-  padding: 4px;
-  box-sizing: border-box;
+  width: 100%;
+  background: #1c1c3a;
+  padding: 8px;
 }
 
-/* Cells: fill grid cells */
+/* Each cell */
 .cartela-cell {
+  background: #2c2c5a;
+  aspect-ratio: 1;
   display: flex;
   justify-content: center;
   align-items: center;
+  border-radius: 4px;
   font-weight: bold;
-  font-size: 20px;
   color: #fff;
-  background: #0c1d2e;
-  border: 2px solid #ffcc00;
-  border-radius: 6px;
-  width: 100%;
-  height: 100%;
-}
-
-/* Free star */
-.free-star {
-  color: red;
-  font-size: 24px;
-  font-weight: bold;
-}
-
-/* Small screens adjustment */
-@media (max-width: 400px) {
-  .cartela-grid {
-    max-width: 95vmin;
-  }
-  .cartela-cell {
-    font-size: 16px;
-  }
-  .free-star {
-    font-size: 20px;
-  }
+  font-size: 14px;
 }
