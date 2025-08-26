@@ -11,33 +11,9 @@
   z-index: 2000;
 }
 
-.cartela-modal {
-  background: #cbc7c7;
-  border-radius: 12px;
-  width: 90vmin;
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-  padding: 0;
-  box-sizing: border-box;
-  overflow: hidden;
-}
 
-/* Header */
-.cartela-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 6px 12px;
-  font-weight: bold;
-  font-size: 18px;
-  color: #fff;
-  background-color: #0077b6;
-  border-radius: 12px 12px 0 0;
-}
+
+
 
 /* Close button */
 .delete-btn {
@@ -47,21 +23,43 @@
   font-size: 20px;
   color: #fff;
 }
+.cartela-modal {
+  background: #cbc7c7;
+  border-radius: 12px;
+  width: 90vmin;           
+  height: 90vmin;          
+  max-width: 500px;
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 4px;            /* small padding around content */
+  box-sizing: border-box;
+}
 
-/* Grid: square, fills modal width */
+.cartela-header {
+  height: 12%;             /* proportion of modal height */
+  padding: 6px 12px;
+  margin-bottom: 4px;      /* small gap between header and grid */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  font-size: 18px;
+  color: #fff;
+  background-color: #0077b6;
+  border-radius: 12px 12px 0 0;
+  flex-shrink: 0;
+}
+
 .cartela-grid {
-  width: 100%;                  /* full modal width */
-  max-width: 90vmin;            /* same as modal width */
-  aspect-ratio: 1 / 1;          /* force square grid */
+  flex: 1;                  /* fills remaining space under header */
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
   gap: 4px;
-  padding: 4px;
-  box-sizing: border-box;
 }
 
-/* Cells: fill grid cells */
 .cartela-cell {
   display: flex;
   justify-content: center;
@@ -76,7 +74,6 @@
   height: 100%;
 }
 
-/* Free star */
 .free-star {
   color: red;
   font-size: 24px;
