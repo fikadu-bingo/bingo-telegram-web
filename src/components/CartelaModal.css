@@ -11,10 +11,15 @@
   z-index: 1000;
 }
 
+/* Wrapper to scope modal styles */
 .cartela-modal-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  max-width: 600px;  /* bigger modal */
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .cartela-modal {
@@ -24,8 +29,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: auto;
-  max-width: 90%;
+  width: 100%;
   overflow: hidden;
 }
 
@@ -34,9 +38,9 @@
   background: linear-gradient(90deg, #ff4b4b, #ff8c42);
   color: #fff;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 18px;   /* slightly bigger text */
   text-align: center;
-  height: 40px;
+  height: 50px;      /* taller title bar */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -47,34 +51,34 @@
 
 .cartela-close-btn {
   position: absolute;
-  right: 8px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   background: transparent;
   border: none;
   color: #fff;
-  font-size: 18px;
+  font-size: 22px;   /* bigger X */
   cursor: pointer;
 }
 
 .cartela-modal-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
+  gap: 6px;                  /* slightly bigger gap between cells */
   width: 100%;
   background: #1c1c3a;
-  padding: 8px;
+  padding: 12px;             /* more padding around grid */
   box-sizing: border-box;
 }
 
 .cartela-modal-cell {
   background: #2c2c5a;
-  aspect-ratio: 1;
+  aspect-ratio: 1;           /* keep cells square */
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 4px;
+  border-radius: 6px;
   font-weight: bold;
   color: #fff;
-  font-size: 14px;
+  font-size: 18px;           /* bigger numbers */
 }
