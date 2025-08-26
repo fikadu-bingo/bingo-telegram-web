@@ -14,7 +14,7 @@
 .cartela-modal {
   background: #cbc7c7;
   border-radius: 12px;
-  width: 90vmin;
+  width: 90vmin;           
   max-width: 500px;
   height: 90vmin;
   max-height: 500px;
@@ -22,7 +22,7 @@
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-  padding: 8px;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -34,10 +34,10 @@
   font-size: 18px;
   color: #fff;
   background-color: #0077b6;
-  border-radius: 12px 12px 0 0;
   padding: 6px 12px;
-  margin-bottom: 6px;   /* small gap between header and grid */
+  border-radius: 12px 12px 0 0;
   flex-shrink: 0;
+  margin-bottom: 6px;   /* small gap between header and grid */
 }
 
 .delete-btn {
@@ -48,14 +48,15 @@
   color: #fff;
 }
 
-/* Grid fills remaining modal space */
 .cartela-grid {
+  flex: 1;                  /* fills remaining height */
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
   gap: 4px;
-  width: 100%;
-  flex: 1;
+  width: 100%;              /* fills full modal width */
+  padding: 0 4px;           /* optional small padding inside grid */
+  box-sizing: border-box;
 }
 
 .cartela-cell {
@@ -69,7 +70,7 @@
   border: 2px solid #ffcc00;
   border-radius: 6px;
   width: 100%;
-  aspect-ratio: 1 / 1;  /* ensures perfect square cells */
+  aspect-ratio: 1 / 1;      /* perfect squares */
 }
 
 .free-star {
@@ -78,7 +79,7 @@
   font-weight: bold;
 }
 
-/* Responsive for small screens */
+/* Responsive */
 @media (max-width: 400px) {
   .cartela-modal {
     width: 95vmin;
