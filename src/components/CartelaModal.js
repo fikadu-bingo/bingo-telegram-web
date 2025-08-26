@@ -2,13 +2,14 @@ import React from "react";
 import "./CartelaModal.css";
 
 const CartelaModal = ({ isOpen, onClose, cartelaData }) => {
-  if (!isOpen) return null;
+  if (!isOpen) return null; // Only render when modal is open
 
-  const columnHeaders = ["B", "I", "N", "G", "O"];
+  const columnHeaders = ["B", "I", "N", "G", "O"]; // Colored header row
 
   return (
     <div className="cartela-overlay" onClick={onClose}>
       <div className="cartela-modal" onClick={(e) => e.stopPropagation()}>
+        
         {/* Column header */}
         <div className="cartela-column-header">
           {columnHeaders.map((col, idx) => (
