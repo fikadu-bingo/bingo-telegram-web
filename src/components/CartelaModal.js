@@ -1,24 +1,23 @@
 import React from "react";
 import "./CartelaModal.css";
 
-const CartelaModal = ({ isOpen, onClose, cartelaData }) => {
+const CartelaModal = ({ isOpen, onClose, cartelaData, title }) => {
   if (!isOpen) return null; // Only render when modal is open
-
-  const columnHeaders = ["B", "I", "N", "G", "O"];
 
   return (
     <div className="cartela-overlay" onClick={onClose}>
       <div className="cartela-modal" onClick={(e) => e.stopPropagation()}>
-        {/* Column header row */}
-        <div className="cartela-column-header">
-          {columnHeaders.map((col, idx) => (
-            <div key={idx} className="cartela-column-cell">
-              {col}
-            </div>
-          ))}
-        </div>
+        {/* Cartela title bar */}
+        {title && (
+          <div className="cartela-title">
+            <span>{title}</span>
+            <button className="cartela-close-btn" onClick={onClose}>
+              ×
+            </button>
+          </div>
+        )}
 
-        {/* Bingo card grid (2D array) */}
+        {/* Bingo card grid */}
         <div className="cartela-grid">
           {cartelaData.map((row, rowIdx) =>
             row.map((number, colIdx) => (
