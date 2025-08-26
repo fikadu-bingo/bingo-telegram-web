@@ -11,10 +11,6 @@
   z-index: 2000;
 }
 
-
-
-
-
 /* Close button */
 .delete-btn {
   background: transparent;
@@ -53,7 +49,8 @@
 }
 
 .cartela-grid {
-  flex: 1;                  /* fills remaining space under header */
+  flex: 1;                  /* fills remaining height */
+  width: 100%;              /* fill full modal width */
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
