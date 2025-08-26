@@ -329,6 +329,7 @@ body, html {
   font-size: 14px;
   font-weight: bold;
   color: #333;
+  background: none;
 }
 
 .bingo-header-row {
