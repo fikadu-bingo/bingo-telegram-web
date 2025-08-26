@@ -2,13 +2,12 @@ import React from "react";
 import "./CartelaModal.css";
 
 const CartelaModal = ({ isOpen, onClose, cartelaData, title }) => {
-  if (!isOpen) return null; // Only render when modal is open
+  if (!isOpen) return null;
 
   return (
     <div className="cartela-overlay" onClick={onClose}>
       <div className="cartela-modal-wrapper" onClick={(e) => e.stopPropagation()}>
         <div className="cartela-modal">
-          {/* Cartela title bar */}
           {title && (
             <div className="cartela-title">
               <span>{title}</span>
@@ -18,11 +17,10 @@ const CartelaModal = ({ isOpen, onClose, cartelaData, title }) => {
             </div>
           )}
 
-          {/* Bingo card grid */}
-          <div className="cartela-grid">
+          <div className="cartela-modal-grid">
             {cartelaData.map((row, rowIdx) =>
               row.map((number, colIdx) => (
-                <div key={`${rowIdx}-${colIdx}`} className="cartela-cell">
+                <div key={`${rowIdx}-${colIdx}`} className="cartela-modal-cell">
                   {number}
                 </div>
               ))
