@@ -212,12 +212,11 @@ function BingoBoard() {
         </button>
       </div>
 
-      <CartelaModal
-        show={showCartelaModal}
-        onClose={() => setShowCartelaModal(false)}
-        cartelaId={cartelaId}
-        card={bingoCard}
-      />
+     <CartelaModal
+  isOpen={showCartelaModal}        // use "isOpen" instead of "show"
+  onClose={() => setShowCartelaModal(false)}
+  cartelaData={bingoCard}         // pass the 2D bingoCard array directly
+/>
     </div>
   );
 }
