@@ -49,30 +49,26 @@ function BingoBoard() {
 
     socketRef.current.emit("joinGame", { userId, stake, ticket: [] });
 
-  socketRef.current.on("ticketNumbersUpdated", (tickets) => {
-  setAllTicketSelections(tickets);
-  const myNumbers = tickets[userIdRef.current] ?? [];
+    socketRef.current.on("ticketNumbersUpdated", (tickets) => {
+      setAllTicketSelections(tickets);
 
-  if (myNumbers.length > 0) {
-    const myNumber = myNumbers[0];
+      const myNumbers = tickets[userIdRef.current] ?? [];
 
-    // Only regenerate card if the ticket number changed
-    if (myNumber !== selectedNumber) {
-      setSelectedNumber(myNumber);
-      setCartelaId(myNumber);
+      if (myNumbers.length > 0) {
+        const myNumber = myNumbers[0];
 
-      // Only generate card here if the user hasn't already generated it
-      if (!bingoCard || bingoCard.length === 0) {
-        const card = generateCard();
-        setBingoCard(card);
+        // Only update selected number if different
+        if (myNumber !== selectedNumber) {
+          setSelectedNumber(myNumber);
+          setCartelaId(myNumber);
+          // Do NOT regenerate bingoCard here, keep the user's current card
+        }
+      } else {
+        setSelectedNumber(null);
+        setCartelaId("");
+        setBingoCard([]);
       }
-    }
-  } else {
-    setSelectedNumber(null);
-    setCartelaId("");
-    setBingoCard([]);
-  }
-});
+    });
 
     socketRef.current.on("ticketAssigned", ({ ticket }) => {
       console.log("Server assigned ticket:", ticket);
@@ -84,7 +80,7 @@ function BingoBoard() {
         socketRef.current.disconnect();
       }
     };
-  }, [stake]);
+  }, [stake, selectedNumber]); // include selectedNumber to compare properly
 
   const generateCard = () => {
     const columns = [
@@ -116,6 +112,7 @@ function BingoBoard() {
     if (gameStarted) return;
     const userId = userIdRef.current;
 
+    // Deselect previous number
     if (selectedNumber !== null && selectedNumber !== number) {
       socketRef.current.emit("deselectTicketNumber", {
         stake,
@@ -124,12 +121,12 @@ function BingoBoard() {
       });
     }
 
+    // Generate new card ONLY on click
     const newCard = generateCard();
     setBingoCard(newCard);
     setSelectedNumber(number);
     setCartelaId(number);
     setShowCartelaModal(true);
-
     socketRef.current.emit("selectTicketNumber", {
       stake,
       userId,
@@ -219,12 +216,12 @@ function BingoBoard() {
         </button>
       </div>
 
-<CartelaModal
-  isOpen={showCartelaModal}
-  onClose={() => setShowCartelaModal(false)}
-  cartelaData={bingoCard}
-  title={`Cartela #${cartelaId}`}
-/>
+      <CartelaModal
+        isOpen={showCartelaModal}
+        onClose={() => setShowCartelaModal(false)}
+        cartelaData={bingoCard}
+        title={`Cartela #${cartelaId}`}
+      />
     </div>
   );
 }
