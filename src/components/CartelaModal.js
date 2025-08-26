@@ -8,7 +8,7 @@ function CartelaModal({ show, onClose, cartelaId, card }) {
     <div className="cartela-overlay" onClick={onClose}>
       <div
         className="cartela-modal"
-        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="cartela-header">
           <span>Cartela #{cartelaId}</span>
@@ -16,8 +16,8 @@ function CartelaModal({ show, onClose, cartelaId, card }) {
         </div>
 
         <div className="cartela-grid">
-          {card.flat().map((num, index) => (
-            <div key={index} className="cartela-cell">
+          {card.flat().map((num, idx) => (
+            <div key={idx} className="cartela-cell">
               {num === "★" ? <span className="free-star">★</span> : num}
             </div>
           ))}
