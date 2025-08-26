@@ -8,87 +8,58 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  z-index: 1000;
 }
 
 .cartela-modal {
-  background: #cbc7c7;
+  background: #1c1c3a;
+  padding: 4px;
   border-radius: 12px;
-  width: 90vmin;           
-  max-width: 500px;
-  height: 90vmin;
-  max-height: 500px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.cartela-header {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-weight: bold;
-  font-size: 18px;
-  color: #fff;
-  background-color: #0077b6;
-  padding: 6px 12px;
-  border-radius: 12px 12px 0 0;
-  flex-shrink: 0;
-  margin-bottom: 6px;   /* small gap between header and grid */
+  width: 280px;
 }
 
-.delete-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 20px;
+.cartela-column-header {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.cartela-column-cell {
+  background: #ff7f50; /* colored header */
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  font-weight: bold;
   color: #fff;
 }
 
 .cartela-grid {
-  flex: 1;                  /* fills remaining height */
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(5, 1fr);
   gap: 4px;
-  width: 100%;              /* fills full modal width */
-  padding: 0 4px;           /* optional small padding inside grid */
-  box-sizing: border-box;
+  width: 100%;
 }
 
 .cartela-cell {
+  background: #2c2c5a;
+  aspect-ratio: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-weight: bold;
-  font-size: 20px;
+  border-radius: 4px;
   color: #fff;
-  background: #0c1d2e;
-  border: 2px solid #ffcc00;
-  border-radius: 6px;
-  width: 100%;
-  aspect-ratio: 1 / 1;      /* perfect squares */
-}
-
-.free-star {
-  color: red;
-  font-size: 24px;
   font-weight: bold;
 }
 
 /* Responsive */
-@media (max-width: 400px) {
-  .cartela-modal {
-    width: 95vmin;
-    height: 95vmin;
-  }
-  .cartela-cell {
-    font-size: 16px;
-  }
-  .free-star {
-    font-size: 20px;
-  }
+@media (max-width: 360px) {
+  .cartela-modal { width: 260px; }
+  .cartela-cell, .cartela-column-cell { font-size: 12px; }
 }
