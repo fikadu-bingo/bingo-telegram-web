@@ -1,30 +1,32 @@
 import React from "react";
-import "./CartelaModal.css";
+import "./SampleCartelaModal.css";
 
-function CartelaModal({ show, onClose, cartelaId, card }) {
-  if (!show) return null;
+const SampleCartelaModal = ({ isOpen, onClose, cartelaData }) => {
+  if (!isOpen) return null;
+
+  const columnHeaders = ["B", "I", "N", "G", "O"];
 
   return (
-    <div className="cartela-overlay" onClick={onClose}>
-      <div
-        className="cartela-modal"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="cartela-header">
-          <span>Cartela #{cartelaId}</span>
-          <button className="delete-btn" onClick={onClose}>✖️</button>
+    <div className="sample-overlay" onClick={onClose}>
+      <div className="sample-modal" onClick={(e) => e.stopPropagation()}>
+        {/* Column header */}
+        <div className="sample-column-header">
+          {columnHeaders.map((col, idx) => (
+            <div key={idx} className="sample-column-cell">{col}</div>
+          ))}
         </div>
 
-        <div className="cartela-grid">
-          {card.flat().map((num, idx) => (
-            <div key={idx} className="cartela-cell">
-              {num === "★" ? <span className="free-star">★</span> : num}
+        {/* Cartela numbers */}
+        <div className="sample-grid">
+          {cartelaData.map((number, idx) => (
+            <div key={idx} className="sample-cell">
+              {number !== 0 ? number : ""}
             </div>
           ))}
         </div>
       </div>
     </div>
   );
-}
+};
 
-export default CartelaModal;
+export default SampleCartelaModal;
