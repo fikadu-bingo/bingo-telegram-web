@@ -46,30 +46,31 @@ function Call() {
   const socket = useRef(null);
   const audioRef = useRef(null);
 
-  // ------------------ Play audio ------------------
 // ------------------ Play audio ------------------
 const playAudio = (formattedNumber) => {
-  if (!formattedNumber || muted) {
-    if (audioRef.current) {
-      audioRef.current.pause(); // Stop any playing audio when muted
-    }
-    return;
-  }
 
-  const audioPath = `/audio/bingo_calls/${formattedNumber}.mp3`;
+  if (!formattedNumber) return;
+
+  // If audioRef exists and is playing, stop it first
   if (audioRef.current) {
     audioRef.current.pause();
+    audioRef.current.currentTime = 0; // reset to start
   }
+
+  // If muted, do not play any audio
+  if (muted) return;
+
+  // Create new Audio object and play
+  const audioPath = `/audio/bingo_calls/${formattedNumber}.mp3`;
   audioRef.current = new Audio(audioPath);
-  audioRef.current.play().catch((err) =>
-    console.warn("Audio play failed:", err)
-  );
+  audioRef.current.volume = 1; // ensure volume is full when unmuted
+  audioRef.current.play().catch((err) => console.warn("Audio play failed:", err));
 };
 
-// ------------------ Mute effect ------------------
+// ------------------ Optional: Pause any playing audio when muted changes ------------------
 useEffect(() => {
   if (muted && audioRef.current) {
-    audioRef.current.pause(); // Pause immediately when muted
+    audioRef.current.pause();
   }
 }, [muted]);
 
@@ -260,14 +261,7 @@ useEffect(() => {
         >
           {muted ? "🔇" : "🔊"}
         </div>
-    {/* Countdown above current ball */}
-{!gameStarted && countdown !== null && (
-  <div className="countdown-above-ball">
-    <div className="timer-circle">
-      <span className="timer-value">{countdown}</span>
-    </div>
-  </div>
-)}
+
       </div>
 
       <div className="main-content">
@@ -310,7 +304,16 @@ useEffect(() => {
 
         {/* Cartela */}
         <div className="cartela-wrapper">
+           {/* Countdown above current ball */}
+          {!gameStarted && countdown !== null && (
+  <div className="countdown-above-ball">
+    <div className="timer-circle">
+      <span className="timer-value">{countdown}</span>
+    </div>
+  </div>
+)}
           <div
+
             className={`current-ball pulse ${
               currentNumber
                 ? getBingoLetter(parseInt(currentNumber.slice(1)))
