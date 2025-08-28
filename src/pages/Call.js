@@ -47,18 +47,31 @@ function Call() {
   const audioRef = useRef(null);
 
   // ------------------ Play audio ------------------
-  const playAudio = (formattedNumber) => {
-    if (muted || !formattedNumber) return;
-
-    const audioPath = `/audio/bingo_calls/${formattedNumber}.mp3`;
+// ------------------ Play audio ------------------
+const playAudio = (formattedNumber) => {
+  if (!formattedNumber || muted) {
     if (audioRef.current) {
-      audioRef.current.pause();
+      audioRef.current.pause(); // Stop any playing audio when muted
     }
-    audioRef.current = new Audio(audioPath);
-    audioRef.current.play().catch((err) =>
-      console.warn("Audio play failed:", err)
-    );
-  };
+    return;
+  }
+
+  const audioPath = `/audio/bingo_calls/${formattedNumber}.mp3`;
+  if (audioRef.current) {
+    audioRef.current.pause();
+  }
+  audioRef.current = new Audio(audioPath);
+  audioRef.current.play().catch((err) =>
+    console.warn("Audio play failed:", err)
+  );
+};
+
+// ------------------ Mute effect ------------------
+useEffect(() => {
+  if (muted && audioRef.current) {
+    audioRef.current.pause(); // Pause immediately when muted
+  }
+}, [muted]);
 
   // ------------------ Socket Setup ------------------
   useEffect(() => {
@@ -247,14 +260,14 @@ function Call() {
         >
           {muted ? "🔇" : "🔊"}
         </div>
-        {!gameStarted && countdown !== null && (
-          <div className="menu-item-box timer-box">
-            <div className="timer-circle">
-              <span className="timer-value">{countdown}</span>
-            </div>
-            <div className="menu-label">⏲️</div>
-          </div>
-        )}
+    {/* Countdown above current ball */}
+{!gameStarted && countdown !== null && (
+  <div className="countdown-above-ball">
+    <div className="timer-circle">
+      <span className="timer-value">{countdown}</span>
+    </div>
+  </div>
+)}
       </div>
 
       <div className="main-content">
