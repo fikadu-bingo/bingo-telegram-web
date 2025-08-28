@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 import WinModal from "../components/WinModal";
 import "./Call.css";
 
-// Helper functions
+// ------------------ Helper functions ------------------
 function getBingoLetter(number) {
   if (number >= 1 && number <= 15) return "B";
   if (number >= 16 && number <= 30) return "I";
@@ -13,7 +13,6 @@ function getBingoLetter(number) {
   if (number >= 61 && number <= 75) return "O";
   return "";
 }
-
 
 function formatBingoNumber(number) {
   return `${getBingoLetter(number)}${number}`;
@@ -25,8 +24,10 @@ function Call() {
   const { card, stake, cartelaNumber, username: stateUsername, userId: stateUserId } =
     location.state ?? {};
 
-  const userId = stateUserId ?? localStorage.getItem("telegram_id") ?? `guest_${Date.now()}`;
-  const username = stateUsername ?? localStorage.getItem("firstName") ?? "User";
+  const userId =
+    stateUserId ?? localStorage.getItem("telegram_id") ?? `guest_${Date.now()}`;
+  const username =
+    stateUsername ?? localStorage.getItem("firstName") ?? "User";
 
   const [calledNumbers, setCalledNumbers] = useState([]);
   const [currentNumber, setCurrentNumber] = useState(null);
@@ -40,8 +41,24 @@ function Call() {
   const [rollingNumbers, setRollingNumbers] = useState([]);
   const [markedNumbers, setMarkedNumbers] = useState([]);
   const [blinkNumbers, setBlinkNumbers] = useState([]);
+  const [muted, setMuted] = useState(false);
 
   const socket = useRef(null);
+  const audioRef = useRef(null);
+
+  // ------------------ Play audio ------------------
+  const playAudio = (formattedNumber) => {
+    if (muted || !formattedNumber) return;
+
+    const audioPath = `/audio/bingo_calls/${formattedNumber}.mp3`;
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    audioRef.current = new Audio(audioPath);
+    audioRef.current.play().catch((err) =>
+      console.warn("Audio play failed:", err)
+    );
+  };
 
   // ------------------ Socket Setup ------------------
   useEffect(() => {
@@ -55,7 +72,12 @@ function Call() {
       transports: ["websocket"],
     });
 
-    socket.current.emit("joinGame", { userId, username, stake, ticket: playerCard });
+    socket.current.emit("joinGame", {
+      userId,
+      username,
+      stake,
+      ticket: playerCard,
+    });
 
     socket.current.on("playerCountUpdate", (count) => setPlayers(count));
     socket.current.on("countdownUpdate", (time) => {
@@ -72,45 +94,57 @@ function Call() {
       const formatted = formatBingoNumber(number);
 
       setCurrentNumber(formatted);
-      setCalledNumbers((prev) => (prev.includes(formatted) ? prev : [...prev, formatted]));
+      setCalledNumbers((prev) =>
+        prev.includes(formatted) ? prev : [...prev, formatted]
+      );
       setRollingNumbers((prev) => {
         const updated = [...prev, formatted];
         if (updated.length > 4) updated.shift();
         return updated;
       });
 
+      // Play audio
+      playAudio(formatted);
+
       // Blink effect for 2 seconds
       setBlinkNumbers((prev) => [...prev, formatted]);
       setTimeout(() => {
-        setBlinkNumbers((prev) => prev.filter((num) => num !== formatted));
+        setBlinkNumbers((prev) =>
+          prev.filter((num) => num !== formatted)
+        );
       }, 2000);
     });
 
     socket.current.on("winAmountUpdate", (amount) => setWinAmount(amount));
     socket.current.on("gameStarted", () => setGameStarted(true));
+    socket.current.on(
+      "gameWon",
+      ({ userId: winnerId, username: winnerUsername, prize }) => {
+        const numericPrize = Number(prize) || 0;
+        setWinnerInfo({
+          userId: winnerId,
+          username: winnerUsername,
+          prize: numericPrize,
+        });
+        setShowPopup(true);
+      }
+    );
 
-    socket.current.on("gameWon", ({ userId: winnerId, username: winnerUsername, prize, balances }) => {
-      const numericPrize = Number(prize) || 0;
-      setWinnerInfo({ userId: winnerId, username: winnerUsername, prize: numericPrize });
+    socket.current.on("bingoSuccess", ({ winnerId, username, prize }) => {
+      setWinnerInfo({ userId: winnerId, username, prize });
       setShowPopup(true);
     });
 
-    socket.current.on("bingoSuccess", ({ winnerId, username, prize, cartela }) => {
-  setWinnerInfo({ userId: winnerId, username, prize });
-  setShowPopup(true);
-});
+    socket.current.on("bingoFail", ({ message }) => {
+      alert(message || "Invalid Bingo claim!");
+    });
 
-socket.current.on("bingoFail", ({ message }) => {
-  alert(message || "Invalid Bingo claim!");
-});
-
-socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => {
-  if (winnerId !== userId) {
-    setWinnerInfo({ userId: winnerId, username, prize });
-    setShowPopup(true);
-  }
-});
-
+    socket.current.on("winnerDeclared", ({ winnerId, username, prize }) => {
+      if (winnerId !== userId) {
+        setWinnerInfo({ userId: winnerId, username, prize });
+        setShowPopup(true);
+      }
+    });
 
     socket.current.on("balanceChange", (payload) => {
       try {
@@ -124,6 +158,7 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
         console.error("Failed to process balanceChange:", e);
       }
     });
+
     socket.current.on("gameReset", () => {
       setCalledNumbers([]);
       setCurrentNumber(null);
@@ -148,33 +183,41 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
   // ------------------ Bingo Check ------------------
   const checkBingo = () => {
     const grid = playerCard;
-    const allMarked = (num) => markedNumbers.includes(formatBingoNumber(num)) || num === "*";
+    const allMarked = (num) =>
+      markedNumbers.includes(formatBingoNumber(num)) || num === "*";
 
     // Rows
     for (let r = 0; r < 5; r++) if (grid[r].every(allMarked)) return true;
     // Columns
-    for (let c = 0; c < 5; c++) if (grid.every((row) => allMarked(row[c]))) return true;
+    for (let c = 0; c < 5; c++) if (grid.every((row) => allMarked(row[c])))
+      return true;
     // Diagonals
     const diag1 = [0, 1, 2, 3, 4].every((i) => allMarked(grid[i][i]));
-    const diag2 = [0, 1, 2, 3, 4].every((i) => allMarked(grid[i][4 - i]));
+    const diag2 = [0, 1, 2, 3, 4].every((i) =>
+      allMarked(grid[i][4 - i])
+    );
     return diag1 || diag2;
   };
 
   const handleMarkNumber = (num) => {
     const formatted = formatBingoNumber(num);
     if (!calledNumbers.includes(formatted)) return;
-    setMarkedNumbers((prev) => (prev.includes(formatted) ? prev : [...prev, formatted]));
+    setMarkedNumbers((prev) =>
+      prev.includes(formatted) ? prev : [...prev, formatted]
+    );
   };
 
   const getMarkedCartela = () =>
     playerCard.map((row, rowIndex) =>
       row.map((num, colIndex) => {
         const isCenter = rowIndex === 2 && colIndex === 2;
-        const marked = isCenter || markedNumbers.includes(formatBingoNumber(num));
+        const marked =
+          isCenter || markedNumbers.includes(formatBingoNumber(num));
         return { num, marked, isCenter };
       })
     );
 
+  // ------------------ UI ------------------
   return (
     <div className="container">
       {/* Top Menu */}
@@ -195,6 +238,15 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
           <div className="menu-label">Call</div>
           <div className="menu-value">{calledNumbers.length}</div>
         </div>
+
+        {/* Mute Button */}
+        <div
+          className="menu-item-box mute-button"
+          onClick={() => setMuted(!muted)}
+          title={muted ? "Unmute" : "Mute"}
+        >
+          {muted ? "🔇" : "🔊"}
+        </div>
         {!gameStarted && countdown !== null && (
           <div className="menu-item-box timer-box">
             <div className="timer-circle">
@@ -210,7 +262,10 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
         <div className="board">
           <div className="bingo-header-row">
             {["B", "I", "N", "G", "O"].map((letter) => (
-              <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
+              <div
+                key={letter}
+                className={`bingo-letter bingo-${letter.toLowerCase()}`}
+              >
                 {letter}
               </div>
             ))}
@@ -228,6 +283,7 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
                       <div
                         key={num}
                         className={`number-box ${isCalled ? "called" : ""}`}
+                        onClick={() => playAudio(formatted)} // replay audio on click
                       >
                         {num}
                       </div>
@@ -238,19 +294,21 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
             })}
           </div>
         </div>
+
         {/* Cartela */}
         <div className="cartela-wrapper">
- <div
-  className={`current-ball pulse ${
-    currentNumber ? getBingoLetter(parseInt(currentNumber.slice(1))) : ""
-  }`}
->
-  {currentNumber ?? "--"}
-  {/* Realistic glossy highlights */}
-  <div className="highlight highlight1"></div>
-  <div className="highlight highlight2"></div>
-  <div className="highlight highlight3"></div>
-</div>
+          <div
+            className={`current-ball pulse ${
+              currentNumber
+                ? getBingoLetter(parseInt(currentNumber.slice(1)))
+                : ""
+            }`}
+          >
+            {currentNumber ?? "--"}
+            <div className="highlight highlight1"></div>
+            <div className="highlight highlight2"></div>
+            <div className="highlight highlight3"></div>
+          </div>
 
           <div className="waiting-rectangle">
             {!gameStarted ? (
@@ -260,7 +318,10 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
                 {rollingNumbers.map((num, idx) => (
                   <div
                     key={idx}
-                    className={`rolling-number ${getBingoLetter(parseInt(num.slice(1)))}`}
+                    className={`rolling-number ${getBingoLetter(
+                      parseInt(num.slice(1))
+                    )}`}
+                    onClick={() => playAudio(num)} // replay old calls
                   >
                     {num}
                   </div>
@@ -274,7 +335,10 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
           <div className="cartela">
             <div className="bingo-header-row">
               {["B", "I", "N", "G", "O"].map((letter) => (
-                <div key={letter} className={`bingo-letter bingo-${letter.toLowerCase()}`}>
+                <div
+                  key={letter}
+                  className={`bingo-letter bingo-${letter.toLowerCase()}`}
+                >
                   {letter}
                 </div>
               ))}
@@ -284,13 +348,13 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
                 const row = Math.floor(idx / 5);
                 const col = idx % 5;
                 const isCenter = row === 2 && col === 2;
-                const marked = isCenter || markedNumbers.includes(formatBingoNumber(num));
+                const marked =
+                  isCenter || markedNumbers.includes(formatBingoNumber(num));
                 const blink = blinkNumbers.includes(formatBingoNumber(num));
                 return (
                   <div
                     key={idx}
-                    className={`number-box ${marked ? "marked" : "unmarked"} ${
-                      blink ? "blink" : ""
+                    className={`number-box ${marked ? "marked" : "unmarked"} ${blink ? "blink" : ""
                     }`}
                     onClick={() => handleMarkNumber(num)}
                   >
@@ -304,41 +368,43 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
       </div>
 
       {/* Buttons */}
-   <button
-  className="bingo-button"
-  onClick={() => {
-    socket.current.emit("bingoWin", {
-      userId,
-      
-      stake,
-       ticket: playerCard
-    });
-  }}
-  disabled={!gameStarted}
->
-  🎉 Bingo
-</button>
+      <button
+        className="bingo-button"
+        onClick={() => {
+          socket.current.emit("bingoWin", {
+            userId,
+            stake,
+            ticket: playerCard,
+          });
+        }}
+        disabled={!gameStarted}
+      >
+        🎉 Bingo
+      </button>
 
-        <div className="bottom-buttons">
-<button
-  className="action-btn refresh-button"
-  onClick={() => {
-    socket.emit("refreshGame", { userId, stake });
-  }}
-  title="Refresh"
->
-  🔄 Refresh
-</button>
-          <button
-            className="action-btn leave-button"
-            onClick={() => navigate("/")}
-            disabled={gameStarted && winnerInfo === null}
-            title={gameStarted && winnerInfo === null ? "You can't leave during an active game" : ""}
-          >
-            🚪 Leave
-          </button>
-        </div>
-      
+      <div className="bottom-buttons">
+        <button
+          className="action-btn refresh-button"
+          onClick={() => {
+            socket.current.emit("refreshGame", { userId, stake });
+          }}
+          title="Refresh"
+        >
+          🔄 Refresh
+        </button>
+        <button
+          className="action-btn leave-button"
+          onClick={() => navigate("/")}
+          disabled={gameStarted && winnerInfo === null}
+          title={
+            gameStarted && winnerInfo === null
+              ? "You can't leave during an active game"
+              : ""
+          }
+        >
+          🚪 Leave
+        </button>
+      </div>
 
       {showPopup && winnerInfo && (
         <WinModal
@@ -349,15 +415,16 @@ socket.current.on("winnerDeclared", ({ winnerId, username, prize, cartela }) => 
           onPlayAgain={() => {
             setWinnerInfo(null);
             setShowPopup(false);
-            const updatedBalance = parseFloat(localStorage.getItem("balance") ?? 0);
+            const updatedBalance = parseFloat(
+              localStorage.getItem("balance") ?? 0
+            );
             setWinAmount(updatedBalance);
             navigate("/");
           }}
         />
       )}
     </div>
-  
-    );
+  );
 }
 
 export default Call;
