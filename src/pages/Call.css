@@ -50,19 +50,23 @@ body, html {
   font-size: 14px;
 }
 
+.countdown-above-ball {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px; /* space between countdown and current ball */
+}
+
 .timer-circle {
-  width: 44px;
-  height: 44px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  background: #ff6b6b;
+  background: #ffcc00;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 4px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
   font-weight: bold;
-  font-size: 16px;
-  color: white;
+  font-size: 1.2rem;
+  color: #1c1c3a;
 }
 
 .timer-value {
