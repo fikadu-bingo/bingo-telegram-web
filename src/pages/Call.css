@@ -53,7 +53,7 @@ body, html {
 .countdown-above-ball {
   display: flex;
   justify-content: center;
-  margin-bottom: 10px; /* space between countdown and current ball */
+  margin-bottom: 12px; /* space above current ball */
 }
 
 .timer-circle {
@@ -62,11 +62,11 @@ body, html {
   border-radius: 50%;
   background: #ffcc00;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   font-weight: bold;
-  font-size: 1.2rem;
-  color: #1c1c3a;
+  font-size: 18px;
+  color: #000;
 }
 
 .timer-value {
