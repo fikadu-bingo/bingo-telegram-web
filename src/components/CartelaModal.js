@@ -20,9 +20,12 @@ const CartelaModal = ({ isOpen, onClose, cartelaData, title }) => {
           <div className="cartela-modal-grid">
             {cartelaData.map((row, rowIdx) =>
               row.map((number, colIdx) => (
-                <div key={`${rowIdx}-${colIdx}`} className="cartela-modal-cell">
-                  {number}
-                </div>
+               <div
+  key={`${rowIdx}-${colIdx}}
+  className={cartela-modal-cell ${number === "*" ? "star" : ""}`}
+>
+  {number}
+</div>
               ))
             )}
           </div>
