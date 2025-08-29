@@ -198,33 +198,42 @@ html, body {
 }
 
 /* ==================== Stake Table ==================== */
+/* Stake Header */
 .hp-stake-header {
   display: flex;
   justify-content: space-between;
-  padding: 5px 15px;           /* ✅ match row horizontal padding */
+  padding: 5px 15px;           /* horizontal padding */
   font-weight: bold;
   font-size: 16px;
   color: #00bfff;
   margin-top: 50px;   
 }
 
-.hp-stake-header > div { flex: 1; text-align: center; }
-.hp-stake-header > div:first-child { text-align: left; }
+.hp-stake-header > div { 
+  flex: 1; 
+  text-align: center; 
+}
 
+.hp-stake-header > div:first-child { 
+  text-align: left; 
+}
+
+/* Stake Row */
 .hp-stake-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: #22224a;
   border-radius: 10px;
-  padding: 12px 15px;           /* same as header padding */
-  margin: 8px 0;                /* only vertical margin, no horizontal */
+  padding: 12px 15px;
+  margin: 8px 0 8px 8px;       /* ✅ shift row slightly left */
   height: 50px;
   border: 2px solid rgba(255, 165, 0, 0.6); /* transparent yellow */
   font-size: 18px;
   font-weight: 600;
-  width: 100%;                   /* full width of parent */
+  width: 100%;                   /* full width */
   box-sizing: border-box;
+  transform: translateX(-12px);  /* ✅ shift the whole row left */
 }
 
 .hp-stake-row.selected {
