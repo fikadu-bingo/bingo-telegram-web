@@ -216,10 +216,12 @@ html, body {
   justify-content: space-between;
   background: #22224a;
   border-radius: 10px;
-  padding: 10px;
+  padding: 12px 15px;
   margin: 8px 0;
-  height: 70px; /* increased height */
-  border: 2px solid rgba(255, 255, 0, 0.6); /* transparent yellow border */
+  height: 50px; /* increased height */
+  border: 2px solid #FFA500; /* transparent yellow border */
+  font-size: 16px; /* bigger text */
+  font-weight: 600; /* slightly bolder */
 }
 
 .hp-stake-row.selected {
@@ -230,7 +232,6 @@ html, body {
 .hp-stake-row .left {
   flex: 1;
   text-align: left;
-  font-weight: bold;
 }
 
 .hp-stake-row .center {
@@ -241,19 +242,20 @@ html, body {
 .hp-selected-badge {
   background: #ff5722;
   color: white;
-  padding: 5px 10px;
+  padding: 6px 12px;
   border-radius: 8px;
   font-weight: bold;
-  font-size: 12px;
+  font-size: 14px; /* increased */
 }
 
 .hp-start-btn {
   background: #00bfff;
   color: white;
   border: none;
-  padding: 5px 10px;
+  padding: 6px 12px;
   border-radius: 8px;
   font-weight: bold;
+  font-size: 14px; /* bigger button text */
   cursor: pointer;
 }
 
