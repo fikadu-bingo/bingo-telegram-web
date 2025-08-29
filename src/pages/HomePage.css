@@ -218,12 +218,13 @@ html, body {
   border-radius: 10px;
   padding: 12px 15px;
   margin: 8px 0;
-  height: 50px; /* increased height */
+  height: 40px; /* increased height */
   border: 2px solid #FFA500; /* transparent yellow border */
-  font-size: 16px; /* bigger text */
+  font-size: 18px; /* bigger text */
   font-weight: 600; /* slightly bolder */
+  width: 100%;             /* ✅ make full width */
+  box-sizing: border-box;  /* ✅ include padding in width */
 }
-
 .hp-stake-row.selected {
   background: #0e0e2c;
   border-color: orange;
