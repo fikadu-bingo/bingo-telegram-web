@@ -338,12 +338,12 @@ function HomePage() {
         </p>
       </aside>
 
-      {/* Balance card */}
+    
      
       {/* Stake header */}
       <div className="hp-stake-header">
         <div>Stake</div>
-        <div>Users</div>
+        <div>Players</div>
         <div>Timer</div>
         <div>Win</div>
         <div>Join</div>
