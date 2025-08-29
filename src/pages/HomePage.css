@@ -218,14 +218,26 @@ html, body {
   border-radius: 10px;
   padding: 10px;
   margin: 8px 0;
-  border: 1px solid transparent;
+  height: 70px; /* increased height */
+  border: 2px solid rgba(255, 255, 0, 0.6); /* transparent yellow border */
 }
+
 .hp-stake-row.selected {
   background: #0e0e2c;
   border-color: orange;
 }
-.hp-stake-row .left { flex: 1; text-align: left; font-weight: bold; }
-.hp-stake-row .center { flex: 1; text-align: center; }
+
+.hp-stake-row .left {
+  flex: 1;
+  text-align: left;
+  font-weight: bold;
+}
+
+.hp-stake-row .center {
+  flex: 1;
+  text-align: center;
+}
+
 .hp-selected-badge {
   background: #ff5722;
   color: white;
@@ -244,11 +256,11 @@ html, body {
   font-weight: bold;
   cursor: pointer;
 }
+
 .hp-start-btn.disabled {
   background: #555;
   cursor: not-allowed;
 }
-
 /* ==================== Actions ==================== */
 .hp-actions {
   display: flex;
