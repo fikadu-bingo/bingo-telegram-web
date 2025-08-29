@@ -20,7 +20,7 @@
   display: flex;
   width: 100%;
   max-width: 500px;
-  background: #2a2a58;
+ background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
   padding: 10px 0;      /* reduced padding for tighter look */
   border-radius: 10px;
   margin: 0;
