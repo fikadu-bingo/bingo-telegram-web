@@ -16,15 +16,20 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 300px;  /* half of original 600px */
-  padding: 5px;      /* half padding */
+  /* Keep max-width same; transform will scale it down */
+  max-width: 600px;
+  padding: 10px;
   box-sizing: border-box;
+
+  /* Scale everything inside wrapper by 0.5 */
+  transform: scale(0.5);
+  transform-origin: center center; /* shrink from center */
 }
 
 .cartela-modal {
   background: #1c1c3a;
   padding: 0;
-  border-radius: 6px;   /* half of 12px */
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -37,36 +42,36 @@
   background: linear-gradient(90deg, #ff4b4b, #ff8c42);
   color: #fff;
   font-weight: bold;
-  font-size: 9px;      /* half of 18px */
+  font-size: 18px;
   text-align: center;
-  height: 25px;        /* half of 50px */
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  padding: 0 6px;      /* half padding */
+  padding: 0 12px;
   box-sizing: border-box;
 }
 
 .cartela-close-btn {
   position: absolute;
-  right: 6px;           /* half of 12px */
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   background: transparent;
   border: none;
   color: #fff;
-  font-size: 11px;      /* half of 22px */
+  font-size: 22px;
   cursor: pointer;
 }
 
 .cartela-modal-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 3px;             /* half of 6px */
+  gap: 6px;
   width: 100%;
   background: #1c1c3a;
-  padding: 6px;          /* half of 12px */
+  padding: 12px;
   box-sizing: border-box;
 }
 
@@ -76,8 +81,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 3px;    /* half of 6px */
+  border-radius: 6px;
   font-weight: bold;
   color: #fff;
-  font-size: 9px;        /* half of 18px */
+  font-size: 18px;
 }
