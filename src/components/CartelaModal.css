@@ -86,3 +86,6 @@
   color: #fff;
   font-size: 36px;
 }
+.cartela-modal-cell.star {
+  color: gold;          /* make the star gold instead of white */
+}
