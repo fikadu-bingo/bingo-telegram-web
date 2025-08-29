@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background:#f7a911;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -27,7 +27,7 @@
 }
 
 .cartela-modal {
-  background: #1c1c3a;
+  background:#e39806;
   padding: 0;
   border-radius: 12px;
   display: flex;
@@ -70,19 +70,19 @@
   grid-template-columns: repeat(5, 1fr);
   gap: 6px;
   width: 100%;
-  background: #1c1c3a;
+  background: #e39806;
   padding: 12px;
   box-sizing: border-box;
 }
 
 .cartela-modal-cell {
-  background: #2c2c5a;
+  background: #fff;
   aspect-ratio: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 6px;
   font-weight: bold;
-  color: #fff;
+  color: #000;
   font-size: 36px;
 }
