@@ -11,21 +11,20 @@
   z-index: 1000;
 }
 
-/* Wrapper to scope modal styles */
 .cartela-modal-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 600px;  /* bigger modal */
-  padding: 10px;
+  max-width: 300px;  /* half of original 600px */
+  padding: 5px;      /* half padding */
   box-sizing: border-box;
 }
 
 .cartela-modal {
   background: #1c1c3a;
   padding: 0;
-  border-radius: 12px;
+  border-radius: 6px;   /* half of 12px */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -33,52 +32,52 @@
   overflow: hidden;
 }
 
-.cartela-titles{
+.cartela-titles {
   width: 100%;
   background: linear-gradient(90deg, #ff4b4b, #ff8c42);
   color: #fff;
   font-weight: bold;
-  font-size: 18px;   /* slightly bigger text */
+  font-size: 9px;      /* half of 18px */
   text-align: center;
-  height: 50px;      /* taller title bar */
+  height: 25px;        /* half of 50px */
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  padding: 0 12px;
+  padding: 0 6px;      /* half padding */
   box-sizing: border-box;
 }
 
 .cartela-close-btn {
   position: absolute;
-  right: 12px;
+  right: 6px;           /* half of 12px */
   top: 50%;
   transform: translateY(-50%);
   background: transparent;
   border: none;
   color: #fff;
-  font-size: 22px;   /* bigger X */
+  font-size: 11px;      /* half of 22px */
   cursor: pointer;
 }
 
 .cartela-modal-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 6px;                  /* slightly bigger gap between cells */
+  gap: 3px;             /* half of 6px */
   width: 100%;
   background: #1c1c3a;
-  padding: 12px;             /* more padding around grid */
+  padding: 6px;          /* half of 12px */
   box-sizing: border-box;
 }
 
 .cartela-modal-cell {
   background: #2c2c5a;
-  aspect-ratio: 1;           /* keep cells square */
+  aspect-ratio: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 6px;
+  border-radius: 3px;    /* half of 6px */
   font-weight: bold;
   color: #fff;
-  font-size: 18px;           /* bigger numbers */
+  font-size: 9px;        /* half of 18px */
 }
