@@ -11,21 +11,41 @@
 }
 
 /* Wallet info bar */
+/* Wallet info bar */
 .bb-wallet-bar {
-  position: fixed;       /* stick at top */
+  position: fixed;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  justify-content: space-between;
   width: 100%;
   max-width: 500px;
   background: #2a2a58;
-  padding: 10px 15px;
+  padding: 10px 0;      /* reduced padding for tighter look */
   border-radius: 10px;
-  margin: 0;             /* no margin since it’s fixed */
+  margin: 0;
   font-size: 14px;
-  z-index: 1000;         /* ensure it’s on top of everything */
+  z-index: 1000;
+}
+
+/* Each item inside the wallet bar */
+.bb-wallet-bar-item {
+  flex: 1;               /* equal width for all items */
+  text-align: center;
+  position: relative;
+  color: white;
+  font-weight: 500;
+}
+
+/* Divider line between items */
+.bb-wallet-bar-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 20%;
+  right: 0;
+  width: 1px;
+  height: 60%;
+  background: rgba(255, 255, 255, 0.3); /* subtle line */
 }
 /* Main board container */
 .bb-board-container {
