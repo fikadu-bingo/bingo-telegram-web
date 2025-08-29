@@ -171,7 +171,7 @@ function BingoBoard() {
   return (
     <div className="bb-page">
       <div className="bb-wallet-bar">
-        <div>Wallet: Br{(wallet - stake).toFixed(2)}</div>
+        <div>Wallet: Br{(wallet -0).toFixed(2)}</div>
         <div>Game ID: {gameId}</div>
         <div>Stake: Br{stake}</div>
       </div>
