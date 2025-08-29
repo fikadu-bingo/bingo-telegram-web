@@ -207,6 +207,7 @@ html, body {
   font-size: 16px;
   color: #00bfff;
   margin-top: 50px;   
+  transform: translateX(-22px); 
 }
 
 .hp-stake-header > div { 
@@ -233,7 +234,7 @@ html, body {
   font-weight: 600;
   width: 100%;                   /* full width */
   box-sizing: border-box;
-  transform: translateX(-20px);  /* ✅ shift the whole row left */
+  transform: translateX(-22px);  /* ✅ shift the whole row left */
 }
 
 .hp-stake-row.selected {
