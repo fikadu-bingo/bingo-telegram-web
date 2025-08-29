@@ -216,17 +216,15 @@ html, body {
   justify-content: space-between;
   background: #22224a;
   border-radius: 10px;
-  padding: 12px 20px 12px 15px;
-  margin: 8px 12px;          /* add horizontal breathing room */
-  height: 48px;               /* increased height */
-  border: 2px solid rgba(255, 165, 0, 0.6); /* transparent yellow border */
-  font-size: 18px;            /* bigger text */
-  font-weight: 600;           /* slightly bolder */
-  width: calc(100% - 24px);   /* account for left/right margin */
-  box-sizing: border-box;     /* include padding in width */
-  overflow: hidden;           /* prevent overflow */
+  padding: 12px 15px;
+  margin: 8px 8px;
+  height: 50px; /* increased height */
+  border: 2px solid #FFA500; /* transparent yellow border */
+  font-size: 18px; /* bigger text */
+  font-weight: 600; /* slightly bolder */
+  width: 100%;             /* ✅ make full width */
+  box-sizing: border-box;  /* ✅ include padding in width */
 }
-
 .hp-stake-row.selected {
   background: #0e0e2c;
   border-color: orange;
@@ -235,19 +233,11 @@ html, body {
 .hp-stake-row .left {
   flex: 1;
   text-align: left;
-  min-width: 0;               /* prevents text from pushing button */
-  overflow: hidden;
-  text-overflow: ellipsis;    /* optional: adds "..." if text is too long */
-  white-space: nowrap;
 }
 
 .hp-stake-row .center {
   flex: 1;
   text-align: center;
-  min-width: 0;               /* prevents overflow */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .hp-selected-badge {
@@ -256,7 +246,7 @@ html, body {
   padding: 6px 12px;
   border-radius: 8px;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 14px; /* increased */
 }
 
 .hp-start-btn {
@@ -266,9 +256,8 @@ html, body {
   padding: 6px 12px;
   border-radius: 8px;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 14px; /* bigger button text */
   cursor: pointer;
-  flex-shrink: 0;             /* button never shrinks */
 }
 
 .hp-start-btn.disabled {
