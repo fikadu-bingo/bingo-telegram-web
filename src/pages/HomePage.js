@@ -432,8 +432,8 @@ function HomePage() {
       <div className="hp-wallet-sidebar">
         <button className="wallet-btn active">💳 Deposit</button>
         <button className="wallet-btn">💸 Withdraw</button>
-        <button 
-  className="wallet-btn" 
+<button
+  className={`wallet-btn ${showTransferModal ? "active" : ""}`}
   onClick={() => setShowTransferModal(true)}
 >
   🔄 Transfer
@@ -481,16 +481,12 @@ function HomePage() {
 )}
 
 {showTransferModal && (
-  <TransferModal 
-    onClose={() => setShowTransferModal(false)} 
-    availableBalance={balance} 
-    onTransfer={(amount, receiver) => {
-      if (balance >= amount) {
-        setBalance(balance - amount);   // deduct from user
-        alert(`Successfully transferred Br.${amount} to ${receiver}`);
-      } else {
-        alert("Insufficient balance!");
-      }
+  <TransferModal
+    onClose={() => setShowTransferModal(false)}
+    availableBalance={balance}
+    onTransfer={(newBalance) => {
+      // Update balance based on backend response
+      setBalance(newBalance);
     }}
   />
 )}
