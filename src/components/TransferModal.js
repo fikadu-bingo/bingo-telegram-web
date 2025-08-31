@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./TransferModal.css";
 
-function TransferModal({ onClose, availableBalance = 200, onTransfer }) {
+function TransferModal({ onClose, availableBalance = 0, onTransfer }) {
   const [receiverPhone, setReceiverPhone] = useState("");
   const [transferAmount, setTransferAmount] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,19 +27,28 @@ function TransferModal({ onClose, availableBalance = 200, onTransfer }) {
     try {
       setLoading(true);
 
-      // Replace with actual logged-in user's telegram_id
       const senderTelegramId = localStorage.getItem("telegram_id");
+      if (!senderTelegramId) {
+        alert("User not logged in.");
+        return;
+      }
 
-      const res = await axios.post("/api/user/transfer", {
-        sender_telegram_id: senderTelegramId,
-        receiver_phone_number: receiverPhone,
-        amount,
-      });
+      // Full backend URL
+      const res = await axios.post(
+        "https://bingo-server-rw7p.onrender.com/api/user/transfer",
+        {
+          sender_telegram_id: senderTelegramId,
+          receiver_phone_number: receiverPhone,
+          amount,
+        }
+      );
 
       alert(res.data.message);
 
-      // Update UI balance
-      if (onTransfer) onTransfer(res.data.newBalance);
+      if (onTransfer) {
+        onTransfer(res.data.newBalance); // update frontend balance
+        localStorage.setItem("balance", res.data.newBalance);
+      }
 
       onClose();
     } catch (err) {
