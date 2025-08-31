@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./TransferModal.css"; // Optional: if you want to add more styles
+import "./TransferModal.css";
 
 function TransferModal({ onClose, availableBalance = 200, onTransfer }) {
   const [receiverPhone, setReceiverPhone] = useState("");
@@ -62,3 +62,6 @@ function TransferModal({ onClose, availableBalance = 200, onTransfer }) {
     </div>
   );
 }
+
+// ✅ Default export (so you can import TransferModal without braces)
+export default TransferModal;
