@@ -33,6 +33,38 @@
   font-size: 14px;
 }
 
+/* Buttons */
+.cancel-btn,
+.confirm-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 48%;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+}
+
+.cancel-btn {
+  background-color: #1a1a40;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #2a2a60;
+}
+
+.confirm-btn {
+  background-color: #00CFFF;
+  color: white;
+}
+
+.confirm-btn:hover {
+  background-color: #00b5e0;
+}
+
+/* Animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
