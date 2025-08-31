@@ -485,8 +485,8 @@ function HomePage() {
     onClose={() => setShowTransferModal(false)}
     availableBalance={balance}
     onTransfer={(newBalance) => {
-      // Update balance based on backend response
       setBalance(newBalance);
+      localStorage.setItem("balance", newBalance);
     }}
   />
 )}
