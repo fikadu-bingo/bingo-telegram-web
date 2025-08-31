@@ -1,15 +1,30 @@
 import React, { useState } from "react";
 import "./TransferModal.css"; // Optional: if you want to add more styles
 
-function TransferModal({ onClose, availableBalance = 200 }) {
+function TransferModal({ onClose, availableBalance = 200, onTransfer }) {
   const [receiverPhone, setReceiverPhone] = useState("");
   const [transferAmount, setTransferAmount] = useState("");
+
+  const handleTransfer = () => {
+    if (!receiverPhone || !transferAmount) {
+      alert("Please fill all fields.");
+      return;
+    }
+    const amount = parseFloat(transferAmount);
+    if (amount <= 0) {
+      alert("Enter a valid amount.");
+      return;
+    }
+    onTransfer(amount, receiverPhone);
+    onClose();
+  };
 
   return (
     <div className="modal">
       <div className="modal-content">
         <h2 style={{ textAlign: "left", marginBottom: "20px" }}>Transfer</h2>
 
+        {/* Receiver */}
         <div style={{ marginBottom: "15px" }}>
           <label><strong>Receiver Phone Number</strong></label>
           <input
@@ -21,6 +36,7 @@ function TransferModal({ onClose, availableBalance = 200 }) {
           />
         </div>
 
+        {/* Amount */}
         <div style={{ marginBottom: "10px" }}>
           <label><strong>Amount To Transfer</strong></label>
           <input
@@ -35,41 +51,14 @@ function TransferModal({ onClose, availableBalance = 200 }) {
           </p>
         </div>
 
+        {/* Actions */}
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
-          <button
-            type="button"
-            onClick={onClose}
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#1a1a40",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              width: "48%"
-            }}
-          >
-            Cancel
-          </button>
-
-          <button
-            type="button"
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#00CFFF",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              width: "48%"
-            }}
-          >
-            Verify Receiver
+          <button onClick={onClose} className="cancel-btn">Cancel</button>
+          <button onClick={handleTransfer} className="confirm-btn">
+            Confirm Transfer
           </button>
         </div>
       </div>
     </div>
   );
 }
-
-export default TransferModal;
