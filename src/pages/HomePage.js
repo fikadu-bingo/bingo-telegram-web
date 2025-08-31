@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
-
+import TransferModal from "../components/TransferModal";
 import DepositModal from "../components/DepositModal";
 import DepositSuccessModal from "../components/DepositSuccessModal";
 import CashOutModal from "../components/CashOutModal";
@@ -42,6 +42,7 @@ function HomePage() {
   const [showCashOutSuccess, setShowCashOutSuccess] = useState(false);
   const [showPromoModal, setShowPromoModal] = useState(false);
   const [showTransactionModal, setShowTransactionModal] = useState(false);
+  const [showTransferModal, setShowTransferModal] = useState(false);
 
   const stakes = [10, 20, 50, 100, 200];
 
@@ -431,7 +432,12 @@ function HomePage() {
       <div className="hp-wallet-sidebar">
         <button className="wallet-btn active">💳 Deposit</button>
         <button className="wallet-btn">💸 Withdraw</button>
-        <button className="wallet-btn">🔄 Transfer</button>
+        <button 
+  className="wallet-btn" 
+  onClick={() => setShowTransferModal(true)}
+>
+  🔄 Transfer
+</button>
         <button className="wallet-btn">📜 History</button>
       </div>
 {/* Main content */}
@@ -472,6 +478,21 @@ function HomePage() {
       </button>
     </div>
   </div>
+)}
+
+{showTransferModal && (
+  <TransferModal 
+    onClose={() => setShowTransferModal(false)} 
+    availableBalance={balance} 
+    onTransfer={(amount, receiver) => {
+      if (balance >= amount) {
+        setBalance(balance - amount);   // deduct from user
+        alert(`Successfully transferred Br.${amount} to ${receiver}`);
+      } else {
+        alert("Insufficient balance!");
+      }
+    }}
+  />
 )}
 
 {showModal === "walletActions" && (
