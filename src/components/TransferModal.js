@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./TransferModal.css";
+import SuccessModal from "./SuccessModal";
 
 function TransferModal({ onClose, availableBalance = 0, onTransfer }) {
   const [receiverPhone, setReceiverPhone] = useState("");
   const [transferAmount, setTransferAmount] = useState("");
   const [loading, setLoading] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+const [successMessage, setSuccessMessage] = useState("");
 
   const handleTransfer = async () => {
     if (!receiverPhone || !transferAmount) {
@@ -42,8 +45,8 @@ function TransferModal({ onClose, availableBalance = 0, onTransfer }) {
           amount,
         }
       );
-
-      alert(res.data.message);
+setSuccessMessage(res.data.message);
+setSuccessOpen(true);
 
       if (onTransfer) {
         onTransfer(res.data.newBalance); // update frontend balance
@@ -58,7 +61,8 @@ function TransferModal({ onClose, availableBalance = 0, onTransfer }) {
     }
   };
 
-  return (
+return (
+  <>
     <div className="modal">
       <div className="modal-content">
         <h2 style={{ textAlign: "left", marginBottom: "20px" }}>Transfer</h2>
@@ -104,7 +108,15 @@ function TransferModal({ onClose, availableBalance = 0, onTransfer }) {
         </div>
       </div>
     </div>
-  );
+
+    {/* Success Modal */}
+    <SuccessModal
+      isOpen={successOpen}
+      onClose={() => setSuccessOpen(false)}
+      message={successMessage}
+    />
+  </>
+);
 }
 
 export default TransferModal;
