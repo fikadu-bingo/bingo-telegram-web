@@ -1,79 +1,110 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./TransferModal.css"; // keep your existing modal styles
+import "./TransferModal.css";
 
-const TransferModal = ({ isOpen, onClose, senderId }) => {
-  const [receiverId, setReceiverId] = useState("");
-  const [amount, setAmount] = useState("");
-  const [error, setError] = useState("");
-  const [successOpen, setSuccessOpen] = useState(false);
-
-  if (!isOpen) return null;
+function TransferModal({ onClose, availableBalance = 0, onTransfer }) {
+  const [receiverPhone, setReceiverPhone] = useState("");
+  const [transferAmount, setTransferAmount] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleTransfer = async () => {
+    if (!receiverPhone || !transferAmount) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    const amount = parseFloat(transferAmount);
+    if (amount <= 0) {
+      alert("Enter a valid amount.");
+      return;
+    }
+
+    if (amount > availableBalance) {
+      alert("Insufficient balance");
+      return;
+    }
+
     try {
-      const res = await axios.post("/api/user/transfer", {
-        senderId,
-        receiverId,
-        amount: parseFloat(amount),
-      });
-      if (res.data.success) {
-        setError("");
-        setSuccessOpen(true);
-      } else {
-        setError(res.data.message);
+      setLoading(true);
+
+      const senderTelegramId = localStorage.getItem("telegram_id");
+      if (!senderTelegramId) {
+        alert("User not logged in.");
+        return;
       }
+
+      // Full backend URL
+      const res = await axios.post(
+        "https://bingo-server-rw7p.onrender.com/api/user/transfer",
+        {
+          sender_telegram_id: senderTelegramId,
+          receiver_phone_number: receiverPhone,
+          amount,
+        }
+      );
+
+      alert(res.data.message);
+
+      if (onTransfer) {
+        onTransfer(res.data.newBalance); // update frontend balance
+        localStorage.setItem("balance", res.data.newBalance);
+      }
+
+      onClose();
     } catch (err) {
-      setError(err.response?.data?.message || "Transfer failed");
+      alert(err.response?.data?.message || "Transfer failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <>
-      {/* =============== Transfer Modal =============== */}
-      <div className="transfer-overlay">
-        <div className="transfer-modal">
-          <h2>Transfer Balance</h2>
+    <div className="modal">
+      <div className="modal-content">
+        <h2 style={{ textAlign: "left", marginBottom: "20px" }}>Transfer</h2>
+
+        {/* Receiver */}
+        <div style={{ marginBottom: "15px" }}>
+          <label><strong>Receiver Phone Number</strong></label>
           <input
-            type="text"
-            placeholder="Receiver Phone or Telegram ID"
-            value={receiverId}
-            onChange={(e) => setReceiverId(e.target.value)}
+            type="tel"
+            value={receiverPhone}
+            onChange={(e) => setReceiverPhone(e.target.value)}
+            placeholder="Enter phone number"
+            required
           />
+        </div>
+
+        {/* Amount */}
+        <div style={{ marginBottom: "10px" }}>
+          <label><strong>Amount To Transfer</strong></label>
           <input
             type="number"
-            placeholder="Amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            value={transferAmount}
+            onChange={(e) => setTransferAmount(e.target.value)}
+            placeholder="Enter amount"
+            required
           />
-          {error && <p className="error-text">{error}</p>}
-          <div className="btn-group">
-            <button onClick={handleTransfer}>Confirm</button>
-            <button onClick={onClose}>Cancel</button>
-          </div>
+          <p style={{ fontSize: "12px", color: "#ccc", marginTop: "5px" }}>
+            Available: Br.{availableBalance}
+          </p>
+          {transferAmount > availableBalance && (
+            <p style={{ color: "red", fontSize: "12px" }}>Insufficient balance</p>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
+          <button onClick={onClose} className="cancel-btn" disabled={loading}>
+            Cancel
+          </button>
+          <button onClick={handleTransfer} className="confirm-btn" disabled={loading}>
+            {loading ? "Processing..." : "Confirm Transfer"}
+          </button>
         </div>
       </div>
-
-      {/* =============== Success Modal =============== */}
-      {successOpen && (
-        <div className="success-overlay">
-          <div className="success-modal">
-            <h2 className="success-title">✅ Success</h2>
-            <p className="success-message">Transfer Completed Successfully</p>
-            <button
-              className="success-btn"
-              onClick={() => {
-                setSuccessOpen(false);
-                onClose(); // close TransferModal too
-              }}
-            >
-              OK
-            </button>
-          </div>
-        </div>
-      )}
-    </>
+    </div>
   );
-};
+}
 
 export default TransferModal;
