@@ -53,7 +53,6 @@ setSuccessOpen(true);
         localStorage.setItem("balance", res.data.newBalance);
       }
 
-      onClose();
     } catch (err) {
       alert(err.response?.data?.message || "Transfer failed");
     } finally {
@@ -112,7 +111,10 @@ return (
     {/* Success Modal */}
     <SuccessModal
       isOpen={successOpen}
-      onClose={() => setSuccessOpen(false)}
+      onClose={() => setSuccessOpen(false)
+       
+      }
+     
       message={successMessage}
     />
   </>
