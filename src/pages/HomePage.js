@@ -438,7 +438,14 @@ function HomePage() {
 >
   🔄 Transfer
 </button>
-        <button className="wallet-btn">📜 History</button>
+       <button
+  className={`wallet-btn ${showTransactionModal ? "active" : ""}`}
+  onClick={() => {
+    setShowTransactionModal(true);
+  }}
+>
+  📜 History
+</button>
       </div>
 {/* Main content */}
 <div className="hp-wallet-content">
@@ -560,12 +567,14 @@ function HomePage() {
         </div>
       )}
 
-      {showTransactionModal && (
-        <div className="hp-overlay">
-          <TransactionHistoryModal onClose={() => setShowTransactionModal(false)} />
-        </div>
-      )}
-
+    {showTransactionModal && (
+  <div className="hp-overlay">
+    <TransactionHistoryModal
+      onClose={() => setShowTransactionModal(false)}
+      telegramId={telegramId}
+    />
+  </div>
+)}
       {showSuccessModal && (
         <DepositSuccessModal onClose={() => setShowSuccessModal(false)} />
       )}
