@@ -90,8 +90,14 @@ useEffect(() => {
       userId,
       username,
       stake,
-      ticket: playerCard,
+      ticket: playerTicket,
     });
+ // Receive assigned ticket from server
+  socket.current.on("ticketAssigned", ({ ticket, cartelaNumber }) => {
+    setPlayerTicket({ grid: ticket, cartelaNumber }); // full object
+    setPlayerCard(ticket); // only grid for rendering
+  });
+    
 
     socket.current.on("playerCountUpdate", (count) => setPlayers(count));
     socket.current.on("countdownUpdate", (time) => {
@@ -400,7 +406,7 @@ useEffect(() => {
           socket.current.emit("bingoWin", {
             userId,
             stake,
-            ticket: playerCard,
+            ticket: playerTicket,
           });
         }}
         disabled={!gameStarted}
