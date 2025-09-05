@@ -24,12 +24,32 @@ function TransactionHistoryModal({ onClose, telegramId }) {
     fetchTransactions();
   }, [telegramId]);
 
+  const getTransactionClass = (type) => {
+    switch (type) {
+      case "deposit":
+        return "deposit";
+      case "cashout":
+        return "cashout";
+      case "transfer":
+        return "transfer";
+      case "win":
+        return "win";
+      default:
+        return "";
+    }
+  };
+
+  const getTransactionSign = (type) => {
+    if (type === "deposit" || type === "win") return "+ ";
+    return "- ";
+  };
+
   return (
     <div className="transaction-modal-overlay">
       <div className="transaction-modal">
         <h2>Transaction History</h2>
         <button className="close-btn" onClick={onClose}>
-          ✖
+          ✖️
         </button>
 
         {loading ? (
@@ -41,12 +61,10 @@ function TransactionHistoryModal({ onClose, telegramId }) {
             {transactions.map((t) => (
               <li
                 key={t.id}
-                className={`transaction-item ${
-                  t.type === "deposit" ? "deposit" : "cashout"
-                }`}
+                className={`transaction-item ${getTransactionClass(t.type)}`}
               >
                 <span className="transaction-type">
-                  {t.type === "deposit" ? "+ " : "- "}
+                  {getTransactionSign(t.type)}
                 </span>
                 <span className="transaction-amount">{t.amount} ETB</span>
                 <span className="transaction-status">({t.status})</span>
