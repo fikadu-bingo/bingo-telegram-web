@@ -139,7 +139,7 @@ function BingoBoard() {
       setShowModal(true);
       return;
     }
-    if (wallet < stake) {
+    if (wallet+stake < stake) {
       alert("Not enough balance!");
       return;
     }
