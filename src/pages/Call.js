@@ -133,12 +133,13 @@ useEffect(() => {
     socket.current.on("gameStarted", () => setGameStarted(true));
     socket.current.on(
       "gameWon",
-      ({ userId: winnerId, username: winnerUsername, prize }) => {
+      ({ userId: winnerId, username: winnerUsername, prize,winnerCartela }) => {
         const numericPrize = Number(prize) || 0;
         setWinnerInfo({
           userId: winnerId,
           username: winnerUsername,
           prize: numericPrize,
+           cartela: winnerCartela,
         });
         setShowPopup(true);
         // Redirect all users automatically after 3 seconds
@@ -156,9 +157,9 @@ useEffect(() => {
       alert(message || "Invalid Bingo claim!");
     });
 
-    socket.current.on("winnerDeclared", ({ winnerId, username, prize }) => {
+    socket.current.on("winnerDeclared", ({ winnerId, username, prize, winnerCartela }) => {
       if (winnerId !== userId) {
-        setWinnerInfo({ userId: winnerId, username, prize });
+        setWinnerInfo({ userId: winnerId, username, prize, cartela: winnerCartela, });
         setShowPopup(true);
 
         // Redirect automatically for all other users
