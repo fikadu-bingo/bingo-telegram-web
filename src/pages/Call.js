@@ -28,7 +28,8 @@ function Call() {
     stateUserId ?? localStorage.getItem("telegram_id") ?? `guest_${Date.now()}`;
   const username =
     stateUsername ?? localStorage.getItem("firstName") ?? "User";
-
+// Full ticket object from server: { grid, cartelaNumber }
+const [playerTicket, setPlayerTicket] = useState(card ? { grid: card, cartelaNumber } : null);
   const [calledNumbers, setCalledNumbers] = useState([]);
   const [currentNumber, setCurrentNumber] = useState(null);
   const [playerCard, setPlayerCard] = useState(card ?? []);
