@@ -141,8 +141,11 @@ useEffect(() => {
           prize: numericPrize,
         });
         setShowPopup(true);
-      }
-    );
+        // Redirect all users automatically after 3 seconds
+  setTimeout(() => {
+    navigate("/");
+  }, 3000); // adjust delay as needed
+      });
 
     socket.current.on("bingoSuccess", ({ winnerId, username, prize }) => {
       setWinnerInfo({ userId: winnerId, username, prize });
@@ -157,6 +160,11 @@ useEffect(() => {
       if (winnerId !== userId) {
         setWinnerInfo({ userId: winnerId, username, prize });
         setShowPopup(true);
+
+        // Redirect automatically for all other users
+    setTimeout(() => {
+      navigate("/");
+    }, 3000);
       }
     });
 
