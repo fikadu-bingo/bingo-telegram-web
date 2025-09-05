@@ -145,7 +145,7 @@ useEffect(() => {
         // Redirect all users automatically after 3 seconds
   setTimeout(() => {
     navigate("/");
-  }, 3000); // adjust delay as needed
+  }, 9000); // adjust delay as needed
       });
 
     socket.current.on("bingoSuccess", ({ winnerId, username, prize }) => {
@@ -165,7 +165,7 @@ useEffect(() => {
         // Redirect automatically for all other users
     setTimeout(() => {
       navigate("/");
-    }, 3000);
+    }, 9000);
       }
     });
 
