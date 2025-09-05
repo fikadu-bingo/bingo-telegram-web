@@ -407,7 +407,7 @@ useEffect(() => {
           socket.current.emit("bingoWin", {
             userId,
             stake,
-            ticket: playerTicket,
+            //ticket: playerTicket,
           });
         }}
         disabled={!gameStarted}
