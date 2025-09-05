@@ -50,12 +50,23 @@
   flex-direction: column;
 }
 
+/* ✅ Extended transaction type styles */
 .transaction-item.deposit .transaction-type {
   color: green;
   font-weight: bold;
 }
 
 .transaction-item.cashout .transaction-type {
+  color: red;
+  font-weight: bold;
+}
+
+.transaction-item.transfer .transaction-type {
+  color: orange;
+  font-weight: bold;
+}
+
+.transaction-item.win .transaction-type {
   color: blue;
   font-weight: bold;
 }
