@@ -133,13 +133,14 @@ useEffect(() => {
     socket.current.on("gameStarted", () => setGameStarted(true));
     socket.current.on(
       "gameWon",
-      ({ userId: winnerId, username: winnerUsername, prize,winnerCartela }) => {
+      ({ userId: winnerId, username: winnerUsername, prize,winnerCartela,cartelaNumber }) => {
         const numericPrize = Number(prize) || 0;
         setWinnerInfo({
           userId: winnerId,
           username: winnerUsername,
           prize: numericPrize,
            cartela: winnerCartela,
+           cartelaNumber
         });
         setShowPopup(true);
         // Redirect all users automatically after 3 seconds
@@ -435,8 +436,8 @@ useEffect(() => {
         <WinModal
           username={winnerInfo.username}
           amount={winnerInfo.prize}
-          cartela={getMarkedCartela()}
-          cartelaNumber={cartelaNumber}
+             cartela={winnerInfo.cartela}        // ✅ use winner’s cartela from socket
+          cartelaNumber={winnerInfo.cartelaNumber}
           onPlayAgain={() => {
             setWinnerInfo(null);
             setShowPopup(false);
