@@ -21,15 +21,18 @@ function formatBingoNumber(number) {
 function Call() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { card, stake, cartelaNumber, username: stateUsername, userId: stateUserId } =
-    location.state ?? {};
+  const {
+    card,
+    stake,
+    cartelaNumber,
+    username: stateUsername,
+    userId: stateUserId,
+  } = location.state ?? {};
 
   const userId =
     stateUserId ?? localStorage.getItem("telegram_id") ?? `guest_${Date.now()}`;
-  const username =
-    stateUsername ?? localStorage.getItem("firstName") ?? "User";
-// Full ticket object from server: { grid, cartelaNumber }
-const [playerTicket, setPlayerTicket] = useState(card ? { grid: card, cartelaNumber } : null);
+  const username = stateUsername ?? localStorage.getItem("firstName") ?? "User";
+
   const [calledNumbers, setCalledNumbers] = useState([]);
   const [currentNumber, setCurrentNumber] = useState(null);
   const [playerCard, setPlayerCard] = useState(card ?? []);
@@ -47,33 +50,31 @@ const [playerTicket, setPlayerTicket] = useState(card ? { grid: card, cartelaNum
   const socket = useRef(null);
   const audioRef = useRef(null);
 
-// ------------------ Play audio ------------------
-const playAudio = (formattedNumber) => {
+  // ------------------ Play audio ------------------
+  const playAudio = (formattedNumber) => {
+    if (!formattedNumber) return;
 
-  if (!formattedNumber) return;
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
 
-  // If audioRef exists and is playing, stop it first
-  if (audioRef.current) {
-    audioRef.current.pause();
-    audioRef.current.currentTime = 0; // reset to start
-  }
+    if (muted) return;
 
-  // If muted, do not play any audio
-  if (muted) return;
+    const audioPath = `/audio/bingo_calls/${formattedNumber}.mp3`;
+    audioRef.current = new Audio(audioPath);
+    audioRef.current.volume = 1;
+    audioRef.current.play().catch((err) =>
+      console.warn("Audio play failed:", err)
+    );
+  };
 
-  // Create new Audio object and play
-  const audioPath = `/audio/bingo_calls/${formattedNumber}.mp3`;
-  audioRef.current = new Audio(audioPath);
-  audioRef.current.volume = 1; // ensure volume is full when unmuted
-  audioRef.current.play().catch((err) => console.warn("Audio play failed:", err));
-};
-
-// ------------------ Optional: Pause any playing audio when muted changes ------------------
-useEffect(() => {
-  if (muted && audioRef.current) {
-    audioRef.current.pause();
-  }
-}, [muted]);
+  // ------------------ Mute effect ------------------
+  useEffect(() => {
+    if (muted && audioRef.current) {
+      audioRef.current.pause();
+    }
+  }, [muted]);
 
   // ------------------ Socket Setup ------------------
   useEffect(() => {
@@ -87,19 +88,15 @@ useEffect(() => {
       transports: ["websocket"],
     });
 
+    // Join game
     socket.current.emit("joinGame", {
       userId,
       username,
       stake,
-      ticket: playerTicket,
+      ticket: playerCard,
     });
- // Receive assigned ticket from server
-  socket.current.on("ticketAssigned", ({ ticket, cartelaNumber }) => {
-    setPlayerTicket({ grid: ticket, cartelaNumber }); // full object
-    setPlayerCard(ticket); // only grid for rendering
-  });
-    
 
+    // Player updates
     socket.current.on("playerCountUpdate", (count) => setPlayers(count));
     socket.current.on("countdownUpdate", (time) => {
       setCountdown(time);
@@ -110,6 +107,7 @@ useEffect(() => {
       setGameStarted(false);
     });
 
+    // Numbers
     socket.current.on("numberCalled", (number) => {
       if (number < 1 || number > 75) return;
       const formatted = formatBingoNumber(number);
@@ -124,37 +122,43 @@ useEffect(() => {
         return updated;
       });
 
-      // Play audio
       playAudio(formatted);
 
       // Blink effect for 2 seconds
       setBlinkNumbers((prev) => [...prev, formatted]);
       setTimeout(() => {
-        setBlinkNumbers((prev) =>
-          prev.filter((num) => num !== formatted)
-        );
+        setBlinkNumbers((prev) => prev.filter((num) => num !== formatted));
       }, 2000);
     });
-
+    // Win info
     socket.current.on("winAmountUpdate", (amount) => setWinAmount(amount));
     socket.current.on("gameStarted", () => setGameStarted(true));
+
     socket.current.on(
       "gameWon",
-      ({ userId: winnerId, username: winnerUsername, prize,winnerCartela,cartelaNumber }) => {
+      ({
+        userId: winnerId,
+        username: winnerUsername,
+        prize,
+        winnerCartela,
+        cartelaNumber,
+      }) => {
         const numericPrize = Number(prize) || 0;
         setWinnerInfo({
           userId: winnerId,
           username: winnerUsername,
           prize: numericPrize,
-           cartela: winnerCartela,
-           cartelaNumber
+          cartela: winnerCartela,
+          cartelaNumber,
         });
         setShowPopup(true);
-        // Redirect all users automatically after 3 seconds
-  setTimeout(() => {
-    navigate("/");
-  }, 9000); // adjust delay as needed
-      });
+
+        // Redirect all users after delay
+        setTimeout(() => {
+          navigate("/");
+        }, 9000);
+      }
+    );
 
     socket.current.on("bingoSuccess", ({ winnerId, username, prize }) => {
       setWinnerInfo({ userId: winnerId, username, prize });
@@ -165,18 +169,27 @@ useEffect(() => {
       alert(message || "Invalid Bingo claim!");
     });
 
-    socket.current.on("winnerDeclared", ({ winnerId, username, prize, winnerCartela }) => {
-      if (winnerId !== userId) {
-        setWinnerInfo({ userId: winnerId, username, prize, cartela: winnerCartela, });
-        setShowPopup(true);
+    socket.current.on(
+      "winnerDeclared",
+      ({ winnerId, username, prize, winnerCartela, cartelaNumber }) => {
+        if (winnerId !== userId) {
+          setWinnerInfo({
+            userId: winnerId,
+            username,
+            prize,
+            cartela: winnerCartela,
+            cartelaNumber,
+          });
+          setShowPopup(true);
 
-        // Redirect automatically for all other users
-    setTimeout(() => {
-      navigate("/");
-    }, 9000);
+          setTimeout(() => {
+            navigate("/");
+          }, 9000);
+        }
       }
-    });
+    );
 
+    // Balance updates
     socket.current.on("balanceChange", (payload) => {
       try {
         if (!payload || !payload.balances) return;
@@ -190,6 +203,7 @@ useEffect(() => {
       }
     });
 
+    // Reset
     socket.current.on("gameReset", () => {
       setCalledNumbers([]);
       setCurrentNumber(null);
@@ -217,16 +231,12 @@ useEffect(() => {
     const allMarked = (num) =>
       markedNumbers.includes(formatBingoNumber(num)) || num === "*";
 
-    // Rows
     for (let r = 0; r < 5; r++) if (grid[r].every(allMarked)) return true;
-    // Columns
     for (let c = 0; c < 5; c++) if (grid.every((row) => allMarked(row[c])))
       return true;
-    // Diagonals
+
     const diag1 = [0, 1, 2, 3, 4].every((i) => allMarked(grid[i][i]));
-    const diag2 = [0, 1, 2, 3, 4].every((i) =>
-      allMarked(grid[i][4 - i])
-    );
+    const diag2 = [0, 1, 2, 3, 4].every((i) => allMarked(grid[i][4 - i]));
     return diag1 || diag2;
   };
 
@@ -270,7 +280,6 @@ useEffect(() => {
           <div className="menu-value">{calledNumbers.length}</div>
         </div>
 
-        {/* Mute Button */}
         <div
           className="menu-item-box mute-button"
           onClick={() => setMuted(!muted)}
@@ -278,7 +287,6 @@ useEffect(() => {
         >
           {muted ? "🔇" : "🔊"}
         </div>
-
       </div>
 
       <div className="main-content">
@@ -307,7 +315,7 @@ useEffect(() => {
                       <div
                         key={num}
                         className={`number-box ${isCalled ? "called" : ""}`}
-                        onClick={() => playAudio(formatted)} // replay audio on click
+                        onClick={() => playAudio(formatted)}
                       >
                         {num}
                       </div>
@@ -321,16 +329,14 @@ useEffect(() => {
 
         {/* Cartela */}
         <div className="cartela-wrapper">
-           {/* Countdown above current ball */}
           {!gameStarted && countdown !== null && (
-  <div className="countdown-above-ball">
-    <div className="timer-circle">
-      <span className="timer-value">{countdown}</span>
-    </div>
-  </div>
-)}
+            <div className="countdown-above-ball">
+              <div className="timer-circle">
+                <span className="timer-value">{countdown}</span>
+              </div>
+            </div>
+          )}
           <div
-
             className={`current-ball pulse ${
               currentNumber
                 ? getBingoLetter(parseInt(currentNumber.slice(1)))
@@ -354,7 +360,7 @@ useEffect(() => {
                     className={`rolling-number ${getBingoLetter(
                       parseInt(num.slice(1))
                     )}`}
-                    onClick={() => playAudio(num)} // replay old calls
+                    onClick={() => playAudio(num)}
                   >
                     {num}
                   </div>
@@ -371,7 +377,7 @@ useEffect(() => {
                 <div
                   key={letter}
                   className={`bingo-letter bingo-${letter.toLowerCase()}`}
-                >
+                  >
                   {letter}
                 </div>
               ))}
@@ -387,7 +393,8 @@ useEffect(() => {
                 return (
                   <div
                     key={idx}
-                    className={`number-box ${marked ? "marked" : "unmarked"} ${blink ? "blink" : ""
+                    className={`number-box ${marked ? "marked" : "unmarked"} ${
+                      blink ? "blink" : ""
                     }`}
                     onClick={() => handleMarkNumber(num)}
                   >
@@ -407,7 +414,6 @@ useEffect(() => {
           socket.current.emit("bingoWin", {
             userId,
             stake,
-            //ticket: playerTicket,
           });
         }}
         disabled={!gameStarted}
@@ -443,7 +449,7 @@ useEffect(() => {
         <WinModal
           username={winnerInfo.username}
           amount={winnerInfo.prize}
-             cartela={winnerInfo.cartela}        // ✅ use winner’s cartela from socket
+          cartela={winnerInfo.cartela}
           cartelaNumber={winnerInfo.cartelaNumber}
           onPlayAgain={() => {
             setWinnerInfo(null);
